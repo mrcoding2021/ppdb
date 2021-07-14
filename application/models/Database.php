@@ -145,5 +145,6 @@ class Database extends CI_Model
         $this->db->where('no_invoice', $inv);
         $this->db->set('approve', $id);
         $this->db->update($table);
+        // oke 
     }
 }
