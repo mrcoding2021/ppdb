@@ -41,28 +41,34 @@ class Setting extends CI_Controller
     public function getAll($id = 0)
     {
         if ($id > 0) {
-            $this->db->where('id', $id);
-            $result = $this->db->get('tb_user_kelas')->row();
+            $this->db->where('id_user', $id);
+            $result = $this->db->get('tb_user')->row();
         } else {
-            $this->db->order_by('ta', 'desc');
-            $data = $this->db->get('tb_user_kelas')->result();
+            $this->db->where('level', 4);
+            $this->db->where('is_active', 1);
+            $data = $this->db->get('tb_user')->result();
             $result = [];
+            // var_dump($data);die;
             $no = 1;
             foreach ($data as $key) {
+                $this->db->where('id_siswa', $key->id_user);
+                $tagihan = $this->db->get('tb_user_tagihan')->row();
+                $this->db->where('kode_kelas', $key->kelas);
+                $kelas = $this->db->get('tb_user_kelas')->row();
                 $result[] = [
                     'no'        => $no++,
-                    'id'        => $key->id,
-                    'nama'      => $key->ket . ' - ' . $key->nama,
-                    'kode_kelas'   => $key->kode_kelas,
-                    'kelas'      => $key->kode_kelas,
-                    'ta'      => $key->ta,
-                    'spp'      => rupiah($key->spp),
-                    'gedung'      => rupiah($key->gedung),
-                    'kegiatan'      => rupiah($key->kegiatan),
-                    'buku'      => rupiah($key->buku),
-                    'komite'      => rupiah($key->komite),
-                    'seragam'      => rupiah($key->seragam),
-                    'sarpras'      => ($key->sarpras != null) ? rupiah($key->sarpras) : 0,
+                    'id'        => $key->id_user,
+                    'nis'        => $key->nis .'<br>'.$key->nisn,
+                    'nama'      => $key->nama,
+                    'kelas'      => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
+                    'ta'      => ($tagihan != null) ? $tagihan->ta : '',
+                    'spp'      => ($tagihan != null) ? rupiah($tagihan->spp): 0,
+                    'gedung'      => ($tagihan != null) ? rupiah($tagihan->gedung) : 0,
+                    'kegiatan'      => ($tagihan != null) ? rupiah($tagihan->kegiatan): 0,
+                    'buku'      => ($tagihan != null) ? rupiah($tagihan->buku) : 0,
+                    'komite'      => ($tagihan != null) ? rupiah($tagihan->komite) : 0,
+                    'seragam'      => ($tagihan != null) ? rupiah($tagihan->seragam) : 0,
+                    'sarpras'      => ($tagihan != null) ? rupiah($tagihan->sarpras) : 0,
                 ];
             }
         }
@@ -111,6 +117,4 @@ class Setting extends CI_Controller
         }
         echo json_encode($res);
     }
-
-
 }

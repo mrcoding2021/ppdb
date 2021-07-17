@@ -12,7 +12,7 @@
                         <duv class="col-md-12">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
-                                    <h3 class="m-0 text-white font-weight-bold ">Nilai Pembayaran
+                                    <h3 class="m-0 text-white font-weight-bold ">Tagihan Biaya Penddikan
                                         <a href="#tambah" class="btn input-ajaran-baru btn-success btn-border-circle float-right" data-toggle="modal">Input Baru</a>
                                     </h3>
                                 </div>
@@ -23,8 +23,8 @@
                                                 <thead class="text-center">
                                                     <tr valign="middle">
                                                         <th rowspan="2" valign="middle">No</th>
-                                                        <th rowspan="2" width="25%">Kelas</th>
-                                                        <th rowspan="2" width="10%">TA</th>
+                                                        <th rowspan="2" width="25%">NIS / NISN</th>
+                                                        <th rowspan="2" width="25%">Nama</th>
                                                         <th colspan="7">Nilai Pembayaran</th>
                                                         <th valign="middle" rowspan="2">Aksi</th>
                                                     </tr>
@@ -56,7 +56,7 @@
                 <!-- End of Main Content -->
 
                 <div class="modal fade" id="tambah" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-dialog modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
                                 <h5 class="modal-title" id="exampleModalLabel">Tambah Item</h5>
@@ -144,10 +144,10 @@
                                         "data": "no"
                                     },
                                     {
-                                        "data": "nama"
+                                        "data": "nis"
                                     },
                                     {
-                                        "data": "ta"
+                                        "data": "nama"
                                     },
                                     {
                                         "data": "spp"
@@ -173,7 +173,7 @@
                                     {
                                         "data": "buku",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html("<a class='mr-1 detail btn btn-info btn-border-circle btn-sm' href='#lihat' data-id=" + oData.id + " >Detail</a>");
+                                            $(nTd).html("<a class='mr-1 detail badge badge-info badge-border-circle' href='#lihat' data-id=" + oData.id + " >Setting</a>");
                                         }
                                     }
                                 ]
@@ -181,8 +181,8 @@
                         }
                         $(document).on('click', '.detail', function(e) {
                             var id = $(this).data('id')
-                            $('.modal-title').text('Detail')
-                            $('.edit').text('Edit')
+                            $('.modal-title').text('Setting Biaya Pendidikan')
+                            $('.edit').text('Simpan')
                             $.ajax({
                                 url: '<?= base_url('setting/getAll/') ?>' + id,
                                 type: 'POST',
