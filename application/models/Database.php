@@ -146,5 +146,6 @@ class Database extends CI_Model
         $this->db->set('approve', $id);
         $this->db->update($table);
         // oke 
+        
     }
 }

@@ -25,7 +25,7 @@
                                                         <th rowspan="2" valign="middle">No</th>
                                                         <th rowspan="2" width="25%">NIS / NISN</th>
                                                         <th rowspan="2" width="25%">Nama</th>
-                                                        <th colspan="7">Nilai Pembayaran</th>
+                                                        <th colspan="7">Nilai Tagihan</th>
                                                         <th valign="middle" rowspan="2">Aksi</th>
                                                     </tr>
                                                     <tr>
@@ -66,57 +66,53 @@
                             </div>
                             <div class="modal-body">
                                 <form action="<?= base_url('setting/add') ?>" method="post" class="input-ajaran">
-                                    <div class="form-group row">
-                                        <div class="col-sm-4">
-                                            <label>Tahun Ajaran</label>
-                                            <input type="text" class="form-control" name="ta">
-                                            <input type="hidden" class="form-control" name="id">
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <label>Kode Kelas</label>
-                                            <input type="text" class="form-control" name="kode_kelas">
-                                        </div>
-                                        <div class="col-sm-2">
-                                            <label>Kelas</label>
-                                            <input type="text" class="form-control" name="ket">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label>Nama Kelas</label>
-                                            <input type="text" class="form-control" name="nama">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-4">
-                                            <label>SPP</label>
-                                            <input type="text" class="form-control" name="spp">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label>Infaq Gedung</label>
-                                            <input type="text" class="form-control" name="gedung">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label>Kegiatan</label>
-                                            <input type="text" class="form-control" name="kegiatan">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-4">
-                                            <label>Seragam</label>
-                                            <input type="text" class="form-control" name="seragam">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label>Komite</label>
-                                            <input type="text" class="form-control" name="komite">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label>Buku</label>
-                                            <input type="text" class="form-control" name="buku">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label>Sarpras</label>
-                                            <input type="text" class="form-control" name="sarpras">
-                                        </div>
-                                    </div>
+                                    <table class="table table-striped table-sm">
+                                        <thead class="bg-dark text-white text-center">
+                                            <tr>
+                                                <th scope="col" rowspan="2" width="15%">Jenis Tagihan</th>
+                                                <th scope="col">Tagihan Tahun ini</th>
+                                                <th scope="col">Tagihan Tahun Lalu</th>
+                                                <th scope="col" rowspan="2">Total Tagihan</th>
+                                                <th scope="col" rowspan="2" width="40%">Keterangan</th>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col">
+                                                    <select type="text" class="form-control form-control-sm" name="ta">
+                                                        <?php $n = 16;
+                                                        $m = 17;
+                                                        for ($i = 0; $i < 15; $i++) { ?>
+                                                            <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                        <?php $n++;
+                                                            $m++;
+                                                        } ?>
+                                                    </select>
+                                                </th>
+                                                <th scope="col">
+                                                    <select type="text" class="form-control form-control-sm" name="ta_lalu">
+                                                        <?php $n = 16;
+                                                        $m = 17;
+                                                        for ($i = 0; $i < 15; $i++) { ?>
+                                                            <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                        <?php $n++;
+                                                            $m++;
+                                                        } ?>
+                                                    </select>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+                                            for ($i = 0; $i < 7; $i++) { ?>
+                                                <tr>
+                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm kode" value="<?= $kode[$i] ?>" name="kode[]"><input type="hidden" class="form-control form-control-sm id_siswa" name="id_siswa[]"></td>
+                                                    <td><input type="text" class="form-control form-control-sm bayar" name="bayar[]"></td>
+                                                    <td><input type="text" class="form-control form-control-sm bayar_lalu" name="bayar_lalu[]"></td>
+                                                    <td><input readonly type="text" class="form-control  form-control-sm total" name="total[]"></td>
+                                                    <td><input type="text" class="form-control form-control-sm" name="ket[]"></td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
                                     <div class="modal-footer">
                                         <button id="close" class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
                                         <button class="btn btn-success  btn-border-circle btn-block" type="submit">Input</button>
@@ -130,6 +126,22 @@
 
                 <script>
                     $(document).ready(function() {
+                        $('.bayar').keyup(function() {
+                            var bayar = $(this).val()
+                            console.log(bayar)
+                            var diskon = $(this).parent('td').next().find('.bayar_lalu').val()
+                            var total = $(this).parents('td').next().next().find('.total')
+                            total.val(parseInt(bayar) + parseInt(diskon))
+                        })
+
+                        $('.bayar_lalu').keyup(function() {
+                            var bayar = $(this).val()
+                            console.log(bayar)
+                            var diskon = $(this).parent('td').prev().find('.bayar').val()
+                            var total = $(this).parents('td').next().find('.total')
+                            total.val(parseInt(bayar) + parseInt(diskon))
+                        })
+
                         dataTHAjaran()
 
                         function dataTHAjaran() {
@@ -173,37 +185,30 @@
                                     {
                                         "data": "buku",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html("<a class='mr-1 detail badge badge-info badge-border-circle' href='#lihat' data-id=" + oData.id + " >Setting</a>");
+                                            $(nTd).html('<a class="mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Detail</a><a class="mr-1 detail badge badge-success" href="#lihat" data-id="' + oData.id + '" >Setting</a>');
                                         }
                                     }
                                 ]
                             });
                         }
+
                         $(document).on('click', '.detail', function(e) {
                             var id = $(this).data('id')
                             $('.modal-title').text('Setting Biaya Pendidikan')
                             $('.edit').text('Simpan')
+                            $('.id_siswa').val(id)
                             $.ajax({
                                 url: '<?= base_url('setting/getAll/') ?>' + id,
                                 type: 'POST',
                                 dataType: 'JSON',
                                 success: function(data) {
+                                    console.log(data)
                                     $('#tambah').modal('show')
-                                    $('input[name="ta"]').val(data.ta)
-                                    $('input[name="nama"]').val(data.nama)
-                                    $('input[name="kode_kelas"]').val(data.kode_kelas)
-                                    $('input[name="spp"]').val(data.spp)
-                                    $('input[name="gedung"]').val(data.gedung)
-                                    $('input[name="kegiatan"]').val(data.kegiatan)
-                                    $('input[name="seragam"]').val(data.seragam)
-                                    $('input[name="komite"]').val(data.komite)
-                                    $('input[name="buku"]').val(data.buku)
-                                    $('input[name="sarpras"]').val(data.sarpras)
-                                    $('input[name="id"]').val(data.id)
-                                    $('input[name="ket"]').val(data.ket)
+
                                 }
                             })
                         })
+
                         $('.input-ajaran-baru').on('click', function(e) {
                             $('.modal-title').text('Tambah Ajaran Baru')
                             $('.form-control').val('')
@@ -212,6 +217,7 @@
                         // input ajaran 
                         $('.input-ajaran').on('submit', function(e) {
                             e.preventDefault()
+                            console.log($('.kode').val())
                             Swal.fire({
                                 title: "Yakin ingin disimpan?",
                                 text: "Pastikan data sudah benar dan sesuai",

@@ -40,9 +40,27 @@ class Setting extends CI_Controller
 
     public function getAll($id = 0)
     {
+
         if ($id > 0) {
             $this->db->where('id_user', $id);
-            $result = $this->db->get('tb_user')->row();
+            $data = $this->db->get('tb_user')->row();
+            $this->db->where('id_siswa', $data->id_user);
+            $tagihan = $this->db->get('tb_user_tagihan')->row();
+            $this->db->where('kode_kelas', $data->kelas);
+            $kelas = $this->db->get('tb_user_kelas')->row();
+            $result = [
+                'id'        => $data->id_user,
+                'nis'        => $data->nis . '<br>' . $data->nisn,
+                'nama'      => $data->nama,
+                'kelas'      => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
+                'spp'      => ($tagihan != null) ? rupiah($tagihan->spp) : 0,
+                'gedung'      => ($tagihan != null) ? rupiah($tagihan->gedung) : 0,
+                'kegiatan'      => ($tagihan != null) ? rupiah($tagihan->kegiatan) : 0,
+                'buku'      => ($tagihan != null) ? rupiah($tagihan->buku) : 0,
+                'komite'      => ($tagihan != null) ? rupiah($tagihan->komite) : 0,
+                'seragam'      => ($tagihan != null) ? rupiah($tagihan->seragam) : 0,
+                'sarpras'      => ($tagihan != null) ? rupiah($tagihan->sarpras) : 0,
+            ];
         } else {
             $this->db->where('level', 4);
             $this->db->where('is_active', 1);
@@ -58,13 +76,13 @@ class Setting extends CI_Controller
                 $result[] = [
                     'no'        => $no++,
                     'id'        => $key->id_user,
-                    'nis'        => $key->nis .'<br>'.$key->nisn,
+                    'nis'        => $key->nis . '<br>' . $key->nisn,
                     'nama'      => $key->nama,
                     'kelas'      => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
                     'ta'      => ($tagihan != null) ? $tagihan->ta : '',
-                    'spp'      => ($tagihan != null) ? rupiah($tagihan->spp): 0,
+                    'spp'      => ($tagihan != null) ? rupiah($tagihan->spp) : 0,
                     'gedung'      => ($tagihan != null) ? rupiah($tagihan->gedung) : 0,
-                    'kegiatan'      => ($tagihan != null) ? rupiah($tagihan->kegiatan): 0,
+                    'kegiatan'      => ($tagihan != null) ? rupiah($tagihan->kegiatan) : 0,
                     'buku'      => ($tagihan != null) ? rupiah($tagihan->buku) : 0,
                     'komite'      => ($tagihan != null) ? rupiah($tagihan->komite) : 0,
                     'seragam'      => ($tagihan != null) ? rupiah($tagihan->seragam) : 0,
@@ -79,32 +97,42 @@ class Setting extends CI_Controller
     {
 
         $this->form_validation->set_rules('ta', 'Tahun Ajaran', 'trim|required');
-        $this->form_validation->set_rules('kode_kelas', 'Kode kelas', 'trim|required');
+        $this->form_validation->set_rules('kode', 'Kode Tagihan', 'trim|required');
 
         $id = $this->input->post('id');
         if ($this->form_validation->run() == TRUE) {
-            $data = array(
-                'ta'  => trim(htmlspecialchars($_POST['ta'])),
-                'nama'  => trim(htmlspecialchars($_POST['nama'])),
-                'ket'  => trim(htmlspecialchars($_POST['ket'])),
-                'kode_kelas'  => trim(htmlspecialchars($_POST['kode_kelas'])),
-                'gedung'  => trim(htmlspecialchars($_POST['gedung'])),
-                'kegiatan'  => trim(htmlspecialchars($_POST['kegiatan'])),
-                'seragam'  => trim(htmlspecialchars($_POST['seragam'])),
-                'komite'  => trim(htmlspecialchars($_POST['komite'])),
-                'buku'  => trim(htmlspecialchars($_POST['buku'])),
-                'spp'  => trim(htmlspecialchars($_POST['spp'])),
-                'sarpras'  => trim(htmlspecialchars($_POST['sarpras'])),
-            );
 
             if ($id) {
+                for ($i = 0; $i < count($_POST['kode']); $i++) {
+                    $data = array(
+                        'ta'            => trim(htmlspecialchars($_POST['ta'])),
+                        'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
+                        'kode'          => trim(htmlspecialchars($_POST['kode'][$i])),
+                        'bayar'         => trim(htmlspecialchars($_POST['bayar'][$i])),
+                        'bayar_lalu'    => trim(htmlspecialchars($_POST['bayar_lalu'][$i])),
+                        'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
+                    );
+                }
                 $this->db->where('id', $id);
-                $this->db->update('tb_user_kelas', $data);
+                $this->db->set('updated_at', date('Y-m-d'));
+                $this->db->update('tb_user_tagihan', $data);
                 $aff = 'Data berhasil dirubah';
             } else {
-                $this->db->set('created_at', date('Y-m-d'));
-                $this->db->insert('tb_user_kelas', $data);
-                $aff = 'Data berhasil tersimpan';
+                for ($i = 0; $i < count($_POST['kode']); $i++) {
+                    $data = array(
+                        'ta'            => trim(htmlspecialchars($_POST['ta'])),
+                        'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
+                        'kode'          => trim(htmlspecialchars($_POST['kode'][$i])),
+                        'bayar'         => trim(htmlspecialchars($_POST['bayar'][$i])),
+                        'bayar_lalu'    => trim(htmlspecialchars($_POST['bayar_lalu'][$i])),
+                        'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
+                    );
+
+                    $this->db->set('id_siswa', $_POST['id_siswa']);
+                    $this->db->set('created_at', date('Y-m-d'));
+                    $this->db->insert('tb_user_tagihan', $data);
+                    $aff = 'Data berhasil tersimpan';
+                }
             }
 
             if ($this->db->affected_rows() > 0) {
