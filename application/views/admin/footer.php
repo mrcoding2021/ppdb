@@ -174,7 +174,7 @@
 <script src="<?= base_url() ?>asset/admin/js/sb-admin-2.min.js"></script>
 
 
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script script src="<?= base_url() ?>asset/admin/js/my.js">
 </script>
@@ -249,7 +249,7 @@
                         $('input[name="id_murid"]').val(res[0].id)
                         $('input[name="nama"]').val(res[0].nama)
                         $('input[name="jumlah[]"]').val(res[0].spp)
-                        
+
                         if (inv != undefined) {
                             $('.cetak-invoice').attr('href', '<?= base_url('cetak/invoice/') ?>' + inv.replace(/\s+/g, ''))
                         }

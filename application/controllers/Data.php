@@ -33,7 +33,7 @@ class Data extends CI_Controller
             $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
             $data['users'] = $this->db->get_where($table, array('level' => 3, 'is_active' => 1))->result();
             $data['sekolah'] = $this->db->get('tb_sekolah')->result();
-            $data['transaksi'] = $this->mapp->get_all('tb_tansaksi');
+            // $data['transaksi'] = $this->mapp->get_all('tb_tansaksi');
             $this->load->view('admin/header', $data);
             $this->load->view('admin/v_data', $data);
             $this->load->view('admin/footer', $data);
@@ -161,6 +161,7 @@ class Data extends CI_Controller
             $data = array(
                 'nama' => strtoupper($this->input->post('nama')),
                 'nis' => $this->input->post('nis'),
+                'nisn' => $this->input->post('nisn'),
                 'email' => $this->input->post('email'),
                 'alamat' => $this->input->post('alamat'),
                 'hp' => $this->input->post('hp'),
@@ -168,7 +169,8 @@ class Data extends CI_Controller
                 'pj' => $this->input->post('wali'),
                 'parent' => 12,
                 'level' => 4,
-                'pwd' => $_POST['tgl_lahir'],
+                'pwd' =>  $this->input->post('tgl_lahir'),
+                'password' => md5(str_replace('-','',$this->input->post('tgl_lahir')))
             );
 
             if ($id) {

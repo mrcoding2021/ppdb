@@ -18,6 +18,7 @@
                                                 <tr>
                                                     <th>No</th>
                                                     <th>NIS</th>
+                                                    <th>NISN</th>
                                                     <th>Nama Siswa</th>
                                                     <th>Kelas</th>
                                                     <th>Aksi</th>
@@ -87,12 +88,16 @@
                                 <form action="<?= base_url('data/addSiswa') ?>" method="post" class="addSiswa" data-id="0">
                                     <div class="form-group row">
                                         <label for="1" class="col-sm-1 col-form-label">NIS</label>
-                                        <div class="col-sm-5">
+                                        <div class="col-sm-3">
                                             <input type="text" class="form-control" name="nis">
                                             <input type="hidden" class="form-control" name="id_user">
                                         </div>
-                                        <label for="1" class="col-sm-2 col-form-label">Tgl.Daftar</label>
-                                        <div class="col-sm-4">
+                                        <label for="1" class="col-sm-1 col-form-label">NISN</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" class="form-control" name="nisn">
+                                        </div>
+                                        <label for="1" class="col-sm-1 col-form-label">Tgl.Daftar</label>
+                                        <div class="col-sm-3">
                                             <input type="date" class="form-control" name="date">
                                         </div>
                                     </div>
@@ -133,7 +138,6 @@
                                         <div class="col-sm-4">
                                             <input type="date" class="form-control" name="tgl_lahir">
                                         </div>
-
                                     </div>
                                     <div class="form-group row">
                                         <label for="1" class="col-sm-1 col-form-label">Email</label>
@@ -143,7 +147,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Cancel</button>
-                                        <button type="sbmit" class="btn btn-success btn-border-circle btn-block">Input</button>
+                                        <button type="submit" class="btn btn-success btn-border-circle btn-block">Input</button>
                                     </div>
                                 </form>
                             </div>
@@ -155,7 +159,7 @@
                 <script>
                     $(document).ready(function() {
                         ambilData()
-                        $(document).on('click', '.hapus', function() {
+                        $(document).on('click', '.blokir', function() {
                             var id = $(this).data('id')
                             Swal.fire({
                                 title: "Yakin ingin dihapus?",
@@ -170,6 +174,8 @@
                                     Swal.fire("Berhasil!", "Data telah terhapus.", "success");
                                     $.ajax({
                                         url: '<?= base_url('sispem/delete/') ?>' + id,
+                                        dataType: 'json',
+                                        type: "post",
                                         success: function() {
                                             ambilData()
                                         }
@@ -181,6 +187,11 @@
 
                         function ambilData() {
                             var pembiayaan = $('#dataSiswa').DataTable({
+                                "processing": true,
+                                "language": {
+                                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                                },
+                                "serverSide": true,
                                 'ajax': {
                                     "type": "POST",
                                     "url": '<?= base_url('sispem/getAll/tb_user') ?>',
@@ -194,6 +205,9 @@
                                         "data": "nis"
                                     },
                                     {
+                                        "data": "nisn"
+                                    },
+                                    {
                                         "data": "nama"
                                     },
                                     {
@@ -202,7 +216,7 @@
                                     {
                                         "data": "spp",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html("<a data-toggle='modal' class='mr-1 detail badge badge-info badge-border-circle' href='#detail' data-id=" + oData.id_user + " >Detail</a><a class='hapus mr-1 badge badge-border-circle badge-danger ' data-id=" + oData.id_user + ">Hapus</a>");
+                                            $(nTd).html("<a data-toggle='modal' class='mr-1 detail badge badge-info' href='#detail' data-id=" + oData.id_user + " >Detail</a><a href='#' class='blokir mr-1 badge badge-danger' data-id=" + oData.id_user + ">Blokir</a>");
                                         }
                                     }
                                 ]
@@ -222,6 +236,7 @@
                                 success: function(data) {
                                     $('.input').html('Edit Data')
                                     $('input[name=nis').val(data.nis)
+                                    $('input[name=nisn').val(data.nisn)
                                     $('input[name="date"]').val(data.date_created)
                                     $('input[name="nama"]').val(data.nama)
                                     $('input[name="alamat"]').val(data.alamat)
@@ -265,16 +280,20 @@
                                         data: $(this).serialize(),
                                         dataType: 'json',
                                         type: 'POST',
+                                        beforeSend: function() {
+                                            Swal.fire({
+                                                html: '<div class="p-5"><img src="<?= base_url('asset/img/tenor.gif') ?>" width="100"></div>',
+                                                showConfirmButton: false
+                                            })
+                                        },
                                         success: function(data) {
-                                            console.log(data)
-                                            $('.loader').show()
                                             if (data.sukses) {
-                                                ambilData()
                                                 Swal.fire(
                                                     'Data berhasil terinput',
                                                     `${data.sukses}`,
                                                     'success'
                                                 )
+                                                ambilData()
                                                 $('#detail').modal('hide')
                                             } else {
                                                 Swal.fire(

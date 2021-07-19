@@ -104,7 +104,7 @@
                                             <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
                                             for ($i = 0; $i < 7; $i++) { ?>
                                                 <tr>
-                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm kode" value="<?= $kode[$i] ?>" name="kode[]"><input type="hidden" class="form-control form-control-sm id_siswa" name="id_siswa[]"></td>
+                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm id_siswa" name="id_siswa"></td>
                                                     <td><input type="text" class="form-control form-control-sm bayar" name="bayar[]"></td>
                                                     <td><input type="text" class="form-control form-control-sm bayar_lalu" name="bayar_lalu[]"></td>
                                                     <td><input readonly type="text" class="form-control  form-control-sm total" name="total[]"></td>
@@ -146,6 +146,11 @@
 
                         function dataTHAjaran() {
                             var pembiayaan = $('#table-bayar').DataTable({
+                                "processing": true,
+                                "language": {
+                                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                                },
+                                "serverSide": true,
                                 'ajax': {
                                     "type": "POST",
                                     "url": '<?= base_url('setting/getAll/0') ?>',
@@ -217,7 +222,7 @@
                         // input ajaran 
                         $('.input-ajaran').on('submit', function(e) {
                             e.preventDefault()
-                            console.log($('.kode').val())
+                            console.log($('.kode').text())
                             Swal.fire({
                                 title: "Yakin ingin disimpan?",
                                 text: "Pastikan data sudah benar dan sesuai",
@@ -233,6 +238,12 @@
                                         data: $(this).serialize(),
                                         dataType: 'json',
                                         type: 'POST',
+                                        beforeSend: function() {
+                                            Swal.fire({
+                                                html: '<div class="p-5"><img src="<?= base_url('asset/img/tenor.gif') ?>" width="100"></div>',
+                                                showConfirmButton: false
+                                            })
+                                        },
                                         success: function(data) {
                                             if (data.sukses) {
                                                 Swal.fire(

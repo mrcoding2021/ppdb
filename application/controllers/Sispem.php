@@ -95,6 +95,7 @@ class Sispem extends CI_Controller
       $hasil[] =  array(
         'no'  => $no++,
         'nis' => $key->nis,
+        'nisn' => $key->nisn,
         'id_user' => $key->id_user,
         'tgl' => $key->date_created,
         'nama' => $key->nama,
