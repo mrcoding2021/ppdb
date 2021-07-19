@@ -150,7 +150,6 @@
                                 "language": {
                                     processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
                                 },
-                                "serverSide": true,
                                 'ajax': {
                                     "type": "POST",
                                     "url": '<?= base_url('setting/getAll/0') ?>',
@@ -240,7 +239,7 @@
                                         type: 'POST',
                                         beforeSend: function() {
                                             Swal.fire({
-                                                html: '<div class="p-5"><img src="<?= base_url('asset/img/tenor.gif') ?>" width="100"></div>',
+                                                html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
                                                 showConfirmButton: false
                                             })
                                         },

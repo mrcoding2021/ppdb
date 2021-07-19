@@ -130,7 +130,7 @@ class Setting extends CI_Controller
                     );
                 }
                 $this->db->where('id', $id);
-                $this->db->set('updated_at', date('Y-m-d'));
+                $this->db->set('updated_at', date('Y-m-d H:i:s'));
                 $this->db->update('tb_user_tagihan', $data);
                 $aff = 'Data berhasil dirubah';
             } else {
@@ -146,7 +146,7 @@ class Setting extends CI_Controller
                     );
 
                     $this->db->set('id_siswa', $_POST['id_siswa']);
-                    $this->db->set('created_at', date('Y-m-d'));
+                    $this->db->set('created_at', date('Y-m-d H:i:s'));
                     $this->db->insert('tb_user_tagihan', $data);
                     $aff = 'Data berhasil tersimpan';
                 }
