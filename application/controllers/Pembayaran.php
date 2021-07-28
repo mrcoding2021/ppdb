@@ -30,7 +30,7 @@ class Pembayaran extends CI_Controller
       $data['parent'] = 'Input';
       $data['admin'] = $this->db->query($query)->result_array();
       $data['menu'] = $this->db->get('tb_menu')->result_array();
-      $data['post'] = $this->db->get('tb_post')->result_array();
+      
       $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
       $data['pembayaran'] = $this->db->get('tb_pembayaran')->result();
       $this->load->view('admin/header', $data);

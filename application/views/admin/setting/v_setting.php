@@ -66,6 +66,35 @@
                             </div>
                             <div class="modal-body">
                                 <form action="<?= base_url('setting/add') ?>" method="post" class="input-ajaran">
+                                    <div class="form-group row">
+                                        <div class="col-sm-3 add_ta">
+                                            <label for="1">Th. Ajaran</label>
+                                            <select type="text" class="ta_s form-control" name="ta">
+                                                <?php $n = 16;
+                                                $m = 17;
+                                                for ($i = 0; $i < 15; $i++) { ?>
+                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                <?php $n++;
+                                                    $m++;
+                                                } ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="1">Nama Siswa</label>
+                                            <input type="text" readonly name="nama_siswa" class="form-control nama_siswa">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label for="1">Kelas</label>
+                                            <input type="hidden" name="id" class="id_user">
+                                            <select name="kelas" class="kelas form-control">
+                                                <?php $this->db->group_by('kode_kelas');
+                                                $kelas = $this->db->get('tb_user_kelas')->result();
+                                                foreach ($kelas as $key) { ?>
+                                                    <option value="<?= $key->kode_kelas ?>"><?= $key->ket . ' - ' . $key->nama ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <table class="table table-striped table-sm">
                                         <thead class="bg-dark text-white text-center">
                                             <tr>
@@ -75,9 +104,9 @@
                                                 <th scope="col" rowspan="2">Total Tagihan</th>
                                                 <th scope="col" rowspan="2" width="40%">Keterangan</th>
                                             </tr>
-                                            <tr>
+                                            <tr id="th_ta">
                                                 <th scope="col">
-                                                    <select type="text" class="form-control form-control-sm" name="ta">
+                                                    <select type="text" class="ta form-control form-control-sm" name="ta">
                                                         <?php $n = 16;
                                                         $m = 17;
                                                         for ($i = 0; $i < 15; $i++) { ?>
@@ -88,9 +117,9 @@
                                                     </select>
                                                 </th>
                                                 <th scope="col">
-                                                    <select type="text" class="form-control form-control-sm" name="ta_lalu">
-                                                        <?php $n = 16;
-                                                        $m = 17;
+                                                    <select type="text" class="ta_lalu form-control form-control-sm" name="ta_lalu">
+                                                        <?php $n = 15;
+                                                        $m = 16;
                                                         for ($i = 0; $i < 15; $i++) { ?>
                                                             <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
                                                         <?php $n++;
@@ -189,28 +218,56 @@
                                     {
                                         "data": "buku",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html('<a class="mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Detail</a><a class="mr-1 detail badge badge-success" href="#lihat" data-id="' + oData.id + '" >Setting</a>');
+                                            $(nTd).html('<a class="detail mr-1 badge badge-info" href="#lihat" data-kode="1" data-siswa="' + oData.nama + '" data-id="' + oData.id + '" >Detail</a><a class="detail mr-1 badge badge-success"  data-siswa="' + oData.nama + '"  href="#lihat" data-kode="0" data-id="' + oData.id + '" >Setting</a>');
                                         }
                                     }
                                 ]
                             });
                         }
 
-                        $(document).on('click', '.detail', function(e) {
-                            var id = $(this).data('id')
-                            $('.modal-title').text('Setting Biaya Pendidikan')
-                            $('.edit').text('Simpan')
-                            $('.id_siswa').val(id)
+                        $('.ta_s').change(function() {
+                            var id_u = $('.id_user').val()
+                            var ta = $(this).val()
+                            console.log(id_u)
                             $.ajax({
-                                url: '<?= base_url('setting/getAll/') ?>' + id,
+                                url: '<?= base_url('setting/getAll/') ?>' + id_u + '/' + ta,
                                 type: 'POST',
                                 dataType: 'JSON',
                                 success: function(data) {
                                     console.log(data)
-                                    $('#tambah').modal('show')
+                                    $('.kelas option[value="' + data[0].kelas + '"]').attr('selected', true)
+                                    $('.kelas option[value="' + data[0].kelas + '"]').siblings().attr('selected', false)
 
+                                    for (let i = 0; i < data.length; i++) {
+                                        $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
+                                        $('.bayar_lalu:eq(' + [i] + ')').val(data[i].bayar_lalu)
+                                        $('.ket:eq(' + [i] + ')').val(data[i].ket)
+                                        $('.total:eq(' + [i] + ')').val(data[i].total)
+                                    }
                                 }
                             })
+                        })
+
+                        $(document).on('click', '.detail', function(e) {
+                            var id = $(this).data('id')
+                            var kode = $(this).data('kode')
+                            var siswa = $(this).data('siswa')
+                            $('.modal-title').text('Setting Biaya Pendidikan')
+                            $('.edit').text('Simpan')
+                            $('#tambah').modal('show')
+                            $('.nama_siswa').val(siswa)
+                            if (kode === 1) {
+                                $('.id_user').val(id)
+                                $('input').attr('readonly', true)
+                                $('#th_ta').hide()
+                                $('.add_ta').show()
+                            } else {
+                                $('input').attr('readonly', false)
+                                $('input').val('')
+                                $('.nama_siswa').val(siswa)
+                                $('#th_ta').show()
+                                $('.add_ta').hide()
+                            }
                         })
 
                         $('.input-ajaran-baru').on('click', function(e) {

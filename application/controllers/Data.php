@@ -162,25 +162,27 @@ class Data extends CI_Controller
                 'nama' => strtoupper($this->input->post('nama')),
                 'nis' => $this->input->post('nis'),
                 'nisn' => $this->input->post('nisn'),
+                'ta'    => $this->input->post('ta'),
                 'email' => $this->input->post('email'),
                 'alamat' => $this->input->post('alamat'),
+                'tempat_lahir' => $this->input->post('tempat_lahir'),
                 'hp' => $this->input->post('hp'),
-                'kelas' => $this->input->post('kelas'),
                 'pj' => $this->input->post('wali'),
                 'parent' => 12,
                 'level' => 4,
                 'pwd' =>  $this->input->post('tgl_lahir'),
-                'password' => md5(str_replace('-','',$this->input->post('tgl_lahir')))
+                'password' => md5(str_replace('-', '', $this->input->post('tgl_lahir')))
             );
 
             if ($id) {
                 $this->db->where('id_user', $id);
+                $this->db->set('date_created', $this->input->post('date'));
                 $this->db->update('tb_user', $data);
-                $aff = 'Data berhasil dirubah'; 
+                $aff = 'Data berhasil dirubah';
             } else {
-                $this->db->set('date_created', date('Y-m-d'));
+                $this->db->set('date_created', $this->input->post('date'));
                 $this->db->insert('tb_user', $data);
-                $aff = 'Data berhasil tersimpan'; 
+                $aff = 'Data berhasil tersimpan';
             }
 
             if ($this->db->affected_rows() > 0) {

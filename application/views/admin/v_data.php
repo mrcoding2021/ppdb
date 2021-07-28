@@ -87,61 +87,68 @@
                             <div class="modal-body">
                                 <form action="<?= base_url('data/addSiswa') ?>" method="post" class="addSiswa" data-id="0">
                                     <div class="form-group row">
-                                        <label for="1" class="col-sm-1 col-form-label">NIS</label>
                                         <div class="col-sm-3">
+                                            <label for="1">NIS</label>
                                             <input type="text" class="form-control" name="nis">
                                             <input type="hidden" class="form-control" name="id_user">
                                         </div>
-                                        <label for="1" class="col-sm-1 col-form-label">NISN</label>
                                         <div class="col-sm-3">
+                                            <label for="1">NISN</label>
                                             <input type="text" class="form-control" name="nisn">
                                         </div>
-                                        <label for="1" class="col-sm-1 col-form-label">Tgl.Daftar</label>
                                         <div class="col-sm-3">
+                                            <label for="1">Tgl.Daftar</label>
                                             <input type="date" class="form-control" name="date">
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="1" class="col-sm-1 col-form-label">Nama</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="nama">
+                                        <div class="col-sm-3">
+                                            <label for="1">Tahun Ajaran</label>
+                                            <select type="text" class="form-control" name="ta">
+                                                <?php $n = 16;
+                                                $m = 17;
+                                                for ($i = 0; $i < 15; $i++) { ?>
+                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                <?php $n++;
+                                                    $m++;
+                                                } ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="1" class="col-sm-1 col-form-label">Alamat</label>
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-12">
+                                            <label for="1">Nama</label>
+                                            <input type="text" class="form-control" name="nama">
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12">
+                                            <label for="1">Alamat</label>
                                             <input type="text" class="form-control" name="alamat">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="1" class="col-sm-1 col-form-label">Kelas</label>
-                                        <div class="col-sm-5">
-                                            <select name="kelas" class="kelas form-control">
-                                                <?php $this->db->group_by('kode_kelas');
-                                                $kelas = $this->db->get('tb_user_kelas')->result();
-                                                foreach ($kelas as $key) { ?>
-                                                    <option value="<?= $key->kode_kelas ?>"><?= $key->ket . ' - ' . $key->nama ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                        <label for="1" class="col-sm-2 col-form-label">No. HP</label>
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-6">
+                                            <label for="1">No. HP</label>
                                             <input type="text" class="form-control" name="hp">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="1">Orangtua/Wali</label>
+                                            <input type="text" class="form-control" name="wali">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="1" class="col-sm-2 col-form-label">Orangtua/Wali</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control" name="wali">
+                                        <div class="col-sm-8">
+                                            <label for="1">Tempat Lahir</label>
+                                            <input type="text" class="form-control" name="tempat_lahir">
                                         </div>
-                                        <label for="1" class="col-sm-2 col-form-label">Tgl. Lahir</label>
                                         <div class="col-sm-4">
+                                            <label for="1"> Tgl. Lahir</label>
                                             <input type="date" class="form-control" name="tgl_lahir">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="1" class="col-sm-1 col-form-label">Email</label>
-                                        <div class="col-sm-10">
+                                        <div class="col-sm-12">
+                                            <label for="1">Email</label>
                                             <input type="text" class="form-control" name="email">
                                         </div>
                                     </div>

@@ -29,7 +29,7 @@ class Setting extends CI_Controller
             $data['title'] = 'Sistem Setting';
             $data['admin'] = $this->db->query($query)->result_array();
             $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
-            $data['setting'] = $this->db->get('tb_setting')->result_array();
+
             $this->load->view('admin/header', $data);
             $this->load->view('admin/setting/v_setting', $data);
             $this->load->view('admin/footer', $data);
@@ -38,38 +38,63 @@ class Setting extends CI_Controller
         }
     }
 
-    public function getAll($id = 0)
+    public function getAll($id = 0, $ta = '')
     {
-        $ta = '2017-2018';
-
+        $result = [];
         if ($id > 0) {
             $this->db->where('id_user', $id);
             $data = $this->db->get('tb_user')->row();
             $this->db->where('id_siswa', $data->id_user);
             $this->db->where('ta', $ta);
             $tagihan = $this->db->get('tb_user_tagihan')->result();
+
             // var_dump($tagihan);die;
             $this->db->where('kode_kelas', $data->kelas);
             $kelas = $this->db->get('tb_user_kelas')->row();
-            $result = [
-                'id'        => $data->id_user,
-                'nis'        => $data->nis . '<br>' . $data->nisn,
-                'nama'      => $data->nama,
-                'kelas'      => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
-                'ta'      => $ta,
-                'spp'      => ($tagihan != null) ? rupiah($tagihan[0]->total) : 0,
-                'gedung'      => ($tagihan != null) ? rupiah($tagihan[1]->total) : 0,
-                'kegiatan'      => ($tagihan != null) ? rupiah($tagihan[2]->total) : 0,
-                'buku'      => ($tagihan != null) ? rupiah($tagihan[3]->total) : 0,
-                'komite'      => ($tagihan != null) ? rupiah($tagihan[4]->total) : 0,
-                'seragam'      => ($tagihan != null) ? rupiah($tagihan[5]->total) : 0,
-                'sarpras'      => ($tagihan != null) ? rupiah($tagihan[6]->total) : 0,
-            ];
+            
+            for ($i = 0; $i < count($tagihan); $i++) {
+               
+                
+               
+                # code...
+                // $result[] = [
+                //     'id'        => $data->id_user,
+                //     'nis'        => $data->nis . '<br>' . $data->nisn,
+                //     'nama'      => $data->nama,
+                //     'kelas'      => ($tagihan != null) ? $tagihan[$i]->kelas : '',
+                //     'ta'      => $ta,
+                //     'spp'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'gedung'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'kegiatan'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'buku'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'komite'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'seragam'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'sarpras'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
+                //     'spp_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                //     'gedung_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                //     'kegiatan_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                //     'buku_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                //     'komite_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                //     'seragam_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                //     'sarpras_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
+                // ];
+                $result[] = [
+                    'id'        => $data->id_user,
+                    'nis'        => $data->nis . '<br>' . $data->nisn,
+                    'nama'      => $data->nama,
+                    'kelas'      => ($tagihan != null) ? $tagihan[$i]->kelas : '',
+                    'ta'      => $ta,
+                    'bayar'      => ($tagihan != null) ? ($tagihan[$i]->bayar) : 0,
+                    'bayar_lalu'      => ($tagihan != null) ? ($tagihan[$i]->bayar_lalu) : 0,
+                    'total'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
+                    'ket'      => ($tagihan != null) ? ($tagihan[$i]->ket) : 0,
+                ];
+            }
+            $error = ['error' => 'Data tidak ditemukan'];
         } else {
             $this->db->where('level', 4);
             $this->db->where('is_active', 1);
             $data = $this->db->get('tb_user')->result();
-            $result = [];
             // var_dump($data);die;
             $no = 1;
             foreach ($data as $key) {
@@ -84,16 +109,16 @@ class Setting extends CI_Controller
                 for ($i = 0; $i < 7; $i++) {
                     $this->db->where('kode', $kode[$i]);
                     $this->db->where('id_siswa', $key->id_user);
-                    $this->db->where('ta', $ta);
-                    $tagihan[] = $this->db->get('tb_user_tagihan')->row();           
+                    // $this->db->where('ta', $ta);
+                    $tagihan[] = $this->db->get('tb_user_tagihan')->row();
                 }
-        
+
                 $result[] = [
                     'no'        => $no++,
                     'id'        => $key->id_user,
                     'nis'        => $key->nis . '<br>' . $key->nisn,
                     'nama'      => $key->nama,
-                    'kelas'      => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
+                    'kelas'      => ($tagihan[0] != null) ? $tagihan[0]->kelas : '',
                     'ta'      => ($tab != null) ? $tab->ta : '',
                     'spp'      => ($tagihan[0] != null) ? rupiah($tagihan[0]->total) : 0,
                     'gedung'      => ($tagihan[1] != null) ? rupiah($tagihan[1]->total) : 0,
@@ -105,7 +130,11 @@ class Setting extends CI_Controller
                 ];
             }
         }
-        echo json_encode($result);
+        if ($result != null) {
+            echo json_encode($result);
+        } else {
+            echo json_encode($error);
+        }
     }
 
     public function add()
@@ -120,6 +149,7 @@ class Setting extends CI_Controller
             if ($id) {
                 for ($i = 0; $i < 7; $i++) {
                     $data = array(
+                        'kelas'         => $this->input->post('kelas'),
                         'ta'            => trim(htmlspecialchars($_POST['ta'])),
                         'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
                         'kode'          => trim(htmlspecialchars($kode[$i])),
@@ -128,14 +158,15 @@ class Setting extends CI_Controller
                         'total'    => trim(htmlspecialchars($_POST['total'][$i])),
                         'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
                     );
+                    $this->db->where('id', $id);
+                    $this->db->set('updated_at', date('Y-m-d H:i:s'));
+                    $this->db->update('tb_user_tagihan', $data);
                 }
-                $this->db->where('id', $id);
-                $this->db->set('updated_at', date('Y-m-d H:i:s'));
-                $this->db->update('tb_user_tagihan', $data);
                 $aff = 'Data berhasil dirubah';
             } else {
                 for ($i = 0; $i < 7; $i++) {
                     $data = array(
+                        'kelas'         => $this->input->post('kelas'),
                         'ta'            => trim(htmlspecialchars($_POST['ta'])),
                         'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
                         'kode'          => trim(htmlspecialchars($kode[$i])),

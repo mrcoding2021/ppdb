@@ -16,12 +16,14 @@
                                         <div class="form-group row">
                                             <div class="col-md-3">
                                                 <label for="1">Tahun Ajaran</label>
-                                                <select name="ta" id="ta" class="ta form-control">
-                                                    <?php $this->db->group_by('ta');
-                                                    $ta = $this->db->get('tb_user_kelas')->result();
-                                                    foreach ($ta as $key) : ?>
-                                                        <option value="<?= $key->ta ?>"><?= $key->ta ?></option>
-                                                    <?php endforeach; ?>
+                                                <select type="text" class="form-control" name="ta">
+                                                    <?php $n = 16;
+                                                    $m = 17;
+                                                    for ($i = 0; $i < 15; $i++) { ?>
+                                                        <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                    <?php $n++;
+                                                        $m++;
+                                                    } ?>
                                                 </select>
                                             </div>
                                             <div class="col-sm-6">
