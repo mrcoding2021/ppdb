@@ -13,7 +13,7 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold ">Tagihan Biaya Penddikan
-                                        <a href="#tambah" class="btn input-ajaran-baru btn-success btn-border-circle float-right" data-toggle="modal">Input Baru</a>
+                                        <a href="#tambahKelas" class="btn addKelas btn-success btn-border-circle float-right" data-toggle="modal">Tambah Kelas</a>
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -65,7 +65,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="<?= base_url('setting/add') ?>" method="post" class="input-ajaran">
+                                <form action="<?= base_url('setting/add') ?>" method="post" class="input-ajaran" data-kode="1">
                                     <div class="form-group row">
                                         <div class="col-sm-3 add_ta">
                                             <label for="1">Th. Ajaran</label>
@@ -152,9 +152,137 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="tambahKelas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="exampleModalLabel">Tambah Kelas</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="<?= base_url('data/addKelas') ?>" method="post" class="input-ajaran" data-kode="0">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <table class="table table-bordered" id="dataKelas" width="100%" cellspacing="0">
+                                                <thead class="text-center bg-dark text-white">
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Kode Kelas</th>
+                                                        <th>Nama Keals</th>
+                                                        <th>Keterangan</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <label>Kode</label>
+                                                    <input type="text" class="form-control kode_kelas" name="kode_kelas">
+                                                    <input type="hidden" class="form-control id_kelas" name="id">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <label>Nama Kelas</label>
+                                                    <input type="text" class="form-control nama_kelas" name="nama">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <label>Kelas</label>
+                                                    <select name="kelas" class="kelas form-control">
+                                                        <option>PiliH Kelas </option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                        <option value="6">6</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-sm-12">
+                                                    <label>Keterangan</label>
+                                                    <textarea type="text" class="ket_kelas form-control" name="keterangan"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
+                                                <button class="btn btn-success btn-border-circle btn-block" type="submit">Simpan</button>
+                                            </div>
+                                        </div>
+                                    </div>
 
+
+
+
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
                 <script>
                     $(document).ready(function() {
+                        function getKelas() {
+                            var dataKelas = $('#dataKelas').DataTable({
+                                "processing": true,
+                                "language": {
+                                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                                },
+                                'ajax': {
+                                    "type": "POST",
+                                    "url": '<?= base_url('data/dataKelas') ?>',
+                                    "dataSrc": ""
+                                },
+                                "destroy": true,
+                                'columns': [{
+                                        "data": "id"
+                                    },
+                                    {
+                                        "data": "kode_kelas"
+                                    },
+                                    {
+                                        "data": "nama"
+                                    },
+                                    {
+                                        "data": "keterangan"
+                                    },
+                                    {
+                                        "data": "id",
+                                        "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
+                                            $(nTd).html('<a data-ket="' + oData.ket + '" data-nama="' + oData.nama + '" data-keterangan="' + oData.keterangan + '" data-kode_kelas="' + oData.kode_kelas + '" class="edit mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Edit</a><a class="hapus mr-1 badge badge-danger" href="#lihat" data-kode="0" data-id="' + oData.id + '" >Hapus</a>');
+                                        }
+                                    }
+                                ]
+                            });
+                        }
+                        $(document).on('click', '.edit', function(e) {
+                            e.preventDefault()
+                            var id_kelas = $(this).data('id')
+                            var kode_kelas = $(this).data('kode_kelas')
+                            var nama_kelas = $(this).data('nama')
+                            var kelas = $(this).data('ket')
+                            var ket = $(this).data('keterangan')
+                            $('.kode_kelas').val(kode_kelas)
+                            $('.id_kelas').val(id_kelas)
+                            $('.nama_kelas').val(nama_kelas)
+                            $('.kelas option[value="'+kelas+'"]').attr('selected', true)
+                            $('.kelas option[value="'+kelas+'"]').siblings().attr('selected', false)
+                            $('.ket_kelas').val(ket)
+                        })
+                        $('.addKelas').click(function(e) {
+                            e.preventDefault()
+                            getKelas()
+                            $('.form-control').val('')
+                        })
                         $('.bayar').keyup(function() {
                             var bayar = $(this).val()
                             console.log(bayar)
@@ -307,8 +435,13 @@
                                                     `${data.sukses}`,
                                                     'success'
                                                 )
-                                                dataTHAjaran()
-                                                $('.modal').modal('hide')
+
+                                                if ($(this).data('kode') === 1) {
+                                                    $('.modal').modal('hide')
+                                                    dataTHAjaran()
+                                                } else {
+                                                    getKelas()
+                                                }
                                             } else {
                                                 Swal.fire(
                                                     'Error',

@@ -302,4 +302,43 @@ class Data extends CI_Controller
             echo json_encode($nama);
         }
     }
+
+    public function dataKelas(){
+        $kelas = $this->db->get('tb_user_kelas')->result();
+        echo json_encode($kelas);
+    }
+
+    public function addKelas(){
+        $this->form_validation->set_rules('kode_kelas', 'Kode Kelas', 'trim|required');
+        $this->form_validation->set_rules('nama', 'Nama Kelas', 'trim|required');
+
+        $id = $this->input->post('id');
+        if ($this->form_validation->run() == TRUE) {
+            $data = array(
+                'kode_kelas' => strtoupper($this->input->post('kode_kelas')),
+                'nama' => strtoupper($this->input->post('nama')),
+                'ket' => $this->input->post('kelas'),
+                'keterangan' => $this->input->post('keterangan'),
+            );
+
+            if ($id) {
+                $this->db->where('id', $id);
+                $this->db->update('tb_user_kelas', $data);
+                $aff = 'Data berhasil dirubah';
+            } else {
+                $this->db->set('created_at', date('Y-m-d H:i:s'));
+                $this->db->insert('tb_user_kelas', $data);
+                $aff = 'Data berhasil tersimpan';
+            }
+
+            if ($this->db->affected_rows() > 0) {
+                $res = ['sukses' => $aff];
+            } else {
+                $res = ['error' => 'Data gagal tersimpan'];
+            }
+        } else {
+            $res = ['error' => validation_errors()];
+        }
+        echo json_encode($res);
+    }
 }
