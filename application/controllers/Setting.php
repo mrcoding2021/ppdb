@@ -51,35 +51,11 @@ class Setting extends CI_Controller
             // var_dump($tagihan);die;
             $this->db->where('kode_kelas', $data->kelas);
             $kelas = $this->db->get('tb_user_kelas')->row();
-            
+
             for ($i = 0; $i < count($tagihan); $i++) {
-               
-                
-               
-                # code...
-                // $result[] = [
-                //     'id'        => $data->id_user,
-                //     'nis'        => $data->nis . '<br>' . $data->nisn,
-                //     'nama'      => $data->nama,
-                //     'kelas'      => ($tagihan != null) ? $tagihan[$i]->kelas : '',
-                //     'ta'      => $ta,
-                //     'spp'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'gedung'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'kegiatan'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'buku'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'komite'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'seragam'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'sarpras'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar) : 0,
-                //     'spp_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                //     'gedung_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                //     'kegiatan_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                //     'buku_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                //     'komite_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                //     'seragam_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                //     'sarpras_lalu'      => ($tagihan != null) ? rupiah($tagihan[$i]->bayar_lalu) : 0,
-                // ];
                 $result[] = [
-                    'id'        => $data->id_user,
+                    'id'        => ($tagihan != null) ? $tagihan[$i]->id : '',
+                    'id_user'        => $data->id_user,
                     'nis'        => $data->nis . '<br>' . $data->nisn,
                     'nama'      => $data->nama,
                     'kelas'      => ($tagihan != null) ? $tagihan[$i]->kelas : '',
@@ -115,9 +91,10 @@ class Setting extends CI_Controller
 
                 $result[] = [
                     'no'        => $no++,
-                    'id'        => $key->id_user,
+                    'id_user'        => $key->id_user,
                     'nis'        => $key->nis . '<br>' . $key->nisn,
                     'nama'      => $key->nama,
+                    'id'      => ($tagihan[0] != null) ? $tagihan[0]->id : '',
                     'kelas'      => ($tagihan[0] != null) ? $tagihan[0]->kelas : '',
                     'ta'      => ($tab != null) ? $tab->ta : '',
                     'spp'      => ($tagihan[0] != null) ? rupiah($tagihan[0]->total) : 0,
@@ -137,56 +114,78 @@ class Setting extends CI_Controller
         }
     }
 
+    public function u()
+    {
+        $u = [];
+        echo json_encode($u);
+    }
+
     public function add()
     {
 
         $this->form_validation->set_rules('ta', 'Tahun Ajaran', 'trim|required');
-        $this->form_validation->set_rules('id_siswa', 'Id siswa', 'trim|required');
+        $this->form_validation->set_rules('id_siswa[]', 'Id siswa', 'trim|required');
 
-        $id = $this->input->post('id');
         if ($this->form_validation->run() == TRUE) {
-            $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
-            if ($id) {
-                for ($i = 0; $i < 7; $i++) {
-                    $data = array(
-                        'kelas'         => $this->input->post('kelas'),
-                        'ta'            => trim(htmlspecialchars($_POST['ta'])),
-                        'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
-                        'kode'          => trim(htmlspecialchars($kode[$i])),
-                        'bayar'         => trim(htmlspecialchars($_POST['bayar'][$i])),
-                        'bayar_lalu'    => trim(htmlspecialchars($_POST['bayar_lalu'][$i])),
-                        'total'    => trim(htmlspecialchars($_POST['total'][$i])),
-                        'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
-                    );
-                    $this->db->where('id', $id);
-                    $this->db->set('updated_at', date('Y-m-d H:i:s'));
-                    $this->db->update('tb_user_tagihan', $data);
-                }
-                $aff = 'Data berhasil dirubah';
-            } else {
-                for ($i = 0; $i < 7; $i++) {
-                    $data = array(
-                        'kelas'         => $this->input->post('kelas'),
-                        'ta'            => trim(htmlspecialchars($_POST['ta'])),
-                        'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
-                        'kode'          => trim(htmlspecialchars($kode[$i])),
-                        'bayar'         => trim(htmlspecialchars($_POST['bayar'][$i])),
-                        'bayar_lalu'    => trim(htmlspecialchars($_POST['bayar_lalu'][$i])),
-                        'total'    => trim(htmlspecialchars($_POST['total'][$i])),
-                        'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
-                    );
 
-                    $this->db->set('id_siswa', $_POST['id_siswa']);
-                    $this->db->set('created_at', date('Y-m-d H:i:s'));
-                    $this->db->insert('tb_user_tagihan', $data);
-                    $aff = 'Data berhasil tersimpan';
-                }
+
+            $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+            for ($i = 0; $i < 7; $i++) {
+                $data = array(
+                    'id_siswa'      => $this->input->post('id_siswa')[$i],
+                    'kelas'         => $this->input->post('kelas'),
+                    'ta'            => trim(htmlspecialchars($_POST['ta'])),
+                    'ta_lalu'       => trim(htmlspecialchars($_POST['ta_lalu'])),
+                    'kode'          => trim(htmlspecialchars($kode[$i])),
+                    'bayar'         => trim(htmlspecialchars($_POST['bayar'][$i])),
+                    'bayar_lalu'    => trim(htmlspecialchars($_POST['bayar_lalu'][$i])),
+                    'total'         => trim(htmlspecialchars($_POST['total'][$i])),
+                    'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
+                );
+                $this->db->set('created_at', date('Y-m-d H:i:s'));
+                $this->db->insert('tb_user_tagihan', $data);
             }
+            $aff = 'Data berhasil tersimpan';
+
 
             if ($this->db->affected_rows() > 0) {
                 $res = ['sukses' => $aff];
             } else {
-                $res = ['error' => 'Data gagal tersimpan'];
+                $res = ['error' => 'Data gagal ersimpan'];
+            }
+        } else {
+            $res = ['error' => validation_errors()];
+        }
+        echo json_encode($res);
+    }
+
+    public function edit()
+    {
+
+        $this->form_validation->set_rules('ta', 'Tahun Ajaran', 'trim|required');
+        $this->form_validation->set_rules('id_siswa[]', 'Id siswa', 'trim|required');
+
+        if ($this->form_validation->run() == TRUE) {
+            $id = $this->input->post('id[]');
+
+            for ($i = 0; $i < 7; $i++) {
+                $data = array(
+                    'kelas'         => $this->input->post('kelas'),
+                    'bayar'         => trim(htmlspecialchars($_POST['bayar'][$i])),
+                    'bayar_lalu'    => trim(htmlspecialchars($_POST['bayar_lalu'][$i])),
+                    'total'    => trim(htmlspecialchars($_POST['total'][$i])),
+                    'ket'           => trim(htmlspecialchars($_POST['ket'][$i])),
+                );
+                $this->db->where('id', $id[$i]);
+                $this->db->set('updated_at', date('Y-m-d H:i:s'));
+                $this->db->update('tb_user_tagihan', $data);
+            }
+            $aff = 'Data berhasil dirubah';
+
+            if ($this->db->affected_rows() > 0) {
+                $res = ['sukses' => $aff];
+            } else {
+                $res = ['error' => 'DAta gagal tersimpan'];
             }
         } else {
             $res = ['error' => validation_errors()];

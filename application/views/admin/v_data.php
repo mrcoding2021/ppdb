@@ -259,14 +259,7 @@
 
                         $('.tambah').on('click', function() {
                             $('.input').html('Tambah Data')
-                            $('input[name=nis').val('')
-                            $('input[name="date"]').val('')
-                            $('input[name="nama"]').val('')
-                            $('input[name="alamat"]').val('')
-                            $('input[name="kelas"]').val('')
-                            $('input[name="hp"]').val('')
-                            $('input[name="wali"]').val('')
-                            $('input[name="spp"]').val('')
+                            $('.form-control').val('')
                         })
 
                         $('.addSiswa').on('submit', function(e) {

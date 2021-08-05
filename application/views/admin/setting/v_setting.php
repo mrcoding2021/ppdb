@@ -82,16 +82,11 @@
                                         <div class="col-sm-6">
                                             <label for="1">Nama Siswa</label>
                                             <input type="text" readonly name="nama_siswa" class="form-control nama_siswa">
+                                            <input type="hidden" name="id_user" class="form-control id_user">
                                         </div>
                                         <div class="col-sm-3">
                                             <label for="1">Kelas</label>
-                                            <input type="hidden" name="id" class="id_user">
-                                            <select name="kelas" class="kelas form-control">
-                                                <?php $this->db->group_by('kode_kelas');
-                                                $kelas = $this->db->get('tb_user_kelas')->result();
-                                                foreach ($kelas as $key) { ?>
-                                                    <option value="<?= $key->kode_kelas ?>"><?= $key->ket . ' - ' . $key->nama ?></option>
-                                                <?php } ?>
+                                            <select name="kelas" id="kelas" class="kelas form-control">
                                             </select>
                                         </div>
                                     </div>
@@ -129,12 +124,12 @@
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="hilang">
                                             <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
                                             for ($i = 0; $i < 7; $i++) { ?>
                                                 <tr>
-                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm id_siswa" name="id_siswa"></td>
-                                                    <td><input type="text" class="form-control form-control-sm bayar" name="bayar[]"></td>
+                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm id_siswa" name="id_siswa[]"><input type="hidden" class="form-control form-control-sm num" name="id[]"></td>
+                                                    <td><input type="text" class="form-control  form-control-sm bayar" name="bayar[]"></td>
                                                     <td><input type="text" class="form-control form-control-sm bayar_lalu" name="bayar_lalu[]"></td>
                                                     <td><input readonly type="text" class="form-control  form-control-sm total" name="total[]"></td>
                                                     <td><input type="text" class="form-control form-control-sm" name="ket[]"></td>
@@ -196,7 +191,7 @@
                                             <div class="form-group row">
                                                 <div class="col-sm-12">
                                                     <label>Kelas</label>
-                                                    <select name="kelas" class="kelas form-control">
+                                                    <select name="kelas" class="kelaz form-control">
                                                         <option>PiliH Kelas </option>
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
@@ -215,14 +210,10 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
-                                                <button class="btn btn-success btn-border-circle btn-block" type="submit">Simpan</button>
+                                                <button class="simpan btn btn-success btn-border-circle btn-block" type="submit">Simpan</button>
                                             </div>
                                         </div>
                                     </div>
-
-
-
-
                                 </form>
                             </div>
 
@@ -231,7 +222,10 @@
                 </div>
                 <script>
                     $(document).ready(function() {
+                        getKelas()
+
                         function getKelas() {
+                            var url = '<?= base_url('data/dataKelas') ?>'
                             var dataKelas = $('#dataKelas').DataTable({
                                 "processing": true,
                                 "language": {
@@ -239,7 +233,7 @@
                                 },
                                 'ajax': {
                                     "type": "POST",
-                                    "url": '<?= base_url('data/dataKelas') ?>',
+                                    "url": url,
                                     "dataSrc": ""
                                 },
                                 "destroy": true,
@@ -258,11 +252,23 @@
                                     {
                                         "data": "id",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html('<a data-ket="' + oData.ket + '" data-nama="' + oData.nama + '" data-keterangan="' + oData.keterangan + '" data-kode_kelas="' + oData.kode_kelas + '" class="edit mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Edit</a><a class="hapus mr-1 badge badge-danger" href="#lihat" data-kode="0" data-id="' + oData.id + '" >Hapus</a>');
+                                            $(nTd).html('<a data-ket="' + oData.ket + '" data-nama="' + oData.nama + '" data-keterangan="' + oData.keterangan + '" data-kode_kelas="' + oData.kode_kelas + '" class="edit mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Edit</a><a class="hapus_kelas mr-1 badge badge-danger" href="#lihat" data-kode="0" data-id="' + oData.id + '" >Hapus</a>');
                                         }
                                     }
                                 ]
                             });
+                            $.ajax({
+                                url: url,
+                                dataType: 'json',
+                                type: 'POST',
+                                success: function(data) {
+                                    html = ''
+                                    $.each(data, function(i, v) {
+                                        html += '<option value="' + v.kode_kelas + '">' + v.ket + ' - ' + v.nama + '</option>'
+                                    })
+                                    $('#kelas').html(html)
+                                }
+                            })
                         }
                         $(document).on('click', '.edit', function(e) {
                             e.preventDefault()
@@ -274,15 +280,59 @@
                             $('.kode_kelas').val(kode_kelas)
                             $('.id_kelas').val(id_kelas)
                             $('.nama_kelas').val(nama_kelas)
-                            $('.kelas option[value="'+kelas+'"]').attr('selected', true)
-                            $('.kelas option[value="'+kelas+'"]').siblings().attr('selected', false)
+                            $('.kelaz option[value="' + kelas + '"]').attr('selected', true)
+                            $('.kelaz option[value="' + kelas + '"]').siblings().attr('selected', false)
                             $('.ket_kelas').val(ket)
+                        })
+                        $(document).on('click', '.hapus_kelas', function(e) {
+                            e.preventDefault()
+                            var id_kelas = $(this).data('id')
+                            Swal.fire({
+                                title: "Yakin ingin dihapus?",
+                                text: "Pastikan data sudah benar dan sesuai",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Yes, simpan sekarang!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: '<?= base_url('data/hapusKelas/') ?>' + id_kelas,
+                                        dataType: 'json',
+                                        type: 'POST',
+                                        beforeSend: function() {
+                                            Swal.fire({
+                                                html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                                showConfirmButton: false
+                                            })
+                                        },
+                                        success: function(data) {
+                                            if (data.sukses) {
+                                                Swal.fire(
+                                                    'Berhasil',
+                                                    `${data.sukses}`,
+                                                    'success'
+                                                )
+                                                getKelas()
+                                            } else {
+                                                Swal.fire(
+                                                    'Error',
+                                                    `${data.error}`,
+                                                    'error'
+                                                )
+                                            }
+                                        }
+                                    })
+                                }
+                            });
                         })
                         $('.addKelas').click(function(e) {
                             e.preventDefault()
                             getKelas()
                             $('.form-control').val('')
                         })
+
                         $('.bayar').keyup(function() {
                             var bayar = $(this).val()
                             console.log(bayar)
@@ -346,7 +396,7 @@
                                     {
                                         "data": "buku",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html('<a class="detail mr-1 badge badge-info" href="#lihat" data-kode="1" data-siswa="' + oData.nama + '" data-id="' + oData.id + '" >Detail</a><a class="detail mr-1 badge badge-success"  data-siswa="' + oData.nama + '"  href="#lihat" data-kode="0" data-id="' + oData.id + '" >Setting</a>');
+                                            $(nTd).html('<a class="detail mr-1 badge badge-info" href="#lihat" data-kode="1" data-siswa="' + oData.nama + '" data-id="' + oData.id_user + '" data-num="' + oData.id + '" >Detail</a><a class="edit mr-1 badge badge-success"  data-siswa="' + oData.nama + '"  href="#lihat" data-kode="0" data-id="' + oData.id_user + '" >Setting</a>');
                                         }
                                     }
                                 ]
@@ -362,15 +412,19 @@
                                 type: 'POST',
                                 dataType: 'JSON',
                                 success: function(data) {
-                                    console.log(data)
-                                    $('.kelas option[value="' + data[0].kelas + '"]').attr('selected', true)
-                                    $('.kelas option[value="' + data[0].kelas + '"]').siblings().attr('selected', false)
-
-                                    for (let i = 0; i < data.length; i++) {
-                                        $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
-                                        $('.bayar_lalu:eq(' + [i] + ')').val(data[i].bayar_lalu)
-                                        $('.ket:eq(' + [i] + ')').val(data[i].ket)
-                                        $('.total:eq(' + [i] + ')').val(data[i].total)
+                                    if (data.error) {
+                                        $('#hilang').find('input').val('')
+                                    } else {
+                                        $('.kelas option[value="' + data[0].kelas + '"]').attr('selected', true)
+                                        $('.kelas option[value="' + data[0].kelas + '"]').siblings().attr('selected', false)
+                                        for (let i = 0; i < data.length; i++) {
+                                            $('.num:eq(' + [i] + ')').val(data[i].id)
+                                            $('.id_siswa:eq(' + [i] + ')').val(data[i].id_user)
+                                            $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
+                                            $('.bayar_lalu:eq(' + [i] + ')').val(data[i].bayar_lalu)
+                                            $('.ket:eq(' + [i] + ')').val(data[i].ket)
+                                            $('.total:eq(' + [i] + ')').val(data[i].total)
+                                        }
                                     }
                                 }
                             })
@@ -380,22 +434,37 @@
                             var id = $(this).data('id')
                             var kode = $(this).data('kode')
                             var siswa = $(this).data('siswa')
+                            var num = $(this).data('num')
+                            console.log(siswa)
                             $('.modal-title').text('Setting Biaya Pendidikan')
                             $('.edit').text('Simpan')
                             $('#tambah').modal('show')
                             $('.nama_siswa').val(siswa)
-                            if (kode === 1) {
-                                $('.id_user').val(id)
-                                $('input').attr('readonly', true)
-                                $('#th_ta').hide()
-                                $('.add_ta').show()
-                            } else {
-                                $('input').attr('readonly', false)
-                                $('input').val('')
-                                $('.nama_siswa').val(siswa)
-                                $('#th_ta').show()
-                                $('.add_ta').hide()
-                            }
+                            $('#th_ta').hide()
+                            $('.add_ta').show()
+                            $('.id_user').val(num)
+                            $('.id_siswa').val(id)
+                            $('.input-ajaran').atrr('action', '<?= base_url('setting/edit') ?>')
+                        })
+
+                        $(document).on('click', '.edit', function(e) {
+                            var id = $(this).data('id')
+                            var kode = $(this).data('kode')
+                            var siswa = $(this).data('siswa')
+                            var num = $(this).data('num')
+                            console.log(siswa)
+                            $('.modal-title').text('Setting Biaya Pendidikan')
+                            $('.edit').text('Simpan')
+                            $('#tambah').modal('show')
+                            $('.nama_siswa').val(siswa)
+
+                            $('input').val('')
+                            $('.id_siswa').val(id)
+                            $('#th_ta').show()
+                            $('.add_ta').hide()
+                            $('.nama_siswa').val(siswa)
+                            $('.input-ajaran').atrr('action', '<?= base_url('setting/add') ?>')
+
                         })
 
                         $('.input-ajaran-baru').on('click', function(e) {
@@ -436,7 +505,7 @@
                                                     'success'
                                                 )
 
-                                                if ($(this).data('kode') === 1) {
+                                                if ($(this).data('kode') == 1) {
                                                     $('.modal').modal('hide')
                                                     dataTHAjaran()
                                                 } else {

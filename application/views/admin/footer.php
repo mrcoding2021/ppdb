@@ -203,7 +203,7 @@
         }
         return s.join(dec);
     }
-    var loader = $('.bg').hide()
+
     // cari data siswa berdasarkan nama
     $(function() {
         var n = $('#nama_siswa').val()
@@ -220,58 +220,31 @@
                             return obj.nama
                         })
                         respons(hasil)
-
                     }
-
                 })
             },
             select: function(event, ui) {
-                var ta = $('#ta').val()
-                console.log(ta)
                 $.ajax({
-                    url: '<?= base_url('pembayaran/cari') ?>',
+                    url: '<?= base_url('data/getId') ?>',
                     data: {
                         'nama': ui.item.value,
-                        'ta': ta
                     },
                     dataType: 'json',
+                    type: 'post',
                     success: function(res) {
                         console.log(res)
                         var inv = $('#inv').html()
-                        iuranLunas(res[0].id)
-                        iuranHutang(res[0].id)
+                        iuranLunas(res.id_user)
+                        iuranHutang(res.id_user)
                         $('input[name="no_invoice"]').val(inv)
-                        $('input[name="kelas"]').val(res[0].kelas)
-                        $('input[name="hp"]').val(res[0].hp)
-                        $('input[name="nis"]').val(res[0].nis)
-                        $('input[name="wali"]').val(res[0].wali)
-                        $('input[name="kategori_murid"]').val(res[0].kategori)
-                        $('input[name="id_murid"]').val(res[0].id)
-                        $('input[name="nama"]').val(res[0].nama)
-                        $('input[name="jumlah[]"]').val(res[0].spp)
-
+                        $('input[name="kelas"]').val(res.kelas)
+                        $('input[name="hp"]').val(res.hp)
+                        $('input[name="nis"]').val(res.nis)
+                        $('input[name="nisn"]').val(res.nisn)
+                        $('input[name="wali"]').val(res.wali)
                         if (inv != undefined) {
                             $('.cetak-invoice').attr('href', '<?= base_url('cetak/invoice/') ?>' + inv.replace(/\s+/g, ''))
                         }
-
-                        $('.spp').val(res[0].spp)
-                        $('.gedung').val(res[0].gedung)
-                        $('.seragam').val(res[0].seragam)
-                        $('.kegiatan').val(res[0].kegiatan)
-                        $('.komite').val(res[0].komite)
-                        $('.buku').val(res[0].buku)
-                        $('.sarpras').val(res[0].sarpras)
-                        $('.total').html(res[0].total)
-
-                        $('.jumlah1').val(res[0].spp)
-                        $('.jumlah2').val(res[0].gedung)
-                        $('.jumlah3').val(res[0].seragam)
-                        $('.jumlah4').val(res[0].kegiatan)
-                        $('.jumlah5').val(res[0].komite)
-                        $('.jumlah6').val(res[0].buku)
-                        $('.jumlah7').val(res[0].sarpras)
-                        $('.gTotal').html(res[0].total)
-                        $('.grandTotal').html(number_format(res[0].total, 0, ',', '.'))
                     }
                 })
             },

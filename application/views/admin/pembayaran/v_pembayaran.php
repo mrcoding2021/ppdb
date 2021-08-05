@@ -3,87 +3,90 @@
                     <div class="row">
                         <div class="col-md-12">
                             <?php $this->load->view('admin/breadcrumb'); ?>
-                            <?= $this->session->flashdata('alert');
-                            ?>
+
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold ">Input
                                         <?= $title;
                                         if ($user['level'] == 1) : ?> <a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><?php endif ?><a href="#" class="btn btn-success input-baru btn-border-circle float-right">Input Baru</a></h3>
                                 </div>
-                                <div class="card-body row">
-                                    <div class="col-md-8">
-                                        <div class="form-group row">
-                                            <div class="col-md-3">
-                                                <label for="1">Tahun Ajaran</label>
-                                                <select type="text" class="form-control" name="ta">
-                                                    <?php $n = 16;
-                                                    $m = 17;
-                                                    for ($i = 0; $i < 15; $i++) { ?>
-                                                        <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                    <?php $n++;
-                                                        $m++;
-                                                    } ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <label for="1">Nama Murid</label>
-                                                <input type="text" autofocus class="form-control" name="nama" id="nama_siswa">
-                                                <input type="hidden" class="form-control" name="id_murid">
-                                            </div>
-                                            <div class="col-sm-3">
-                                                <label for="1">NIS</label>
-                                                <input type="text" readonly class="form-control" name="nis">
-                                            </div>
-
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-sm-5">
-                                                <label for="1">Kelas</label>
-                                                <input type="text" readonly class="form-control" name="kelas">
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <label for="1">Orangtua</label>
-                                                <input type="text" readonly class="form-control" name="wali">
-                                            </div>
-                                            <div class="col-sm-3">
-                                                <label for="1">No. HP</label>
-                                                <input type="text" readonly class="form-control" name="hp">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group row">
-                                            <table class="table table-bordered">
-                                                <tr>
-                                                    <td>
-                                                        <h4>
-                                                            No. Invoice :
-                                                        </h4>
-                                                        <?php
-                                                        $this->db->where('parent', '1');
-                                                        $this->db->where('kategori', '1');
-                                                        $akun_trx = $this->db->get('tb_rab')->result();
-                                                        $this->db->order_by('id', 'desc');
-                                                        $inv = $this->db->get('tb_transaksi')->row();
-                                                        $d = 1 . '.' . str_replace('-', '', date('Y-m-d'));
-                                                        $date = str_replace('-', '', date('Y-m-d')) ?>
-                                                        <h4 class="pl-1" id="inv">
-                                                            <?php
-                                                            if ($inv == null) {
-                                                                echo $d;
-                                                            } else {
-                                                                $e = intval($inv->id_trx) + 1;
-                                                                echo $e . '.' . $date;
-                                                            }; ?>
-                                                        </h4>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
                                 <form action="<?= base_url('pembayaran/siswa') ?>" class="pembayaranSiswa">
+                                    <div class="card-body row">
+                                        <div class="col-md-8">
+                                            <div class="form-group row">
+                                                <div class="col-sm-6">
+                                                    <label for="1">Nama Murid</label>
+                                                    <input type="text" autofocus class="form-control" name="nama" id="nama_siswa">
+                                                    <input type="hidden" class="form-control" name="id_murid">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="1">NIS</label>
+                                                    <input type="text" readonly class="form-control" name="nis">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="1">NISN</label>
+                                                    <input type="text" readonly class="form-control" name="nisn">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-sm-5">
+                                                    <label for="1">Kelas</label>
+                                                    <input type="text" readonly class="form-control" name="kelas">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <label for="1">Orangtua</label>
+                                                    <input type="text" readonly class="form-control" name="wali">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="1">No. HP</label>
+                                                    <input type="text" readonly class="form-control" name="hp">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group row border-bottom-danger">
+                                                <label for="1">No. Invoice :</label>
+                                                <?php
+                                                $this->db->where('parent', '1');
+                                                $this->db->where('kategori', '1');
+                                                $akun_trx = $this->db->get('tb_rab')->result();
+                                                $this->db->order_by('id', 'desc');
+                                                $inv = $this->db->get('tb_transaksi')->row();
+                                                $d = 1 . '.' . str_replace('-', '', date('Y-m-d'));
+                                                $date = str_replace('-', '', date('Y-m-d')) ?>
+                                                <h4 class="mx-2" id="inv">
+                                                    <?php
+                                                    if ($inv == null) {
+                                                        echo $d;
+                                                    } else {
+                                                        $e = intval($inv->id_trx) + 1;
+                                                        echo $e . '.' . $date;
+                                                    }; ?>
+                                                </h4>
+
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-6">
+
+                                                    <label for="1">Tahun Ajaran</label>
+                                                    <select type="text" class="form-control" name="ta">
+                                                        <?php $n = 16;
+                                                        $m = 17;
+                                                        for ($i = 0; $i < 15; $i++) { ?>
+                                                            <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                        <?php $n++;
+                                                            $m++;
+                                                        } ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="1">Tgl. Bayar</label>
+                                                    <input type="date" value="<?= date('Y-m-d') ?>" name="tgl_byr" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="row">
                                         <div class="col-md-12 col-lg-12 container">
                                             <table class="table table-striped table-sm" width="100%">
@@ -109,7 +112,6 @@
                                                                 $akuntrx = $this->db->get('tb_rab')->result();
                                                                 foreach ($akuntrx as $key) : ?>
                                                                     <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-
                                                                 <?php endforeach; ?>
                                                             </select>
                                                         </td>
@@ -394,8 +396,21 @@
                     $('.ta').change(function(e) {
                         var ta = $(this).val()
                         var inv = $.trim($('#inv').html())
-                        $('input[name="ta"]').val(ta)
-                        $('input[name="inv"]').val(inv)
+                        var id = $('.id_user').val()
+                        $.ajax({
+                            url: '<?= base_url('setting/getAll/') ?>' + id + '/' + ta,
+                            dataType: 'json',
+                            type: 'POST',
+                            success: function(res) {
+                                for (let i = 0; i < res.length; i++) {
+                                    $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
+                                    $('.bayar_lalu:eq(' + [i] + ')').val(data[i].bayar_lalu)
+                                    $('.ket:eq(' + [i] + ')').val(data[i].ket)
+                                    $('.total:eq(' + [i] + ')').val(data[i].total)
+                                }
+
+                            }
+                        })
                     })
 
                     $('.input-baru').click(function(e) {
