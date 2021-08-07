@@ -164,6 +164,7 @@
 
                     $(document).on('click', '.detail', function() {
                         var inv = $(this).data('id')
+                        $('.terima').attr('data-id', inv)
                         console.log(inv)
                         $.ajax({
                             url: '<?= base_url('acc/getInv/1') ?>',
@@ -207,7 +208,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 $.ajax({
-                                    url: '<?= base_url('acc/accept/') ?>' + link,
+                                    url: '<?= base_url('acc/accept/') ?>' + inv + '/' + link,
                                     data: {
                                         'inv': inv
                                     },

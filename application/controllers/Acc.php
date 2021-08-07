@@ -67,15 +67,12 @@ class Acc extends CI_Controller
     echo json_encode($data);
   }
 
-  public function accept($id = 0)
+  public function accept($inv, $id = 0)
   {
-    if ($id == 1) {
-      // $inv = '275.20210101';
-      $inv = $_POST['inv'];
-      $this->database->accept('tb_transaksi', $inv, $id);
+    $return = $this->database->accept('tb_transaksi', $inv, $id);
+    if ($return) {
       $result = ['sukses' => 'Data pengajuan telah diterima dan sudah masuk ke pembukuan'];
     } else {
-      $inv = $_POST['inv'];
       $this->database->accept('tb_transaksi', $inv, $id);
       $result = ['sukses' => 'Data pengajuan ditolak'];
     }

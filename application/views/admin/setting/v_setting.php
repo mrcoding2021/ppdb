@@ -67,7 +67,7 @@
                             <div class="modal-body">
                                 <form action="<?= base_url('setting/add') ?>" method="post" class="input-ajaran" data-kode="1">
                                     <div class="form-group row">
-                                        <div class="col-sm-3 add_ta">
+                                        <div class="col-sm-2 add_ta">
                                             <label for="1">Th. Ajaran</label>
                                             <select type="text" class="ta_s form-control" name="ta">
                                                 <?php $n = 16;
@@ -88,6 +88,10 @@
                                             <label for="1">Kelas</label>
                                             <select name="kelas" id="kelas" class="kelas form-control">
                                             </select>
+                                        </div>
+                                        <div class="col-md-1" id="ubah">
+                                            <label for="1">.</label>
+                                            <a href="#" class="ubahData btn btn-danger">Ubah</a>
                                         </div>
                                     </div>
                                     <table class="table table-striped table-sm">
@@ -139,7 +143,7 @@
                                     </table>
                                     <div class="modal-footer">
                                         <button id="close" class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
-                                        <button class="btn btn-success  btn-border-circle btn-block" type="submit">Input</button>
+                                        <button class="btnSimpan btn btn-success  btn-border-circle btn-block" type="submit">Simpan</button>
                                     </div>
                                 </form>
                             </div>
@@ -252,7 +256,7 @@
                                     {
                                         "data": "id",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html('<a data-ket="' + oData.ket + '" data-nama="' + oData.nama + '" data-keterangan="' + oData.keterangan + '" data-kode_kelas="' + oData.kode_kelas + '" class="edit mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Edit</a><a class="hapus_kelas mr-1 badge badge-danger" href="#lihat" data-kode="0" data-id="' + oData.id + '" >Hapus</a>');
+                                            $(nTd).html('<a data-ket="' + oData.ket + '" data-nama="' + oData.nama + '" data-keterangan="' + oData.keterangan + '" data-kode_kelas="' + oData.kode_kelas + '" class="editKelas mr-1 badge badge-info" href="#lihat" data-id="' + oData.id + '" >Edit</a><a class="hapus_kelas mr-1 badge badge-danger" href="#lihat" data-kode="0" data-id="' + oData.id + '" >Hapus</a>');
                                         }
                                     }
                                 ]
@@ -270,7 +274,7 @@
                                 }
                             })
                         }
-                        $(document).on('click', '.edit', function(e) {
+                        $(document).on('click', '.editKelas', function(e) {
                             e.preventDefault()
                             var id_kelas = $(this).data('id')
                             var kode_kelas = $(this).data('kode_kelas')
@@ -330,7 +334,7 @@
                         $('.addKelas').click(function(e) {
                             e.preventDefault()
                             getKelas()
-                            $('.form-control').val('')
+                            $('.input').val('')
                         })
 
                         $('.bayar').keyup(function() {
@@ -349,9 +353,10 @@
                             total.val(parseInt(bayar) + parseInt(diskon))
                         })
 
-                        dataTHAjaran()
+                        dataTHAjaran('tes')
 
-                        function dataTHAjaran() {
+                        function dataTHAjaran(f) {
+                            console.log(f)
                             var pembiayaan = $('#table-bayar').DataTable({
                                 "processing": true,
                                 "language": {
@@ -406,12 +411,12 @@
                         $('.ta_s').change(function() {
                             var id_u = $('.id_user').val()
                             var ta = $(this).val()
-                            console.log(id_u)
                             $.ajax({
                                 url: '<?= base_url('setting/getAll/') ?>' + id_u + '/' + ta,
                                 type: 'POST',
                                 dataType: 'JSON',
                                 success: function(data) {
+                                    console.log(data)
                                     if (data.error) {
                                         $('#hilang').find('input').val('')
                                     } else {
@@ -429,22 +434,29 @@
                                 }
                             })
                         })
-
+                        $('.ubahData').click(function(e) {
+                            e.preventDefault()
+                            $('#tambah input').attr('readonly', false)
+                            $('.btnSimpan').show()
+                        })
                         $(document).on('click', '.detail', function(e) {
                             var id = $(this).data('id')
                             var kode = $(this).data('kode')
                             var siswa = $(this).data('siswa')
                             var num = $(this).data('num')
-                            console.log(siswa)
+                            $('#tambah input').attr('readonly', true)
+                            $('#ubah').show()
                             $('.modal-title').text('Setting Biaya Pendidikan')
+                            $('.btnSimpan').hide()
                             $('.edit').text('Simpan')
                             $('#tambah').modal('show')
                             $('.nama_siswa').val(siswa)
                             $('#th_ta').hide()
                             $('.add_ta').show()
-                            $('.id_user').val(num)
+                            $('.id_user').val(id)
                             $('.id_siswa').val(id)
-                            $('.input-ajaran').atrr('action', '<?= base_url('setting/edit') ?>')
+                            $('.input-ajaran').attr('action', '<?= base_url('setting/edit') ?>')
+                            $('.input-ajaran').attr('data-kode', 1)
                         })
 
                         $(document).on('click', '.edit', function(e) {
@@ -452,19 +464,19 @@
                             var kode = $(this).data('kode')
                             var siswa = $(this).data('siswa')
                             var num = $(this).data('num')
-                            console.log(siswa)
+                            $('.btnSimpan').show()
                             $('.modal-title').text('Setting Biaya Pendidikan')
                             $('.edit').text('Simpan')
                             $('#tambah').modal('show')
                             $('.nama_siswa').val(siswa)
-
+                            $('#ubah').hide()
                             $('input').val('')
                             $('.id_siswa').val(id)
                             $('#th_ta').show()
                             $('.add_ta').hide()
                             $('.nama_siswa').val(siswa)
-                            $('.input-ajaran').atrr('action', '<?= base_url('setting/add') ?>')
-
+                            $('.input-ajaran').attr('action', '<?= base_url('setting/add') ?>')
+                            $('.input-ajaran').attr('data-kode', 0)
                         })
 
                         $('.input-ajaran-baru').on('click', function(e) {
@@ -505,12 +517,10 @@
                                                     'success'
                                                 )
 
-                                                if ($(this).data('kode') == 1) {
-                                                    $('.modal').modal('hide')
-                                                    dataTHAjaran()
-                                                } else {
-                                                    getKelas()
-                                                }
+                                                $('#tambah').modal('hide')
+                                                dataTHAjaran('mantap')
+                                                getKelas()
+
                                             } else {
                                                 Swal.fire(
                                                     'Error',

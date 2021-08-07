@@ -114,10 +114,20 @@ class Setting extends CI_Controller
         }
     }
 
-    public function u()
+    public function getTagihan($id, $ta)
     {
-        $u = [];
-        echo json_encode($u);
+        $result = [];
+        for ($i = 0; $i < 7; $i++) {
+            $this->db->where('id_siswa', $id);
+            $this->db->where('ta', $ta);
+            $tagihan = $this->db->get('tb_user_tagihan')->result();
+            $result[] = [                
+                'total'      => ($tagihan != null) ? rupiah($tagihan[$i]->total) : 0,
+                'totalX'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
+            ];
+        }
+
+        echo json_encode($result);
     }
 
     public function add()

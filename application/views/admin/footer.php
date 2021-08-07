@@ -239,6 +239,7 @@
                         $('input[name="no_invoice"]').val(inv)
                         $('input[name="kelas"]').val(res.kelas)
                         $('input[name="hp"]').val(res.hp)
+                        $('input[name="id_murid"]').val(res.id_user)
                         $('input[name="nis"]').val(res.nis)
                         $('input[name="nisn"]').val(res.nisn)
                         $('input[name="wali"]').val(res.wali)

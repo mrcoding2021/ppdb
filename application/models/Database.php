@@ -142,10 +142,11 @@ class Database extends CI_Model
 
     public function accept($table, $inv, $id)
     {
-        $this->db->where('no_invoice', $inv);
+        $this->db->where('id_trx', $inv);
         $this->db->set('approve', $id);
         $this->db->update($table);
-        // oke 
+        return true;
+        
         
     }
 }

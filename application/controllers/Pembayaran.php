@@ -30,7 +30,7 @@ class Pembayaran extends CI_Controller
       $data['parent'] = 'Input';
       $data['admin'] = $this->db->query($query)->result_array();
       $data['menu'] = $this->db->get('tb_menu')->result_array();
-      
+
       $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
       $data['pembayaran'] = $this->db->get('tb_pembayaran')->result();
       $this->load->view('admin/header', $data);
@@ -153,11 +153,11 @@ class Pembayaran extends CI_Controller
 
   public function siswa()
   {
-    $trx = $this->input->post('akun_trx');
-    $kode = ['SPP', 'INFAQ GEDUNG', 'SERAGAM', 'KEGIATAN', 'BUKU', 'KOMITE', 'SARPRAS'];
-    for ($i = 0; $i < count($trx); $i++) {
+
+    $kode = ['SPP', 'INFAQ GEDUNG', 'SERAGAM', 'KEGIATAN', 'KOMITE', 'BUKU', 'SARPRAS'];
+    for ($i = 0; $i < count($kode); $i++) {
       $data = [
-        'date_created' => $this->session->userdata('tgl_byr'),
+        'date_created' => $this->input->post('tgl_byr') . ' ' . date('H:i:s'),
         'inputer'   => $this->session->userdata('id'),
         'id_trx'       => str_replace(' ', '', $this->input->post('inv')),
         'ta'           => $this->input->post('ta'),

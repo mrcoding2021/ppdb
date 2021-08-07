@@ -17,7 +17,7 @@
                                                 <div class="col-sm-6">
                                                     <label for="1">Nama Murid</label>
                                                     <input type="text" autofocus class="form-control" name="nama" id="nama_siswa">
-                                                    <input type="hidden" class="form-control" name="id_murid">
+                                                    <input type="hidden" class="form-control id_user" name="id_murid">
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <label for="1">NIS</label>
@@ -69,7 +69,7 @@
                                                 <div class="col-md-6">
 
                                                     <label for="1">Tahun Ajaran</label>
-                                                    <select type="text" class="form-control" name="ta">
+                                                    <select type="text" class="form-control ta_s" name="ta">
                                                         <?php $n = 16;
                                                         $m = 17;
                                                         for ($i = 0; $i < 15; $i++) { ?>
@@ -103,130 +103,28 @@
 
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <th scope="row">1</th>
-                                                        <td>SPP</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('parent', '1-30000');
-                                                                $akuntrx = $this->db->get('tb_rab')->result();
-                                                                foreach ($akuntrx as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="spp form-control form-control-sm" name="bayar[]"><input type="hidden" value="2021-2022" name="ta"><input type="hidden" value="0" name="inv"><input type="hidden" value="0" name="id_murid"></td>
-                                                        <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah1 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">2</th>
-                                                        <td>Infaq Gedung</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('parent', '1-10000');
-                                                                $gedung = $this->db->get('tb_rab')->result();
-                                                                foreach ($gedung as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="gedung form-control form-control-sm" name="bayar[]"></td>
-                                                        <td><input type="number" value="0" class="diskon2 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah2 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">3</th>
-                                                        <td>Seragam</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('parent', '1-50000');
-                                                                $seragam = $this->db->get('tb_rab')->result();
-                                                                foreach ($seragam as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="seragam form-control form-control-sm" name="bayar[]"></td>
-                                                        <td><input type="number" value="0" class="diskon3 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah3 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">4</th>
-                                                        <td>Kegiatan</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('parent', '1-40000');
-                                                                $kegiatan = $this->db->get('tb_rab')->result();
-                                                                foreach ($kegiatan as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="kegiatan form-control form-control-sm" name="bayar[]"></td>
-                                                        <td><input type="number" value="0" class="diskon4 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah4 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">5</th>
-                                                        <td>Buku</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('parent', '1-60000');
-                                                                $buku = $this->db->get('tb_rab')->result();
-                                                                foreach ($buku as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="buku form-control form-control-sm" name="bayar[]"></td>
-                                                        <td><input type="number" value="0" class="diskon5 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah5 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">6</th>
-                                                        <td>Komite</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('kode_akun', '1-80000');
-                                                                $komite = $this->db->get('tb_rab')->result();
-                                                                foreach ($komite as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="komite form-control form-control-sm" name="bayar[]"></td>
-                                                        <td><input type="number" value="0" class="diskon6 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah6 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">7</th>
-                                                        <td>Sarpras</td>
-                                                        <td>
-                                                            <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                <?php $this->db->where('parent', '1-20000');
-                                                                $akuntrx = $this->db->get('tb_rab')->result();
-                                                                foreach ($akuntrx as $key) : ?>
-                                                                    <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-                                                                <?php endforeach; ?>
-                                                            </select>
-                                                        </td>
-                                                        <td><input type="number" value="0" class="sarpras form-control form-control-sm" name="bayar[]"></td>
-                                                        <td><input type="number" value="0" class="diskon7 form-control form-control-sm" name="diskon[]"></td>
-                                                        <td><input type="number" value="0" class="jumlah7 form-control form-control-sm" name="jml[]"></td>
-                                                        <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                    </tr>
+                                                    <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+                                                    $parent = ['1-30000', '1-10000', '1-40000', '1-50000', '1-80000', '1-60000', '1-70000'];
+                                                    $no = 1;
+                                                    for ($i = 0; $i < 7; $i++) { ?>
+                                                        <tr>
+                                                            <th scope="row"><?= $no++ ?></th>
+                                                            <td><?= $kode[$i] ?></td>
+                                                            <td>
+                                                                <select name="akun_trx[]" class="form-control form-control-sm">
+                                                                    <?php $this->db->where('parent', $parent[$i]);
+                                                                    $akuntrx = $this->db->get('tb_rab')->result();
+                                                                    foreach ($akuntrx as $key) : ?>
+                                                                        <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
+                                                                    <?php endforeach; ?>
+                                                                </select>
+                                                            </td>
+                                                            <td><input type="number" value="0" class="bayar form-control form-control-sm" readonly name="bayar[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
+                                                            <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="diskon[]"></td>
+                                                            <td><input type="number" value="0" readonly class="jumlah form-control form-control-sm" name="jml[]"></td>
+                                                            <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
+                                                        </tr>
+                                                    <?php } ?>
                                                     <tr class="bg-dark text-white text-right">
                                                         <td colspan="3">Total</td>
                                                         <td class="total text-right">0</td>
@@ -393,20 +291,20 @@
                 </div>
 
                 <script>
-                    $('.ta').change(function(e) {
+                    $('.ta_s').change(function(e) {
                         var ta = $(this).val()
                         var inv = $.trim($('#inv').html())
+                        $('.inv').val(inv)
                         var id = $('.id_user').val()
                         $.ajax({
-                            url: '<?= base_url('setting/getAll/') ?>' + id + '/' + ta,
+                            url: '<?= base_url('setting/getTagihan/') ?>' + id + '/' + ta,
                             dataType: 'json',
                             type: 'POST',
                             success: function(res) {
+                                console.log(res)
                                 for (let i = 0; i < res.length; i++) {
-                                    $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
-                                    $('.bayar_lalu:eq(' + [i] + ')').val(data[i].bayar_lalu)
-                                    $('.ket:eq(' + [i] + ')').val(data[i].ket)
-                                    $('.total:eq(' + [i] + ')').val(data[i].total)
+                                    $('.bayar:eq(' + [i] + ')').val(res[i].totalX)
+                                    $('.jumlah:eq(' + [i] + ')').val(res[i].totalX)
                                 }
 
                             }
@@ -461,10 +359,10 @@
                                     dataType: 'json',
                                     type: 'POST',
                                     beforeSend: function() {
-                                        $('.bg').show()
-                                    },
-                                    complete: function() {
-                                        $('.bg').hide()
+                                        Swal.fire({
+                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                            showConfirmButton: false
+                                        })
                                     },
                                     success: function(res) {
                                         if (res.sukses) {
@@ -474,6 +372,7 @@
                                                 html: `${res.sukses}`
                                             })
                                             $('.cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
+                                            ubah_id()
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',
