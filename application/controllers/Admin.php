@@ -7,11 +7,11 @@ class Admin extends CI_Controller
 	{
 		parent::__construct();
 
-		$this->load->library('form_validation');
-		$this->load->model('Model_global', 'M_global');
+		// $this->load->library('form_validation');
+		// $this->load->model('Model_global', 'M_global');
 		$this->load->helper('rupiah');
 		$this->load->helper('tgl_indo');
-		$this->load->helper('terbilang');
+		// $this->load->helper('terbilang');
 	}
 
 	public function index()
@@ -30,7 +30,7 @@ class Admin extends CI_Controller
 
 			$data['admin'] = $this->db->query($query)->result_array();
 			$data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
-			$data['title'] = $data['user']['nama'];
+			$data['title'] = 'oman';
 			$this->db->select_sum('kredit', 'total');
 			$this->db->where('acc', 1);
 			$this->db->where('kategori', 0);

@@ -401,7 +401,7 @@
                                     {
                                         "data": "buku",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                            $(nTd).html('<a class="detail mr-1 badge badge-info" href="#lihat" data-kode="1" data-siswa="' + oData.nama + '" data-id="' + oData.id_user + '" data-num="' + oData.id + '" >Detail</a><a class="edit mr-1 badge badge-success"  data-siswa="' + oData.nama + '"  href="#lihat" data-kode="0" data-id="' + oData.id_user + '" >Setting</a>');
+                                            $(nTd).html('<div class="d-flex"><a class="detail mr-1 btn btn-sm btn-info" href="#lihat" data-kode="1" data-siswa="' + oData.nama + '" data-id="' + oData.id_user + '" data-num="' + oData.id + '" ><i class="fa fa-search"></i></a><a class="btn-sm edit mr-1 btn btn-success"  data-siswa="' + oData.nama + '"  href="#lihat" data-kode="0" data-id="' + oData.id_user + '" ><i class="fas fa-cog"></i></a></div>');
                                         }
                                     }
                                 ]
@@ -445,10 +445,11 @@
                             var siswa = $(this).data('siswa')
                             var num = $(this).data('num')
                             $('#tambah input').attr('readonly', true)
+                            $('#tambah input').attr('value', '0')
                             $('#ubah').show()
                             $('.modal-title').text('Setting Biaya Pendidikan')
                             $('.btnSimpan').hide()
-                            $('.edit').text('Simpan')
+                            
                             $('#tambah').modal('show')
                             $('.nama_siswa').val(siswa)
                             $('#th_ta').hide()
@@ -464,13 +465,15 @@
                             var kode = $(this).data('kode')
                             var siswa = $(this).data('siswa')
                             var num = $(this).data('num')
+                            $('#tambah input').val('')
+                            $('#tambah input').attr('value', '0')
                             $('.btnSimpan').show()
                             $('.modal-title').text('Setting Biaya Pendidikan')
-                            $('.edit').text('Simpan')
+                            
                             $('#tambah').modal('show')
+                            $('#tambah input').attr('readonly', false)
                             $('.nama_siswa').val(siswa)
                             $('#ubah').hide()
-                            $('input').val('')
                             $('.id_siswa').val(id)
                             $('#th_ta').show()
                             $('.add_ta').hide()

@@ -70,9 +70,7 @@
                    overflow-x: hidden;
                }
 
-               /* IE 6 doesn't support max-height
-   * we use height instead, but this forces the menu to always be this tall
-   */
+              
                * html .ui-autocomplete {
                    height: 200px;
                }
@@ -197,7 +195,7 @@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item my-auto">
-                            <span><?= longdate_indo(date('Y-m-d')) ?></span>
+                            <span></span>
                         </li>
                         <!-- Nav Item - Alerts -->
                         <div class="topbar-divider d-none d-sm-block"></div>

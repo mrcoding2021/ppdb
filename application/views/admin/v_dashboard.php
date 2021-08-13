@@ -310,20 +310,9 @@
                         </div>
                     </div>
 
-                    <!-- Content Row -->
+               
 
-                    <div class="row">
-
-                        <!-- Area Chart -->
-                        <div class="col-xl-6 col-lg-6">
-
-                        </div>
-
-                        <!-- Pie Chart -->
-                        <div class="col-xl-6 col-lg-6">
-
-                        </div>
-                    </div>
+                   
                 </div>
                 <!-- /.container-fluid -->
 

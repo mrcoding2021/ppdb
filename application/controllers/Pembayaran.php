@@ -157,7 +157,7 @@ class Pembayaran extends CI_Controller
     $kode = ['SPP', 'INFAQ GEDUNG', 'SERAGAM', 'KEGIATAN', 'KOMITE', 'BUKU', 'SARPRAS'];
     for ($i = 0; $i < count($kode); $i++) {
       $data = [
-        'date_created' => $this->input->post('tgl_byr') . ' ' . date('H:i:s'),
+        'date_created' => $this->input->post('tgl_byr') . '   ' . date('H:i:s'),
         'inputer'   => $this->session->userdata('id'),
         'id_trx'       => str_replace(' ', '', $this->input->post('inv')),
         'ta'           => $this->input->post('ta'),
