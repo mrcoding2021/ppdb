@@ -38,7 +38,7 @@ class Setting extends CI_Controller
         }
     }
 
-    public function getAll($id = '', $ta = '')
+    public function getAll($id = 0, $ta = '')
     {
         $result = [];
         if ($id > 0) {
@@ -117,28 +117,13 @@ class Setting extends CI_Controller
     public function getTagihan($id, $ta)
     {
         $result = [];
-        $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
         for ($i = 0; $i < 7; $i++) {
             $this->db->where('id_siswa', $id);
             $this->db->where('ta', $ta);
-            $this->db->where('kode', $kode[$i]);
             $tagihan = $this->db->get('tb_user_tagihan')->result();
-
-            $this->db->where('id_murid', $id);
-            $this->db->where('ta', $ta);
-            $this->db->where('kode', $kode[$i]);
-            $this->db->select_sum('jumlah', 'total');
-            $pembayaran = $this->db->get('tb_transaksi')->row();
-            var_dump($pembayaran);
-            if ($pembayaran == null) {
-                $totalBayar = 0;
-            } else {
-                $totalBayar = $pembayaran[$i]->total;
-            }
-
-            $result[] = [
-                'total'      => ($tagihan != null) ? rupiah($tagihan[$i]->total - $totalBayar) : 0,
-                'totalX'      => ($tagihan != null) ? ($tagihan[$i]->total - $totalBayar) : 0,
+            $result[] = [                
+                'total'      => ($tagihan != null) ? rupiah($tagihan[$i]->total) : 0,
+                'totalX'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
             ];
         }
 

@@ -153,35 +153,47 @@ class Pembayaran extends CI_Controller
 
   public function siswa()
   {
+    $id_trx = str_replace(' ', '', $this->input->post('inv'));
 
-    $kode = ['SPP', 'INFAQ GEDUNG', 'SERAGAM', 'KEGIATAN', 'KOMITE', 'BUKU', 'SARPRAS'];
-    for ($i = 0; $i < count($kode); $i++) {
-      $data = [
-        'date_created' => $this->input->post('tgl_byr') . '   ' . date('H:i:s'),
-        'inputer'   => $this->session->userdata('id'),
-        'id_trx'       => str_replace(' ', '', $this->input->post('inv')),
-        'ta'           => $this->input->post('ta'),
-        'id_murid'     => $this->input->post('id_murid'),
-        'bayar'        => $this->input->post('bayar')[$i],
-        'kode'         => $kode[$i],
-        'akun_kas'     => '0-10001',
-        'akun_trx'     => $this->input->post('akun_trx')[$i],
-        'diskon'       => $this->input->post('diskon')[$i],
-        'jumlah'        => $this->input->post('jml')[$i],
-        'ket'          => $this->input->post('ket')[$i],
-        'approve'      => 0
-      ];
-      $this->db->insert('tb_transaksi', $data);
-    }
-    if ($this->db->affected_rows() > 0) {
+    $this->db->select('id_trx');
+    $this->db->where('id_trx', $id_trx);
+    $trx = $this->db->get('tb_transaksi')->result();
+    if ($trx != null) {
       $msg = array(
-        'sukses' => 'Data Pembayaran berhasil tersimpan'
+        'warning' => 'No. Invoice sudah ada, silahkan klik input baru!'
       );
     } else {
-      $msg = array(
-        'error' => 'Data Pembayaran gagal tersimpan'
-      );
+      $kode = ['SPP', 'INFAQ GEDUNG', 'SERAGAM', 'KEGIATAN', 'KOMITE', 'BUKU', 'SARPRAS'];
+      for ($i = 0; $i < count($kode); $i++) {
+        $data = [
+          'date_created' => $this->input->post('tgl_byr') . ' ' . date('H:i:s'),
+          'inputer'   => $this->session->userdata('id'),
+          'id_trx'       => $id_trx,
+          'ta'           => $this->input->post('ta'),
+          'metode'       => $this->input->post('metode')[$i],
+          'id_murid'     => $this->input->post('id_murid'),
+          'bayar'        => $this->input->post('bayar')[$i],
+          'kode'         => $kode[$i],
+          'akun_kas'     => '0-10001',
+          'akun_trx'     => $this->input->post('akun_trx')[$i],
+          'diskon'       => $this->input->post('diskon')[$i],
+          'jumlah'        => $this->input->post('jml')[$i],
+          'ket'          => $this->input->post('ket')[$i],
+          'approve'      => 0
+        ];
+        $this->db->insert('tb_transaksi', $data);
+      }
+      if ($this->db->affected_rows() > 0) {
+        $msg = array(
+          'sukses' => 'Data Pembayaran berhasil tersimpan'
+        );
+      } else {
+        $msg = array(
+          'error' => 'Data Pembayaran gagal tersimpan'
+        );
+      }
     }
+
     echo json_encode($msg);
   }
 }

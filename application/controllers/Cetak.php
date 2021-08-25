@@ -17,7 +17,7 @@ class Cetak extends CI_Controller
 
     public function invoice($id = '1.20201231')
     {
-        $db['key'] = $this->db->get_where('tb_transaksi', array('id_trx' => $id))->row();
+        $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
         $this->load->view('print/invoice', $db);
     }
 

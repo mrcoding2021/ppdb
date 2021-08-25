@@ -112,8 +112,8 @@
                             </td>
                             <td></td>
                             <td>
-                                Kwitansi No. <?= $key->no_invoice ?><br>
-                                <?= longdate_indo($key->created_at) ?><br>
+                                Kwitansi No. <?= $key[0]->no_invoice ?><br>
+                                <?= longdate_indo($key[0]->created_at) ?><br>
                             </td>
                         </tr>
                     </table>
@@ -131,7 +131,7 @@
                             <td></td>
                             <td><strong>
 
-                                    <?php $murid = $this->db->get_where('tb_user', array('id_user' => $key->id_murid))->row();
+                                    <?php $murid = $this->db->get_where('tb_user', array('id_user' => $key[0]->id_murid))->row();
                                     echo $murid->nama . '<br>' . $murid->hp . '<br>' . $murid->alamat;
                                     ?><br>
                                 </strong>

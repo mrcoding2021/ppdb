@@ -7,16 +7,17 @@ class Admin extends CI_Controller
 	{
 		parent::__construct();
 
-		// $this->load->library('form_validation');
-		// $this->load->model('Model_global', 'M_global');
+		$this->load->library('form_validation');
+		$this->load->model('Model_global', 'M_global');
 		$this->load->helper('rupiah');
 		$this->load->helper('tgl_indo');
-		// $this->load->helper('terbilang');
+		$this->load->helper('terbilang');
 	}
 
 	public function index()
 	{
 		$id = $this->session->userdata('id');
+		
 		if ($id) {
 			# code...
 			$level = $this->session->userdata('level');
@@ -30,7 +31,7 @@ class Admin extends CI_Controller
 
 			$data['admin'] = $this->db->query($query)->result_array();
 			$data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
-			$data['title'] = 'oman';
+			$data['title'] = $data['user']['nama'];
 			$this->db->select_sum('kredit', 'total');
 			$this->db->where('acc', 1);
 			$this->db->where('kategori', 0);

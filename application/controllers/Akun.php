@@ -12,7 +12,6 @@ class Akun extends CI_Controller
     $this->load->model('Model_global', 'M_global');
     $this->load->helper('tgl_indo');
     $this->load->helper('rupiah');
-    $this->load->library(array('PHPExcel', 'PHPExcel/IOFactory'));
   }
 
   public function core($data)
@@ -50,12 +49,12 @@ class Akun extends CI_Controller
       'judul' => 'Akun Perkiraan',
       'view'  => 'v_kodeAkun'
     );
+    $this->db->where('parent', 0);
     $this->db->where('kategori', 1);
     $this->db->where('is_active', 1);
-    $this->db->where('parent', '1');
     $data['akunPemasukan'] = $this->db->get('tb_rab')->result();
 
-    $this->db->where('parent', '2');
+    $this->db->where('parent', 0);
     $this->db->where('kategori', 2);
     $this->db->where('is_active', 1);
     $data['akunPengeluaran'] = $this->db->get('tb_rab')->result();
@@ -198,8 +197,7 @@ class Akun extends CI_Controller
     $data = array(
       'kode_akun' => $_POST['kode_akun'],
       'nama'      => $_POST['nama'],
-      'kategori'    => $_POST['kategori'],
-      'parent'    => ($_POST['kategori'] == 1) ? $_POST['parent'] : $_POST['ortu']
+      'jumlah'    => $_POST['saldo']
     );
     $this->db->where('id', $id);
     $this->db->update('tb_rab', $data);
@@ -207,62 +205,9 @@ class Akun extends CI_Controller
     if ($this->db->affected_rows() > 0) {
       $result = array('sukses' => "Data berhasil di edit");
     } else {
-      $result = array('error' => "Data gagal di edit");
+      $result = array('sukses' => "Data gagal di edit");
     }
     echo json_encode($result);
-  }
-
-  public function upload()
-  {
-    $fileName = $this->input->post('file');
-    // var_dump($fileName);die;
-    $config['upload_path'] = './asset/upload/';
-    $config['file_name'] = $fileName;
-    $config['allowed_types'] = 'xls|xlsx';
-    $this->load->library('upload', $config);
-    $this->upload->initialize($config);
-    if (!$this->upload->do_upload('file')) {
-      $error = array('error' => $this->upload->display_errors());
-      $this->session->set_flashdata('alert', '<div class="alert alert-danger">' + $error['error'] + '</div>');
-      redirect('akun');
-    } else {
-      $media = $this->upload->data();
-      $inputFileName = 'asset/upload/' . $media['file_name'];
-      try {
-        $inputFileType = IOFactory::identify($inputFileName);
-        $objReader = IOFactory::createReader($inputFileType);
-        $objPHPExcel = $objReader->load($inputFileName);
-      } catch (Exception $e) {
-        die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
-      }
-      $sheet = $objPHPExcel->getSheet(0);
-      $highestRow = $sheet->getHighestRow();
-      $highestColumn = $sheet->getHighestColumn();
-
-      for ($row = 2; $row <= $highestRow; $row++) {
-        $rowData = $sheet->rangeToArray(
-          'A' . $row . ':' . $highestColumn . $row,
-          NULL,
-          TRUE,
-          FALSE
-        );
-
-        $data = array(
-          "created_at" => date('Y-m-d'),
-          "kode_akun" => $rowData[0][0],
-          "nama" => $rowData[0][1],
-          'kategori' => $rowData[0][2],
-          "parent" => $rowData[0][3],
-          "id" => $rowData[0][4],
-        );
-
-        $this->db->insert('tb_rab', $data);
-      }
-
-      $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data pembayaran berhasiil ditambahan</div>');
-
-      redirect('akun');
-    }
   }
 }
 

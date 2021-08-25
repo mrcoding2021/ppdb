@@ -9,11 +9,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><?= $title ?></title>
+    <!-- <title><?= $title ?></title> -->
 
     <!-- Custom fonts for this template -->
     <link href="<?php echo base_url() ?>asset/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- <script src="<?= base_url() ?>asset/admin/vendor/jquery/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="<?= base_url() ?>asset/vendor/jquery-ui/jquery-ui.js"></script>
 
     <!-- Custom styles for this template -->
     <link href="<?php echo base_url() ?>asset/admin/css/sb-admin-2.min.css" rel="stylesheet">
@@ -22,11 +25,10 @@
     <link rel="stylesheet" type="text/css" href="<?= base_url('asset/admin/css/my.css') ?>">
     <link rel="stylesheet" href="<?= base_url() ?>asset/vendor/jquery-ui/jquery-ui.css">
     <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
-    <script src="<?= base_url() ?>asset/admin/vendor/jquery/jquery.min.js"></script>
-    <script src="<?= base_url() ?>asset/vendor/jquery-ui/jquery-ui.js"></script>
     <script src="//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
     <script src="<?= base_url() ?>asset/admin/js/demo/datatables-demo.js"></script>
+    
 </head>
 <style>
     .bg {
@@ -195,7 +197,9 @@
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item my-auto">
-                            <span></span>
+                            <span>
+                                
+                            </span>
                         </li>
                         <!-- Nav Item - Alerts -->
                         <div class="topbar-divider d-none d-sm-block"></div>

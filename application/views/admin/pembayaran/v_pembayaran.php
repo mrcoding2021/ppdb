@@ -96,8 +96,9 @@
                                                         <th scope="col">Jenis Tagihan</th>
                                                         <th scope="col">Kode Akun</th>
                                                         <th scope="col">Jumlah Tagihan</th>
+                                                        <th scope="col">Bayar</th>
                                                         <th scope="col">Diskon</th>
-                                                        <th scope="col">Jumlah</th>
+                                                        <th scope="col">Jumlah dibayar</th>
                                                         <th>Keterangan</th>
                                                     </tr>
 
@@ -120,20 +121,28 @@
                                                                 </select>
                                                             </td>
                                                             <td><input type="number" value="0" class="bayar form-control form-control-sm" readonly name="bayar[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
+                                                            <td>
+                                                                <select type="number" value="0" class="diskon1 form-control form-control-sm" name="metode[]">
+                                                                    <option value="1">CASH</option>
+                                                                    <option value="2">TRANSFER BNI</option>
+                                                                    <option value="3">POTONG TABUNGAN</option>
+                                                                    <option value="4">POTONG KEGIATAN</option>
+                                                                </select>
+                                                            </td>
                                                             <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="diskon[]"></td>
-                                                            <td><input type="number" value="0" readonly class="jumlah form-control form-control-sm" name="jml[]"></td>
+                                                            <td><input type="number" value="0" class="jumlah form-control form-control-sm" name="jml[]"></td>
                                                             <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
                                                         </tr>
                                                     <?php } ?>
                                                     <tr class="bg-dark text-white text-right">
-                                                        <td colspan="3">Total</td>
+                                                        <td colspan="4">Total</td>
                                                         <td class="total text-right">0</td>
                                                         <td><input type="number" readonly class="grandDiskon form-control form-control-sm"></td>
                                                         <td class="gTotal text-right">0</td>
                                                         <td></td>
                                                     </tr>
                                                     <tr class="bg-primary text-white text-right">
-                                                        <td colspan="3">Grand Total</td>
+                                                        <td colspan="4">Grand Total</td>
                                                         <td colspan="2" class="grandTotal text-right">0</td>
                                                         <td></td>
                                                         <td></td>
@@ -196,99 +205,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="tambah" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Tambah Item Pembayaran</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="#" method="post">
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <label for="1">Nama Murid</label>
-                                            <input type="text" class="form-control" name="nama">
-                                            <input type="hidden" class="form-control" name="id_user" data-id="1">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-4">
-                                            <label for="1">Pembayaran Untuk</label>
-                                            <select name="kategori" data-id="1" class="kategori form-control">
-                                                <?php
-                                                $this->db->where('kategori', 1);
-                                                $this->db->where('parent', 0);
-                                                $kategori = $this->db->get('tb_rab')->result();
-                                                foreach ($kategori as $key) : ?>
-                                                    <option data-id="<?= $key->kategori ?>" value="<?= $key->id_kategori ?>"><?= $key->nama ?>
-                                                    </option>
-                                                <?php endforeach ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label for="1">Pembayaran Dengan</label>
-                                            <select name="sumber" data-id="1" class="sumber form-control">
-                                                <?php $sumber = $this->db->get('tb_sumber')->result();
-                                                foreach ($sumber as $key) : ?>
-                                                    <option value="<?= $key->id_sumber ?>"><?= $key->nama ?>
-                                                    </option>
-                                                <?php endforeach ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-4 ">
-                                            <label for="1">Jumlah (Rp)</label>
-                                            <input type="text" data-id="1" placeholder="1000000" required class="form-control jumlah" name="jumlah">
-                                        </div>
-                                    </div>
 
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <label for="1">Keterangan</label>
-                                            <textarea class="form-control" name="ket"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button id="close" class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
-                                        <button class="btn btn-success input-bayar btn-border-circle btn-block">Input</button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="lihat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Rincian Tunggakan</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Keterangan</th>
-                                                <th>Nilai (Rp)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
 
                 <script>
                     $('.ta_s').change(function(e) {
@@ -304,7 +221,7 @@
                                 console.log(res)
                                 for (let i = 0; i < res.length; i++) {
                                     $('.bayar:eq(' + [i] + ')').val(res[i].totalX)
-                                    $('.jumlah:eq(' + [i] + ')').val(res[i].totalX)
+                                    // $('.jumlah:eq(' + [i] + ')').val(res[i].totalX)
                                 }
 
                             }
@@ -324,7 +241,7 @@
 
                         var jumlah = parseInt($(this).parents('td').prev().find('input').val()) - parseInt($(this).val())
                         console.log(jumlah)
-                        $(this).parents('td').next().find('input').val(jumlah)
+                        // $(this).parents('td').next().find('input').val(jumlah)
 
                         var spp = $('.jumlah1').val()
                         var gedung = $('.jumlah2').val()
@@ -368,11 +285,16 @@
                                         if (res.sukses) {
                                             Swal.fire({
                                                 icon: 'success',
-                                                title: 'Berasil',
+                                                title: 'Berhasil',
                                                 html: `${res.sukses}`
                                             })
                                             $('.cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
-                                            ubah_id()
+                                        } else if (res.warning){
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Gagal !',
+                                                html: `${res.warning}`
+                                            })
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',
