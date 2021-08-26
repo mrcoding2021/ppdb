@@ -118,99 +118,105 @@ class Data extends CI_Controller
 
     public function addSekolah()
     {
-        $this->form_validation->set_rules('nama', 'Judul Post', 'trim|required');
-        $this->form_validation->set_rules('hp', 'No. HP Sekolah', 'trim|required');
+        if ($this->scm->cekSecurity() == true) {
+            $this->form_validation->set_rules('nama', 'Judul Post', 'trim|required');
+            $this->form_validation->set_rules('hp', 'No. HP Sekolah', 'trim|required');
 
-        $shuffle = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $shuffle = substr(str_shuffle($shuffle), 0, 8);
+            $shuffle = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $shuffle = substr(str_shuffle($shuffle), 0, 8);
 
-        if ($this->form_validation->run() == TRUE) {
-            $data = array(
-                'nama' => $this->input->post('nama'),
-                'email' => $this->input->post('email'),
-                'alamat' => $this->input->post('alamat'),
-                'date_created' => date('Y-m-d'),
-                'hp' => $this->input->post('hp'),
-                'pj' => $this->input->post('pj'),
-                'parent' => 1,
-                'level' => 2,
-                'pwd' => $shuffle,
-                'password' => md5($shuffle)
-            );
-            $this->db->insert('tb_user', $data);
-            $this->session->set_flashdata('alert', '<div class="alert alert-info">Data baru berhasiil dirubah</div>');
-            redirect('sipajar/saldo');
-        } else {
-            $this->session->set_flashdata('alert', '<div class="alert alert-danger">Mohon maaf. data gagal dirubah</div>');
-            redirect('sipajar/saldo');
+            if ($this->form_validation->run() == TRUE) {
+                $data = array(
+                    'nama' => $this->input->post('nama'),
+                    'email' => $this->input->post('email'),
+                    'alamat' => $this->input->post('alamat'),
+                    'date_created' => date('Y-m-d'),
+                    'hp' => $this->input->post('hp'),
+                    'pj' => $this->input->post('pj'),
+                    'parent' => 1,
+                    'level' => 2,
+                    'pwd' => $shuffle,
+                    'password' => md5($shuffle)
+                );
+                $this->db->insert('tb_user', $data);
+                $this->session->set_flashdata('alert', '<div class="alert alert-info">Data baru berhasiil dirubah</div>');
+                redirect('sipajar/saldo');
+            } else {
+                $this->session->set_flashdata('alert', '<div class="alert alert-danger">Mohon maaf. data gagal dirubah</div>');
+                redirect('sipajar/saldo');
+            }
         }
     }
 
     public function getId()
     {
-        $id  = $this->input->post('nama');
-        $this->db->where('nama', $id);
-        $data = $this->db->get('tb_user')->row();
-        $this->db->where('kode_kelas', $data->kelas);
-        $kelas = $this->db->get('tb_user_kelas')->row();
-        $result = [
-            'id_user'       => $data->id_user,
-            'nis'       => $data->nis,
-            'nisn'       => $data->nisn,
-            'wali'       => $data->pj,
-            'hp'       => $data->hp,
-            'kelas'       => ($kelas != null)? $kelas->ket . ' - ' . $kelas->nama : '',
-            'nama'      => $data->nama
-        ];
-        echo json_encode($result);
+        if ($this->scm->cekSecurity() == true) {
+            $id  = $this->input->post('nama');
+            $this->db->where('nama', $id);
+            $data = $this->db->get('tb_user')->row();
+            $this->db->where('kode_kelas', $data->kelas);
+            $kelas = $this->db->get('tb_user_kelas')->row();
+            $result = [
+                'id_user'       => $data->id_user,
+                'nis'       => $data->nis,
+                'nisn'       => $data->nisn,
+                'wali'       => $data->pj,
+                'hp'       => $data->hp,
+                'kelas'       => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
+                'nama'      => $data->nama
+            ];
+            echo json_encode($result);
+        }
     }
 
     public function addSiswa()
     {
-        $this->form_validation->set_rules('nama', 'Judul Post', 'trim|required');
-        $this->form_validation->set_rules('hp', 'No. HP Sekolah', 'trim|required');
-        $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir', 'trim|required');
+        if ($this->scm->cekSecurity() == true) {
+            $this->form_validation->set_rules('nama', 'Judul Post', 'trim|required');
+            $this->form_validation->set_rules('hp', 'No. HP Sekolah', 'trim|required');
+            $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir', 'trim|required');
 
-        $shuffle = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $shuffle = substr(str_shuffle($shuffle), 0, 8);
-        $id = $this->input->post('id_user');
-        if ($this->form_validation->run() == TRUE) {
-            $data = array(
-                'nama' => strtoupper($this->input->post('nama')),
-                'nis' => $this->input->post('nis'),
-                'nisn' => $this->input->post('nisn'),
-                'ta'    => $this->input->post('ta'),
-                'email' => $this->input->post('email'),
-                'alamat' => $this->input->post('alamat'),
-                'tempat_lahir' => $this->input->post('tempat_lahir'),
-                'hp' => $this->input->post('hp'),
-                'pj' => $this->input->post('wali'),
-                'parent' => 12,
-                'level' => 4,
-                'pwd' =>  $this->input->post('tgl_lahir'),
-                'password' => md5(str_replace('-', '', $this->input->post('tgl_lahir')))
-            );
+            $shuffle = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $shuffle = substr(str_shuffle($shuffle), 0, 8);
+            $id = $this->input->post('id_user');
+            if ($this->form_validation->run() == TRUE) {
+                $data = array(
+                    'nama' => strtoupper($this->input->post('nama')),
+                    'nis' => $this->input->post('nis'),
+                    'nisn' => $this->input->post('nisn'),
+                    'ta'    => $this->input->post('ta'),
+                    'email' => $this->input->post('email'),
+                    'alamat' => $this->input->post('alamat'),
+                    'tempat_lahir' => $this->input->post('tempat_lahir'),
+                    'hp' => $this->input->post('hp'),
+                    'pj' => $this->input->post('wali'),
+                    'parent' => 12,
+                    'level' => 4,
+                    'pwd' =>  $this->input->post('tgl_lahir'),
+                    'password' => md5(str_replace('-', '', $this->input->post('tgl_lahir')))
+                );
 
-            if ($id) {
-                $this->db->where('id_user', $id);
-                $this->db->set('date_created', $this->input->post('date'));
-                $this->db->update('tb_user', $data);
-                $aff = 'Data berhasil dirubah';
+                if ($id) {
+                    $this->db->where('id_user', $id);
+                    $this->db->set('date_created', $this->input->post('date'));
+                    $this->db->update('tb_user', $data);
+                    $aff = 'Data berhasil dirubah';
+                } else {
+                    $this->db->set('date_created', $this->input->post('date'));
+                    $this->db->insert('tb_user', $data);
+                    $aff = 'Data berhasil tersimpan';
+                }
+
+                if ($this->db->affected_rows() > 0) {
+                    $res = ['sukses' => $aff];
+                } else {
+                    $res = ['error' => 'Data gagal tersimpan'];
+                }
             } else {
-                $this->db->set('date_created', $this->input->post('date'));
-                $this->db->insert('tb_user', $data);
-                $aff = 'Data berhasil tersimpan';
+                $res = ['error' => validation_errors()];
             }
-
-            if ($this->db->affected_rows() > 0) {
-                $res = ['sukses' => $aff];
-            } else {
-                $res = ['error' => 'Data gagal tersimpan'];
-            }
-        } else {
-            $res = ['error' => validation_errors()];
+            echo json_encode($res);
         }
-        echo json_encode($res);
     }
 
     public function sekolah($id_sekolah)
@@ -278,115 +284,125 @@ class Data extends CI_Controller
 
     public function addMurid()
     {
-        $this->form_validation->set_rules('nama', 'Judul Post', 'trim|required');
-        $this->form_validation->set_rules('hp', 'No. HP Sekolah', 'trim|required');
-        $this->form_validation->set_rules('tgl_lahir', 'Tanggal lahir', 'trim|required');
+        if ($this->scm->cekSecurity() == true) {
+            $this->form_validation->set_rules('nama', 'Judul Post', 'trim|required');
+            $this->form_validation->set_rules('hp', 'No. HP Sekolah', 'trim|required');
+            $this->form_validation->set_rules('tgl_lahir', 'Tanggal lahir', 'trim|required');
 
-        $shuffle = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $shuffle = substr(str_shuffle($shuffle), 0, 8);
+            $shuffle = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $shuffle = substr(str_shuffle($shuffle), 0, 8);
 
-        if ($this->form_validation->run() == TRUE) {
-            $data = array(
-                'nama' => $this->input->post('nama'),
-                'email' => $this->input->post('email'),
-                'alamat' => $this->input->post('alamat'),
-                'date_created' => date('Y-m-d'),
-                'hp' => $this->input->post('hp'),
-                'pj' => $this->input->post('pj'),
-                'parent' => 1,
-                'level' => 2,
-                'pwd' => $_POST['tgl_lahir'],
-                'password' => str_replace('-', '', $_POST['tgl_lahir'])
-            );
-            $this->db->insert('tb_user', $data);
-            $this->session->set_flashdata('alert', '<div class="alert alert-info">Data baru berhasiil dirubah</div>');
-            redirect('sipajar/saldo');
-        } else {
-            $this->session->set_flashdata('alert', '<div class="alert alert-danger">Mohon maaf. data gagal dirubah</div>');
-            redirect('sipajar/saldo');
+            if ($this->form_validation->run() == TRUE) {
+                $data = array(
+                    'nama' => $this->input->post('nama'),
+                    'email' => $this->input->post('email'),
+                    'alamat' => $this->input->post('alamat'),
+                    'date_created' => date('Y-m-d'),
+                    'hp' => $this->input->post('hp'),
+                    'pj' => $this->input->post('pj'),
+                    'parent' => 1,
+                    'level' => 2,
+                    'pwd' => $_POST['tgl_lahir'],
+                    'password' => str_replace('-', '', $_POST['tgl_lahir'])
+                );
+                $this->db->insert('tb_user', $data);
+                $this->session->set_flashdata('alert', '<div class="alert alert-info">Data baru berhasiil dirubah</div>');
+                redirect('sipajar/saldo');
+            } else {
+                $this->session->set_flashdata('alert', '<div class="alert alert-danger">Mohon maaf. data gagal dirubah</div>');
+                redirect('sipajar/saldo');
+            }
         }
     }
 
     public function nameSchool()
     {
-        $id = $_POST['id'];
-        $this->db->where('id_user', $id);
-        $nama = $this->db->get('tb_user')->row();
-        if ($nama) {
-            echo json_encode($nama);
-        } else {
-            $nama = array('nama' => "Tidak ada Sekolah");
-            echo json_encode($nama);
+        if ($this->scm->cekSecurity() == true) {
+            $id = $_POST['id'];
+            $this->db->where('id_user', $id);
+            $nama = $this->db->get('tb_user')->row();
+            if ($nama) {
+                echo json_encode($nama);
+            } else {
+                $nama = array('nama' => "Tidak ada Sekolah");
+                echo json_encode($nama);
+            }
         }
     }
 
     public function dataKelas()
     {
-        $this->db->where('is_active', 1);
-        $kelas = $this->db->get('tb_user_kelas')->result();
-        echo json_encode($kelas);
+        if ($this->scm->cekSecurity() == true) {
+            $this->db->where('is_active', 1);
+            $kelas = $this->db->get('tb_user_kelas')->result();
+            echo json_encode($kelas);
+        }
     }
 
     public function addKelas()
     {
-        $this->form_validation->set_rules('kode_kelas', 'Kode Kelas', 'trim|required');
-        $this->form_validation->set_rules('nama', 'Nama Kelas', 'trim|required');
+        if ($this->scm->cekSecurity() == true) {
+            $this->form_validation->set_rules('kode_kelas', 'Kode Kelas', 'trim|required');
+            $this->form_validation->set_rules('nama', 'Nama Kelas', 'trim|required');
 
-        $id = $this->input->post('id');
-        $kd_kelas = $this->input->post('kode_kelas');
-        $this->db->where('kode_kelas', strtoupper($kd_kelas));
-        $kode_kelas = $this->db->get('tb_user_kelas')->result();
-        if ($this->form_validation->run() == TRUE) {
-            $data = array(
-                'kode_kelas' => strtoupper($this->input->post('kode_kelas')),
-                'nama' => strtoupper($this->input->post('nama')),
-                'ket' => $this->input->post('kelas'),
-                'keterangan' => $this->input->post('keterangan'),
-            );
+            $id = $this->input->post('id');
+            $kd_kelas = $this->input->post('kode_kelas');
+            $this->db->where('kode_kelas', strtoupper($kd_kelas));
+            $kode_kelas = $this->db->get('tb_user_kelas')->result();
+            if ($this->form_validation->run() == TRUE) {
+                $data = array(
+                    'kode_kelas' => strtoupper($this->input->post('kode_kelas')),
+                    'nama' => strtoupper($this->input->post('nama')),
+                    'ket' => $this->input->post('kelas'),
+                    'keterangan' => $this->input->post('keterangan'),
+                );
 
-            if ($id) {
-                $this->db->where('id', $id);
-                $this->db->update('tb_user_kelas', $data);
-                $aff = 'Data berhasil dirubah';
-                $sandi = 1;
-            } else {
-                if ($kode_kelas == null) {
-                    $this->db->set('created_at', date('Y-m-d H:i:s'));
-                    $this->db->insert('tb_user_kelas', $data);
+                if ($id) {
+                    $this->db->where('id', $id);
+                    $this->db->update('tb_user_kelas', $data);
+                    $aff = 'Data berhasil dirubah';
                     $sandi = 1;
-                    $aff = 'Data berhasil tersimpan';
                 } else {
-                    $sandi = 0;
-                    $aff = 'kode Kelas sudah ada, silahkan rubah!, data gagal terimpan';
+                    if ($kode_kelas == null) {
+                        $this->db->set('created_at', date('Y-m-d H:i:s'));
+                        $this->db->insert('tb_user_kelas', $data);
+                        $sandi = 1;
+                        $aff = 'Data berhasil tersimpan';
+                    } else {
+                        $sandi = 0;
+                        $aff = 'kode Kelas sudah ada, silahkan rubah!, data gagal terimpan';
+                    }
                 }
-            }
 
-            if ($sandi > 0) {
-                $res = ['sukses' => $aff];
+                if ($sandi > 0) {
+                    $res = ['sukses' => $aff];
+                } else {
+                    $res = ['error' => $aff];
+                }
             } else {
-                $res = ['error' => $aff];
+                $res = ['error' => validation_errors()];
             }
-        } else {
-            $res = ['error' => validation_errors()];
+            echo json_encode($res);
         }
-        echo json_encode($res);
     }
 
     public function hapusKelas($id)
     {
-        $ids = $this->session->userdata('id');
-        if ($ids) {
-            $this->db->where('id', $id);
-            $this->db->set('is_active', 0);
-            $this->db->update('tb_user_kelas');
-            if ($this->db->affected_rows() > 0) {
-                $result = ['sukses' => 'Data berhasil dihapus'];
+        if ($this->scm->cekSecurity() == true) {
+            $ids = $this->session->userdata('id');
+            if ($ids) {
+                $this->db->where('id', $id);
+                $this->db->set('is_active', 0);
+                $this->db->update('tb_user_kelas');
+                if ($this->db->affected_rows() > 0) {
+                    $result = ['sukses' => 'Data berhasil dihapus'];
+                } else {
+                    $result = ['error' => 'Data gagal dihapus'];
+                }
+                echo json_encode($result);
             } else {
-                $result = ['error' => 'Data gagal dihapus'];
+                redirect('auth');
             }
-            echo json_encode($result);
-        } else {
-            redirect('auth');
         }
     }
 }

@@ -17,21 +17,27 @@ class Cetak extends CI_Controller
 
     public function invoice($id = '1.20201231')
     {
-        $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
-        $this->load->view('print/invoice', $db);
+        if ($this->scm->cekSecurity() == true) {
+            $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
+            $this->load->view('print/invoice', $db);
+        }
     }
 
     public function pemasukan($id = '1.20201231')
     {
-        $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
-        $db['sekolah'] = $this->db->get('sekolah')->row_array();
-        $this->load->view('print/pemasukan', $db);
+        if ($this->scm->cekSecurity() == true) {
+            $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
+            $db['sekolah'] = $this->db->get('sekolah')->row_array();
+            $this->load->view('print/pemasukan', $db);
+        }
     }
 
     public function pengeluaran($id = '1.20201231')
     {
-        $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
-        $this->load->view('print/pengeluaran', $db);
+        if ($this->scm->cekSecurity() == true) {
+            $db['key'] = $this->db->get_where('tb_pembayaran', array('no_invoice' => $id))->result();
+            $this->load->view('print/pengeluaran', $db);
+        }
     }
 }
 

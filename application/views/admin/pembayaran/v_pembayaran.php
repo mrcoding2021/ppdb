@@ -97,8 +97,9 @@
                                                         <th scope="col">Kode Akun</th>
                                                         <th scope="col">Jumlah Tagihan</th>
                                                         <th scope="col">Bayar</th>
+                                                        <th scope="col">Jumlah Bayar</th>
                                                         <th scope="col">Diskon</th>
-                                                        <th scope="col">Jumlah dibayar</th>
+                                                        <th scope="col">Total dibayar</th>
                                                         <th>Keterangan</th>
                                                     </tr>
 
@@ -129,20 +130,21 @@
                                                                     <option value="4">POTONG KEGIATAN</option>
                                                                 </select>
                                                             </td>
+                                                            <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="jml_byr[]"></td>
                                                             <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="diskon[]"></td>
                                                             <td><input type="number" value="0" class="jumlah form-control form-control-sm" name="jml[]"></td>
                                                             <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
                                                         </tr>
                                                     <?php } ?>
                                                     <tr class="bg-dark text-white text-right">
-                                                        <td colspan="4">Total</td>
+                                                        <td colspan="5">Total</td>
                                                         <td class="total text-right">0</td>
                                                         <td><input type="number" readonly class="grandDiskon form-control form-control-sm"></td>
                                                         <td class="gTotal text-right">0</td>
                                                         <td></td>
                                                     </tr>
                                                     <tr class="bg-primary text-white text-right">
-                                                        <td colspan="4">Grand Total</td>
+                                                        <td colspan="5">Grand Total</td>
                                                         <td colspan="2" class="grandTotal text-right">0</td>
                                                         <td></td>
                                                         <td></td>

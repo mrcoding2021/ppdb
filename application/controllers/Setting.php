@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Setting extends CI_Controller
 {
+
     public function __construct()
     {
         parent::__construct();
@@ -40,94 +41,97 @@ class Setting extends CI_Controller
 
     public function getAll($id = 0, $ta = '')
     {
-        $result = [];
-        if ($id > 0) {
-            $this->db->where('id_user', $id);
-            $data = $this->db->get('tb_user')->row();
-            $this->db->where('id_siswa', $data->id_user);
-            $this->db->where('ta', $ta);
-            $tagihan = $this->db->get('tb_user_tagihan')->result();
+        if ($this->scm->cekSecurity() == true) {
+            $result = [];
+            if ($id > 0) {
+                $this->db->where('id_user', $id);
+                $data = $this->db->get('tb_user')->row();
+                $this->db->where('id_siswa', $data->id_user);
+                $this->db->where('ta', $ta);
+                $tagihan = $this->db->get('tb_user_tagihan')->result();
 
-            // var_dump($tagihan);die;
-            $this->db->where('kode_kelas', $data->kelas);
-            $kelas = $this->db->get('tb_user_kelas')->row();
-
-            for ($i = 0; $i < count($tagihan); $i++) {
-                $result[] = [
-                    'id'        => ($tagihan != null) ? $tagihan[$i]->id : '',
-                    'id_user'        => $data->id_user,
-                    'nis'        => $data->nis . '<br>' . $data->nisn,
-                    'nama'      => $data->nama,
-                    'kelas'      => ($tagihan != null) ? $tagihan[$i]->kelas : '',
-                    'ta'      => $ta,
-                    'bayar'      => ($tagihan != null) ? ($tagihan[$i]->bayar) : 0,
-                    'bayar_lalu'      => ($tagihan != null) ? ($tagihan[$i]->bayar_lalu) : 0,
-                    'total'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
-                    'ket'      => ($tagihan != null) ? ($tagihan[$i]->ket) : 0,
-                ];
-            }
-            $error = ['error' => 'Data tidak ditemukan'];
-        } else {
-            $this->db->where('level', 4);
-            $this->db->where('is_active', 1);
-            $data = $this->db->get('tb_user')->result();
-            // var_dump($data);die;
-            $no = 1;
-            foreach ($data as $key) {
-                $this->db->where('id_siswa', $key->id_user);
-                $tab = $this->db->get('tb_user_tagihan')->row();
-
-                $this->db->where('kode_kelas', $key->kelas);
+                // var_dump($tagihan);die;
+                $this->db->where('kode_kelas', $data->kelas);
                 $kelas = $this->db->get('tb_user_kelas')->row();
 
-                $tagihan = [];
-                $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
-                for ($i = 0; $i < 7; $i++) {
-                    $this->db->where('kode', $kode[$i]);
-                    $this->db->where('id_siswa', $key->id_user);
-                    // $this->db->where('ta', $ta);
-                    $tagihan[] = $this->db->get('tb_user_tagihan')->row();
+                for ($i = 0; $i < count($tagihan); $i++) {
+                    $result[] = [
+                        'id'        => ($tagihan != null) ? $tagihan[$i]->id : '',
+                        'id_user'        => $data->id_user,
+                        'nis'        => $data->nis . '<br>' . $data->nisn,
+                        'nama'      => $data->nama,
+                        'kelas'      => ($tagihan != null) ? $tagihan[$i]->kelas : '',
+                        'ta'      => $ta,
+                        'bayar'      => ($tagihan != null) ? ($tagihan[$i]->bayar) : 0,
+                        'bayar_lalu'      => ($tagihan != null) ? ($tagihan[$i]->bayar_lalu) : 0,
+                        'total'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
+                        'ket'      => ($tagihan != null) ? ($tagihan[$i]->ket) : 0,
+                    ];
                 }
+                $error = ['error' => 'Data tidak ditemukan'];
+            } else {
+                $this->db->where('level', 4);
+                $this->db->where('is_active', 1);
+                $data = $this->db->get('tb_user')->result();
+                // var_dump($data);die;
+                $no = 1;
+                foreach ($data as $key) {
+                    $this->db->where('id_siswa', $key->id_user);
+                    $tab = $this->db->get('tb_user_tagihan')->row();
 
-                $result[] = [
-                    'no'        => $no++,
-                    'id_user'        => $key->id_user,
-                    'nis'        => $key->nis . '<br>' . $key->nisn,
-                    'nama'      => $key->nama,
-                    'id'      => ($tagihan[0] != null) ? $tagihan[0]->id : '',
-                    'kelas'      => ($tagihan[0] != null) ? $tagihan[0]->kelas : '',
-                    'ta'      => ($tab != null) ? $tab->ta : '',
-                    'spp'      => ($tagihan[0] != null) ? rupiah($tagihan[0]->total) : 0,
-                    'gedung'      => ($tagihan[1] != null) ? rupiah($tagihan[1]->total) : 0,
-                    'kegiatan'      => ($tagihan[2] != null) ? rupiah($tagihan[2]->total) : 0,
-                    'buku'      => ($tagihan[3] != null) ? rupiah($tagihan[3]->total) : 0,
-                    'komite'      => ($tagihan[4] != null) ? rupiah($tagihan[4]->total) : 0,
-                    'seragam'      => ($tagihan[5] != null) ? rupiah($tagihan[5]->total) : 0,
-                    'sarpras'      => ($tagihan[6] != null) ? rupiah($tagihan[6]->total) : 0,
-                ];
+                    $this->db->where('kode_kelas', $key->kelas);
+                    $kelas = $this->db->get('tb_user_kelas')->row();
+
+                    $tagihan = [];
+                    $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+                    for ($i = 0; $i < 7; $i++) {
+                        $this->db->where('kode', $kode[$i]);
+                        $this->db->where('id_siswa', $key->id_user);
+                        // $this->db->where('ta', $ta);
+                        $tagihan[] = $this->db->get('tb_user_tagihan')->row();
+                    }
+
+                    $result[] = [
+                        'no'        => $no++,
+                        'id_user'        => $key->id_user,
+                        'nis'        => $key->nis . '<br>' . $key->nisn,
+                        'nama'      => $key->nama,
+                        'id'      => ($tagihan[0] != null) ? $tagihan[0]->id : '',
+                        'kelas'      => ($tagihan[0] != null) ? $tagihan[0]->kelas : '',
+                        'ta'      => ($tab != null) ? $tab->ta : '',
+                        'spp'      => ($tagihan[0] != null) ? rupiah($tagihan[0]->total) : 0,
+                        'gedung'      => ($tagihan[1] != null) ? rupiah($tagihan[1]->total) : 0,
+                        'kegiatan'      => ($tagihan[2] != null) ? rupiah($tagihan[2]->total) : 0,
+                        'buku'      => ($tagihan[3] != null) ? rupiah($tagihan[3]->total) : 0,
+                        'komite'      => ($tagihan[4] != null) ? rupiah($tagihan[4]->total) : 0,
+                        'seragam'      => ($tagihan[5] != null) ? rupiah($tagihan[5]->total) : 0,
+                        'sarpras'      => ($tagihan[6] != null) ? rupiah($tagihan[6]->total) : 0,
+                    ];
+                }
             }
-        }
-        if ($result != null) {
-            echo json_encode($result);
-        } else {
-            echo json_encode($error);
+            if ($result != null) {
+                echo json_encode($result);
+            } else {
+                echo json_encode($error);
+            }
         }
     }
 
-    public function getTagihan($id, $ta)
+    public function getTagihan($id = 0, $ta = 0)
     {
-        $result = [];
-        for ($i = 0; $i < 7; $i++) {
-            $this->db->where('id_siswa', $id);
-            $this->db->where('ta', $ta);
-            $tagihan = $this->db->get('tb_user_tagihan')->result();
-            $result[] = [                
-                'total'      => ($tagihan != null) ? rupiah($tagihan[$i]->total) : 0,
-                'totalX'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
-            ];
+        if ($this->scm->cetSecurity() == true) {
+            $result = [];
+            for ($i = 0; $i < 7; $i++) {
+                $this->db->where('id_siswa', $id);
+                $this->db->where('ta', $ta);
+                $tagihan = $this->db->get('tb_user_tagihan')->result();
+                $result[] = [
+                    'total'      => ($tagihan != null) ? rupiah($tagihan[$i]->total) : 0,
+                    'totalX'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
+                ];
+            }
+            echo json_encode($result);
         }
-
-        echo json_encode($result);
     }
 
     public function add()

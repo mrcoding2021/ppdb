@@ -9,11 +9,13 @@ class Security_model extends CI_Model {
 		
 	}
 
-	public function getsecurity() {
-		$username = $this->session->userdata('username_user');
-		if (empty($username)) {
+	public function cetSecurity() {
+		$id = $this->session->userdata('id');
+		$username = $this->session->userdata('nama');
+		$level = $this->session->userdata('level');
+		if (empty($id) && empty($username) && empty($level)) {
 			$this->session->sess_destroy();
-			redirect('login');
+			redirect('/');
 		}
 	}
 }

@@ -11,7 +11,6 @@ class Akses extends CI_Controller
     $this->load->library('form_validation');
     $this->load->helper('tgl_indo');
     $this->load->model('database');
-    
   }
 
   public function core($data)
@@ -31,14 +30,15 @@ class Akses extends CI_Controller
       $data['userfull'] = $this->db->get('tb_user')->result_array();
       $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
       $this->load->view('admin/header', $data);
-      $this->load->view('akses/'.$data['page'], $data);
+      $this->load->view('akses/' . $data['page'], $data);
       $this->load->view('admin/footer', $data);
     } else {
       redirect('auth');
     }
   }
 
-  public function index(){
+  public function index()
+  {
     $data = [
       'title'   => 'Hak Akses',
       'page'    => 'index',
@@ -47,15 +47,20 @@ class Akses extends CI_Controller
     $this->core($data);
   }
 
-  public function get(){
-    $data = $this->database->get();
-    echo json_encode($data);
+  public function get()
+  {
+    if ($this->scm->cekSecurity() == true) {
+      $data = $this->database->get();
+      echo json_encode($data);
+    }
   }
 
   public function user($id)
   {
-    $data = $this->database->user($id);
-    echo json_encode($data);
+    if ($this->scm->cekSecurity() == true) {
+      $data = $this->database->user($id);
+      echo json_encode($data);
+    }
   }
 }
 

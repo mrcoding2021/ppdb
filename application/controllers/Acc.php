@@ -50,98 +50,108 @@ class Acc extends CI_Controller
 
   public function getAcc($id = 0)
   {
-    if ($id > 0) {
-      // $inv = '275.20210101';
-      $inv = $_POST['inv'];
-      $data = $this->database->getAcc('tb_transaksi', $inv, $id);
-    } else {
-      $inv = '';
-      $data = $this->database->getAcc('tb_transaksi', $inv, 0);
+    if ($this->scm->cekSecurity() == true) {
+      if ($id > 0) {
+        // $inv = '275.20210101';
+        $inv = $_POST['inv'];
+        $data = $this->database->getAcc('tb_transaksi', $inv, $id);
+      } else {
+        $inv = '';
+        $data = $this->database->getAcc('tb_transaksi', $inv, 0);
+      }
+      echo json_encode($data);
     }
-    echo json_encode($data);
   }
 
   public function user($id)
   {
-    $data = $this->database->user($id);
-    echo json_encode($data);
+    if ($this->scm->cekSecurity() == true) {
+      $data = $this->database->user($id);
+      echo json_encode($data);
+    }
   }
 
   public function accept($inv, $id = 0)
   {
-    $return = $this->database->accept('tb_transaksi', $inv, $id);
-    if ($return) {
-      $result = ['sukses' => 'Data pengajuan telah diterima dan sudah masuk ke pembukuan'];
-    } else {
-      $this->database->accept('tb_transaksi', $inv, $id);
-      $result = ['sukses' => 'Data pengajuan ditolak'];
+    if ($this->scm->cekSecurity() == true) {
+      $return = $this->database->accept('tb_transaksi', $inv, $id);
+      if ($return) {
+        $result = ['sukses' => 'Data pengajuan telah diterima dan sudah masuk ke pembukuan'];
+      } else {
+        $this->database->accept('tb_transaksi', $inv, $id);
+        $result = ['sukses' => 'Data pengajuan ditolak'];
+      }
+      echo json_encode($result);
     }
-    echo json_encode($result);
   }
 
   public function getBy($bln, $thn)
   {
-    $this->db->group_by('id_trx');
-    // $this->db->where('date(date_created)', $tgl);
-    $this->db->where('approve', 0);
-    $this->db->where('month(date_created)', $bln);
-    $this->db->where('year(date_created)', $thn);
-    $data = $this->db->get('tb_transaksi')->result();
-    $result = [];
-    $no = 1;
-    foreach ($data as $key) {
-      $this->db->select_sum('jumlah', 'total');
-      $this->db->where('id_trx', $key->id_trx);
-      $jumlah = $this->db->get('tb_transaksi')->row();
+    if ($this->scm->cekSecurity() == true) {
+      $this->db->group_by('id_trx');
+      // $this->db->where('date(date_created)', $tgl);
+      $this->db->where('approve', 0);
+      $this->db->where('month(date_created)', $bln);
+      $this->db->where('year(date_created)', $thn);
+      $data = $this->db->get('tb_transaksi')->result();
+      $result = [];
+      $no = 1;
+      foreach ($data as $key) {
+        $this->db->select_sum('jumlah', 'total');
+        $this->db->where('id_trx', $key->id_trx);
+        $jumlah = $this->db->get('tb_transaksi')->row();
 
-      $this->db->where('id_user', $key->id_murid);
-      $siswa = $this->db->get('tb_user')->row();
+        $this->db->where('id_user', $key->id_murid);
+        $siswa = $this->db->get('tb_user')->row();
 
-      if ($key->approve == 1) {
-        $span = '<span class="btn btn-success btn-border-circle btn-sm">Terima</span>';
-      } else {
-        $span = '<span class="btn btn-warning btn-border-circle btn-sm">Menunggu</span>';
+        if ($key->approve == 1) {
+          $span = '<span class="btn btn-success btn-border-circle btn-sm">Terima</span>';
+        } else {
+          $span = '<span class="btn btn-warning btn-border-circle btn-sm">Menunggu</span>';
+        }
+
+        $result[] = [
+          'no'      => $no,
+          'tgl'    => $key->date_created,
+          'inv'     => $key->id_trx,
+          'jumlah'  => rupiah($jumlah->total),
+          'siswa'   => $siswa->nama,
+          'status'    => $span
+
+        ];
       }
-
-      $result[] = [
-        'no'      => $no,
-        'tgl'    => $key->date_created,
-        'inv'     => $key->id_trx,
-        'jumlah'  => rupiah($jumlah->total),
-        'siswa'   => $siswa->nama,
-        'status'    => $span
-
-      ];
+      echo json_encode($result);
     }
-    echo json_encode($result);
   }
 
   public function getInv($id = 0)
   {
-    $id_trx = $this->input->post('inv');
-    $this->db->where('id_trx', $id_trx);
-    $data = $this->db->get('tb_transaksi')->result();
-    $result = [];
-    $no = 1;
-    foreach ($data as $key) {
-      
-      $this->db->where('kode_akun', $key->akun_trx);
-      $akun = $this->db->get('tb_rab')->row();
+    if ($this->scm->cekSecurity() == true) {
+      $id_trx = $this->input->post('inv');
+      $this->db->where('id_trx', $id_trx);
+      $data = $this->db->get('tb_transaksi')->result();
+      $result = [];
+      $no = 1;
+      foreach ($data as $key) {
 
-      $result[] = [
-        'no'      => $no,
-        'tgl'    => $key->date_created,
-        'ta'     => $key->ta,
-        'akun'  => $key->kode,
-        'akun_trx'  => $akun->nama,
-        'nilai'   => rupiah($key->bayar),
-        'diskon'  => rupiah($key->diskon),
-        'ket'    => $key->ket,
-        'total'   => rupiah($key->jumlah)
-      ];
-      $no++;
+        $this->db->where('kode_akun', $key->akun_trx);
+        $akun = $this->db->get('tb_rab')->row();
+
+        $result[] = [
+          'no'      => $no,
+          'tgl'    => $key->date_created,
+          'ta'     => $key->ta,
+          'akun'  => $key->kode,
+          'akun_trx'  => $akun->nama,
+          'nilai'   => rupiah($key->bayar),
+          'diskon'  => rupiah($key->diskon),
+          'ket'    => $key->ket,
+          'total'   => rupiah($key->jumlah)
+        ];
+        $no++;
+      }
+      echo json_encode($result);
     }
-    echo json_encode($result);
   }
 }
 
