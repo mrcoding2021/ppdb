@@ -20,18 +20,17 @@
                                     <div class="row">
                                         <div class="col-md-12">
 
-                                            <table class="table table-hover table-bordered" id="akunPemasukan">
+                                            <table class="table table-hover table-bordered" width="100%" id="akunKas">
                                                 <thead class="bg-success text-white text-center">
                                                     <tr>
-                                                        <th>Kode</th>
+                                                        <th>No</th>
+                                                        <th>Kode Akun</th>
                                                         <th>Nama Akun Kas</th>
-                                                        <th>Keterangan</th>
-                                                        <th>Saldo Awal</th>
                                                         <th>Saldo Akhir</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="akunKas">
+                                                <tbody>
 
                                                 </tbody>
                                             </table>
@@ -81,19 +80,6 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12">
-                                            <label>Tahun Ajaran</label>
-                                            <select name="ta" class="form-control">
-                                                <?php $this->db->group_by('ta');
-                                                $ta = $this->db->get('tb_ta')->result();
-                                                foreach ($ta as $key) : ?>
-                                                    <option value="<?= $key->ta ?>"><?= $key->ta ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
                                             <label>Saldo Awal</label>
                                             <input type="text" class="form-control" name="saldo">
                                         </div>
@@ -113,32 +99,39 @@
                     getAkunKas()
 
                     function getAkunKas() {
-                        $.ajax({
-                            url: '<?= base_url('akun/getAkunKas') ?>',
-                            dataType: 'json',
-                            type: 'post',
-                            success: function(res) {
-
-                                var html = '<tr>'
-                                $.each(res, function(i, v) {
-                                    html += '<td>' + v.kode_akun + '</td>' +
-                                        '<td>' + v.nama + '</td>' +
-                                        '<td>' + v.alias + '</td>' +
-                                        '<td>' + v.jumlah + '</td>' +
-                                        '<td>' + v.jumlah + '</td>' +
-                                        '<td><a href="#detail" class="badge badge-primary detail" data-toggle="modal" data-id="' + v.id + '">Detaiil</a><a href="#" class="badge badge-danger delete" data-id="' + v.id + '">Delete</a></td>'
-                                    html += '</tr>'
-                                })
-                                if (res == false) {
-                                    $('#akunKas').html('<tr><td colspan="6"><center>Tidak Ada Data</center></td></tr>')
-                                } else {
-                                    $('#akunKas').html(html)
+                        var akunKas = $('#akunKas').DataTable({
+                            "processing": true,
+                            "language": {
+                                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                            },
+                            'ajax': {
+                                "type": "POST",
+                                "url": '<?= base_url('akun/getAkunKas/') ?>',
+                                "dataSrc": ""
+                            },
+                            "destroy": true,
+                            'columns': [{
+                                    "data": "no"
+                                },
+                                {
+                                    "data": "kode_akun"
+                                },
+                                {
+                                    "data": "nama"
+                                },
+                                {
+                                    "data": "saldo"
+                                },
+                                {
+                                    "data": "id",
+                                    "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
+                                        $(nTd).html('<div class="d-flex"><a class="mr-1 btn btn-sm btn-info" href="" data-id="' + oData.id + '" data-id="' + oData.id_user + '" data-num="' + oData.id + '" ><i class="fa fa-search"></i></a></div>');
+                                    }
                                 }
-
-                            }
-                        })
+                            ]
+                        });
                     }
-                    
+
                     $('.add').click(function(e) {
                         $('.form-control').val('')
                         $('form').attr('action', '<?= base_url('akun/addAkunKas/') ?>')

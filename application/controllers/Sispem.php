@@ -82,15 +82,30 @@ class Sispem extends CI_Controller
     $this->M_global->delete('tb_user', $id);
   }
 
-  public function getAll($table)
+  public function getAll()
   {
-    $result = $this->M_global->getBy($table);
+    $this->db->where('level', 4);
+    $this->db->where('is_active', 1);
+    
+    $result = $this->db->get('tb_user')->result();
 
     $no = 1;
     $hasil = array();
     foreach ($result as $key) {
-      $this->db->where('kode_kelas', $key->kelas);
-      $kelas = $this->db->get('tb_user_kelas')->row();
+      if (date('m') > 6) {
+        $this->db->where('ta', date('Y') . '-' . (date('Y') + 1));
+      } elseif (date('m') < 7) {
+        $this->db->where('ta', (date('Y') - 1) . '-' . date('Y'));
+      }
+      $this->db->where('id_siswa', $key->id_user);
+      $ajaran = $this->db->get('tb_user_tagihan')->result();
+      
+      if ($ajaran) {
+        $this->db->where('kode_kelas', $ajaran[0]->kelas);
+        $kelas = $this->db->get('tb_user_kelas')->row();
+      } else {
+        $kelas = '';
+      }
 
       $hasil[] =  array(
         'no'  => $no++,
@@ -99,7 +114,7 @@ class Sispem extends CI_Controller
         'id_user' => $key->id_user,
         'tgl' => $key->date_created,
         'nama' => $key->nama,
-        'kelas' => ($kelas) ? $kelas->nama : 'belum',
+        'kelas' => ($kelas) ? $kelas->nama : $kelas,
         'spp' => rupiah($key->spp)
       );
     }

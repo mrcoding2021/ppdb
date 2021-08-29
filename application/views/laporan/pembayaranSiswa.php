@@ -1,8 +1,6 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-
-
                     <div class="row">
 
                         <duv class="col-md-12">
@@ -45,7 +43,6 @@
                                                     <th>No</th>
                                                     <th>Tanggal</th>
                                                     <th>No. Invoice</th>
-                                                    <th>Kategori</th>
                                                     <th>Nama</th>
                                                     <th>Jumlah</th>
                                                     <th>Aksi</th>
@@ -76,12 +73,12 @@
                                             <thead class="bg-primary text-white">
                                                 <tr>
                                                     <th>No</th>
-                                                    <th>Th. Ajaran</th>
+                                                    <th>TH. Ajaran</th>
                                                     <th>Pembayaran</th>
-                                                    <th class="none">Jml. Tagihan</th>
+                                                    <th>Jml. TAgihan</th>
                                                     <th>Metode</th>
-                                                    <th class="none">Jumlah Bayar</th>
-                                                    <th class="none">Diskon</th>
+                                                    <th>Jumlah Bayar</th>
+                                                    <th>Diskon</th>
                                                     <th>Total Bayar</th>
                                                 </tr>
                                             </thead>
@@ -93,10 +90,6 @@
                                         </table>
                                     </form>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button data-dismiss="modal" class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px">Close</button>
-                                <button class="btn btn-success aksi terima btn-border-circle btn-block">Terima</button>
                             </div>
                         </div>
                     </div>
@@ -112,13 +105,13 @@
 
                     var bln = $('.bulan').val()
                     var thn = $('.tahun').val()
-                    getAcc(bln, thn)
+                    getPembayaranSiswa(bln, thn, 1)
 
-                    function getAcc(bln, thn) {
+                    function getPembayaranSiswa(bln, thn, kode) {
                         var dataAcc = $('#dataAcc').DataTable({
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('acc/getAcc/') ?>' + bln + '/' + thn,
+                                "url": '<?= base_url('acc/getAcc/') ?>' + bln + '/' + thn + '/' + kode,
                                 "dataSrc": ""
                             },
                             'destroy': true,
@@ -130,9 +123,6 @@
                                 },
                                 {
                                     "data": "inv"
-                                },
-                                {
-                                    "data": "kategori"
                                 },
                                 {
                                     "data": "siswa"
@@ -158,8 +148,7 @@
 
                     $(document).on('click', '.detail', function() {
                         var inv = $(this).data('id')
-                        $('.terima').attr('data-id', inv)                        
-                        
+                        $('.terima').attr('data-id', inv)
                         $.ajax({
                             url: '<?= base_url('acc/getInv/') ?>',
                             type: 'post',
@@ -170,7 +159,7 @@
                             success: function(res) {
                                 console.log(res)
 
-                                $('.aksi').attr('data-id', inv)
+                                $('.aksi').attr('data-id', res[0].inv)
                                 var bayar = ''
 
                                 $.each(res, function(i, v) {
@@ -195,42 +184,4 @@
                         var link = 1
                         accept(inv, link)
                     })
-
-                    function accept(inv, link) {
-
-                        Swal.fire({
-                            title: "Yakin ?",
-                            text: "Pastikan data sudah benar dan sesuai",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Yes !",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: '<?= base_url('acc/accept/') ?>' + inv + '/' + link,
-                                    data: {
-                                        'inv': inv
-                                    },
-                                    dataType: 'json',
-                                    type: 'POST',
-                                    success: function(response) {
-                                        if (response.sukses) {
-                                            $('.modal').modal('hide')
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Berasil',
-                                                html: `${response.sukses}`
-                                            })
-                                            var bln = $('.bulan').val()
-                                            var thn = $('.tahun').val()
-                                            getAcc(bln, thn)
-                                        }
-
-                                    }
-                                })
-                            }
-                        });
-                    }
                 </script>

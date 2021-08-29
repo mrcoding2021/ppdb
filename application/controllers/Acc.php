@@ -48,18 +48,48 @@ class Acc extends CI_Controller
     $this->core($data);
   }
 
-  public function getAcc($id = 0)
+  public function getAcc($bln = '', $thn = '', $kode = 0)
   {
     if ($this->scm->cekSecurity() == true) {
-      if ($id > 0) {
-        // $inv = '275.20210101';
-        $inv = $_POST['inv'];
-        $data = $this->database->getAcc('tb_transaksi', $inv, $id);
+      $this->db->select('id_trx', 'date_created', 'id_murid');
+      $this->db->group_by('id_trx');
+      $this->db->where('month(date_created)', $bln);
+      $this->db->where('year(date_created)', $thn);
+      if ($kode == 0) {
+        $this->db->where('approve', 0);
       } else {
-        $inv = '';
-        $data = $this->database->getAcc('tb_transaksi', $inv, 0);
+        $this->db->where('approve', 1);
       }
-      echo json_encode($data);
+      $data = $this->db->get('tb_transaksi')->result();
+
+      $result = [];
+      $no = 1;
+      foreach ($data as $key) {
+        
+        $this->db->select_sum('jumlah', 'total');
+        $this->db->where('id_trx', $key->id_trx);
+        $jumlah = $this->db->get('tb_transaksi')->row();
+
+        $this->db->where('id_trx', $key->id_trx);
+        $kategori = $this->db->get('tb_transaksi')->row();
+        
+        $this->db->where('id_trx', $key->id_trx);
+        $trx = $this->db->get('tb_transaksi')->row();
+
+        $this->db->where('id_user', $trx->id_murid);
+        $siswa = $this->db->get('tb_user')->row();
+
+        $result[] = [
+          'no'      => $no,
+          'tgl'     => $trx->date_created,
+          'inv'     => $trx->id_trx,
+          'siswa'   => ($siswa != null) ? $siswa->nama : 'KAS',
+          'jumlah'  => rupiah($jumlah->total),
+          'kategori'=> ($kategori->kategori == 1) ? 'Pemasukan': 'Pengeluaran'
+        ];
+        $no++;
+      }
+      echo json_encode($result);
     }
   }
 
@@ -124,28 +154,27 @@ class Acc extends CI_Controller
     }
   }
 
-  public function getInv($id = 0)
+  public function getInv()
   {
     if ($this->scm->cekSecurity() == true) {
       $id_trx = $this->input->post('inv');
+      // $id_trx = '1.20210829';
       $this->db->where('id_trx', $id_trx);
       $data = $this->db->get('tb_transaksi')->result();
       $result = [];
       $no = 1;
       foreach ($data as $key) {
-
-        $this->db->where('kode_akun', $key->akun_trx);
-        $akun = $this->db->get('tb_rab')->row();
-
+        $this->db->where('id_sumber', $key->metode);
+        $metode = $this->db->get('tb_metode')->row();
         $result[] = [
+          'id_trx'  => $key->id_trx,
           'no'      => $no,
-          'tgl'    => $key->date_created,
-          'ta'     => $key->ta,
           'akun'  => $key->kode,
-          'akun_trx'  => $akun->nama,
-          'nilai'   => rupiah($key->bayar),
+          'ta'  => $key->ta,
+          'tagihan'  => rupiah($key->tagihan),
+          'metode'    => $metode->nama,
+          'nilai'   => rupiah($key->jumlah),
           'diskon'  => rupiah($key->diskon),
-          'ket'    => $key->ket,
           'total'   => rupiah($key->jumlah)
         ];
         $no++;

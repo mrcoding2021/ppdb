@@ -90,6 +90,9 @@
                 dataType: 'json',
                 type: 'post',
                 success: function(res) {
+                    if (res != null) {
+                        getTabungan(res.id_user)
+                    }
                     console.log(res)
                     var inv = $('#inv').html()
                     iuranLunas(res.id_user)

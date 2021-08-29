@@ -87,30 +87,18 @@
                             <div class="modal-body">
                                 <form action="<?= base_url('data/addSiswa') ?>" method="post" class="addSiswa" data-id="0">
                                     <div class="form-group row">
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-4">
                                             <label for="1">NIS</label>
                                             <input type="text" class="form-control" name="nis">
                                             <input type="hidden" class="form-control" name="id_user">
                                         </div>
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-4">
                                             <label for="1">NISN</label>
                                             <input type="text" class="form-control" name="nisn">
                                         </div>
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-4">
                                             <label for="1">Tgl.Daftar</label>
                                             <input type="date" class="form-control" name="date">
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label for="1">Tahun Ajaran</label>
-                                            <select type="text" class="form-control" name="ta">
-                                                <?php $n = 16;
-                                                $m = 17;
-                                                for ($i = 0; $i < 15; $i++) { ?>
-                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                <?php $n++;
-                                                    $m++;
-                                                } ?>
-                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">

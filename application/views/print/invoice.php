@@ -102,76 +102,66 @@
 
 <body>
     <div class="invoice-box">
-        <table cellpadding="0" cellspacing="0">
-            <tr class="top">
-                <td colspan="3">
-                    <table>
-                        <tr>
-                            <td class="title">
-                                <img src="<?= base_url('asset/img/logo-sdit-full.jpg') ?>" style="width:100%; max-width:300px;margin-top:-20px">
-                            </td>
-                            <td></td>
-                            <td>
-                                Kwitansi No. <?= $key[0]->no_invoice ?><br>
-                                <?= longdate_indo($key[0]->created_at) ?><br>
-                            </td>
-                        </tr>
-                    </table>
+        <table>
+
+            <tr>
+                <td colspan="3" class="title">
+                    <img src="<?= base_url('asset/img/logo-sdit-full.jpg') ?>" style="width:100%; max-width:300px;margin-top:-20px">
+                </td>
+
+                <td colspan="3" style="text-align: right;">
+                    Kwitansi No. <?= $key[0]->id_trx ?><br>
+                    <?= longdate_indo(substr($key[0]->date_created, 0, 10)) ?><br>
+                    <div style="content:''; border-bottom: 2px solid black;"></div>
                 </td>
             </tr>
 
-            <tr class="information">
-                <td colspan="3">
-                    <table>
-                        <tr>
-                            <td>Alamat : <br>
-                                The Palm Green Residence Sriamur, Kec. Tambun <br> Utara, Bekasi, Jawa Barat 17510
-                                <br> Kontak Kami : 082388880459 / 085312029800
-                            </td>
-                            <td></td>
-                            <td><strong>
-
-                                    <?php $murid = $this->db->get_where('tb_user', array('id_user' => $key[0]->id_murid))->row();
-                                    echo $murid->nama . '<br>' . $murid->hp . '<br>' . $murid->alamat;
-                                    ?><br>
-                                </strong>
-
-                            </td>
-                        </tr>
-                    </table>
+            <tr>
+                <td colspan="3" >Alamat : <br>
+                    The Palm Green Residence Sriamur, Kec. Tambun <br> Utara, Bekasi, Jawa Barat 17510
+                    <br> Kontak Kami : 082388880459 / 085312029800
                 </td>
+                <td colspan="3" style="text-align: right;"><strong>
+                        <?php $murid = $this->db->get_where('tb_user', array('id_user' => $key[0]->id_murid))->row();
+                        echo $murid->nama . '<br>' . $murid->hp . '<br>' . $murid->alamat;
+                        ?><br>
+                    </strong>
+
+                </td>
+
             </tr>
+
             <tr class="heading">
-                <td width="25%">
-                    Pembayaran
-                </td>
-                <td width="40%">
-                    Metode Pembayaran
-                </td>
-                <td>
-                    Total
-                </td>
+                <td>Pembayaran</td>
+                <td>Tagihan</td>
+                <td>Metode</td>
+                <td>Jumlah Bayar</td>
+                <td>Diskon</td>
+                <td>Total Bayar</td>
             </tr>
             <?php foreach ($key as $k) { ?>
-                <?php $bayar = $this->db->get_where('tb_rab', array('id' => $k->byr_utk))->row();
-                $sumber = $this->db->get_where('tb_sumber', array('id_sumber' => $k->id_sumber))->row();
-               
+                <?php
+                $this->db->where('id_sumber', $k->metode);
+                $metode = $this->db->get('tb_metode')->row();
                 ?>
                 <tr class="item">
-                    <td> <?= $bayar->alias ?></td>
-                    <td><?= $sumber->nama . ' - ' . $k->ket ?></td>
-                    <td><?= rupiah($k->kredit) ?></td>
+                    <td width="30%"> <?= $k->kode ?></td>
+                    <td><?= rupiah($k->tagihan) ?></td>
+                    <td><?= $metode->nama ?></td>
+                    <td><?= rupiah($k->jumlah) ?></td>
+                    <td><?= rupiah($k->diskon) ?></td>
+                    <td><?= rupiah($k->jumlah) ?></td>
                 </tr>
             <?php } ?>
 
 
             <tr class="heading">
 
-                <td>Grand Total :</td>
-                
-                <td colspan="2">
-                    <?php $this->db->select_sum('kredit', 'total');
-                    $total = $this->db->get_where('tb_pembayaran', array('no_invoice' => $key[0]->no_invoice))->row();
+                <td colspan="2">Grand Total :</td>
+
+                <td colspan="4">
+                    <?php $this->db->select_sum('jumlah', 'total');
+                    $total = $this->db->get_where('tb_transaksi', array('id_trx' => $key[0]->id_trx))->row();
                     echo rupiah($total->total);
                     ?><br><i><?= str_replace('Koma', '', number_to_words($total->total)) ?> Rupiah</i>
                 </td>
@@ -179,7 +169,7 @@
         </table>
     </div>
     <script>
-        window.print()
+        // window.print()
     </script>
 </body>
 

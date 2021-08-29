@@ -15,7 +15,7 @@ class Invoice extends CI_Controller
     $this->load->helper('terbilang');
   }
 
-  public function index()
+  public function core($data)
   {
     $id = $this->session->userdata('id');
     if ($id) {
@@ -27,7 +27,6 @@ class Invoice extends CI_Controller
               ON `tb_user_menu`.`id_user` = `tb_menu_acces`.`menu_id`
             WHERE `tb_menu_acces`.`role_id`= $level
           ORDER BY `tb_menu_acces`.`menu_id` ASC";
-      $data['title'] = 'Invoice';
       $data['parent'] = 'Data';
       $data['admin'] = $this->db->query($query)->result_array();
       $data['menu'] = $this->db->get('tb_menu')->result_array();
@@ -42,6 +41,14 @@ class Invoice extends CI_Controller
     }
   }
 
+  public function index()
+  {
+    $data = [
+      'title'   => 'Cari Invoice'
+    ];
+    $this->core($data);
+  }
+
   public function get()
   {
     // $id = $_POST['id'];
@@ -52,10 +59,10 @@ class Invoice extends CI_Controller
 
   public function cari()
   {
-    // $id = $_POST['id'];
-    $id = '281.20210101';
+    $id = $this->input->post('id');
+    // $id = '281.20210101';
     $this->db->where('no_invoice', $id);
-    $result = $this->db->get('tb_pembayaran')->result();
+    $result = $this->db->get('tb_transaksi')->result();
 
     for ($i = 0; $i < count($result); $i++) {
       $this->db->where('id_user', $result[0]->id_murid);

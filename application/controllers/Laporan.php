@@ -48,7 +48,7 @@ class Laporan extends CI_Controller
     $this->index($data);
   }
 
-   public function keuangan()
+  public function keuangan()
   {
     $data = array(
       'title'   => 'Laporan Keuangan',
@@ -73,7 +73,7 @@ class Laporan extends CI_Controller
     $this->db->order_by('id_pembayaran', 'desc');
     $this->db->where('month(created_at)', $bln);
     $this->db->where('year(created_at)', $thn);
-    $this->db->select_sum('jumlah','total');
+    $this->db->select_sum('jumlah', 'total');
     $jumlah = $this->db->get('tb_pembayaran')->row();
     // var_dump($data);die;
     $result = array();
@@ -96,7 +96,7 @@ class Laporan extends CI_Controller
         $parent = $this->db->get('tb_rab')->row_array();
         // var_dump($parent->nama);die;
         $result[] = array(
-          'created_at' => shortdate_indo(substr($key->created_at,0,10)),
+          'created_at' => shortdate_indo(substr($key->created_at, 0, 10)),
           'kode_akun' => $key->byr_utk,
           'nama'      => $user->nama,
           'keterangan'  => $parent['alias'] . ' - ' . $akun->nama,
@@ -127,7 +127,15 @@ class Laporan extends CI_Controller
     redirect('post');
   }
 
-  
+  public function pembayaranSiswa()
+  {
+    $data = array(
+      'title'   => 'Laporan Pembayaran Siswa',
+      'view'    => 'pembayaranSiswa',
+      'parent'  => 'Laporan'
+    );
+    $this->index($data);
+  }
 }
 
 

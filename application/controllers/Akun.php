@@ -76,23 +76,27 @@ class Akun extends CI_Controller
     $this->core($data);
   }
 
-  public function getAkunKas()
+  public function getAkunKas($kode = 0)
   {
     if ($this->scm->cekSecurity() == true) {
-      $this->db->where('parent', 0);
-      $this->db->where('kategori', 3);
+      $this->db->where('kategori', $kode);
       $this->db->where('is_active', 1);
       $akunKas = $this->db->get('tb_rab')->result();
       $data = [];
+      $no = 1;
       foreach ($akunKas as $key) {
+        $this->db->where('approve', 1);
+        $this->db->where('akun_kas', $key->kode_akun);
+        $this->db->select_sum('jumlah', 'saldo');
+        $jumlah = $this->db->get('tb_transaksi')->row();
         $data[] = [
+          'no'  => $no,
           'id' => $key->id,
           'kode_akun' => $key->kode_akun,
           'nama' => $key->nama,
-          'jumlah' => rupiah($key->jumlah),
-          'ta' => $key->ta,
-          'alias' => $key->alias,
+          'saldo' => rupiah($jumlah->saldo),
         ];
+        $no++;
       }
 
       echo json_encode($data);

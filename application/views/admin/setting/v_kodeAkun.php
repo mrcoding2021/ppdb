@@ -25,30 +25,14 @@
                                             <table class="table table-sm table-hover table-bordered" id="akunPemasukan">
                                                 <thead class="bg-success text-white text-center">
                                                     <tr>
+                                                        <th>No</th>
                                                         <th>Kode</th>
                                                         <th>Nama Akun</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach ($akunPemasukan as $masuk) { ?>
-                                                        <tr>
-                                                            <td><?= $masuk->kode_akun ?></td>
-                                                            <td><strong><?= $masuk->nama ?></strong></td>
-                                                            <td><a class="badge edit badge-primary" href="#add" data-toggle="modal" data-id="<?= $masuk->id ?>">Edit</a><a class="badge delete badge-danger" href="<?= base_url('akun/delete/') . $masuk->id ?>">Delete</a></td>
-                                                            <?php $this->db->where('parent', $masuk->kode_akun);
-                                                            $da = $this->db->get('tb_rab')->result();
-                                                            foreach ($da as $key) { ?>
-                                                        <tr>
-                                                            <td><?= $key->kode_akun ?></td>
-                                                            <td>---> <?= $key->nama ?></td>
-                                                            <td><a class="badge edit badge-primary" href="#add" data-toggle="modal" data-id="<?= $key->id ?>">Edit</a><a class="badge delete badge-danger" href="<?= base_url('akun/delete/') . $key->id ?>">Delete</a></td>
-                                                        </tr>
 
-                                                    <?php } ?>
-
-                                                    </tr>
-                                                <?php } ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -57,30 +41,14 @@
                                             <table class="table table-sm table-hover table-bordered" id="akunPengeluaran">
                                                 <thead class="bg-danger text-white text-center">
                                                     <tr>
+                                                        <th>No</th>
                                                         <th width="15%">Kode</th>
                                                         <th>Nama Akun</th>
                                                         <th width="15%">Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php foreach ($akunPengeluaran as $keluar) { ?>
-                                                        <tr>
-                                                            <td><?= $keluar->kode_akun ?></td>
-                                                            <td><strong><?= $keluar->nama ?></strong></td>
-                                                            <td width="20%"><a class="badge edit badge-primary" href="#add" data-toggle="modal" data-id="<?= $keluar->id ?>">Edit</a><a class="badge delete badge-danger" href="<?= base_url('akun/delete/') . $keluar->id ?>">Delete</a></td>
-                                                            <?php $this->db->where('parent', $keluar->kode_akun);
-                                                            $da = $this->db->get('tb_rab')->result();
-                                                            foreach ($da as $key) { ?>
-                                                        <tr>
-                                                            <td><?= $key->kode_akun ?></td>
-                                                            <td>---> <?= $key->nama ?></td>
-                                                            <td><a class="badge edit badge-primary" href="#add" data-toggle="modal" data-id="<?= $key->id ?>">Edit</a><a class="badge delete badge-danger" href="<?= base_url('akun/delete/') . $key->id ?>">Delete</a></td>
-                                                        </tr>
 
-                                                    <?php } ?>
-
-                                                    </tr>
-                                                <?php } ?>
 
                                                 </tbody>
                                             </table>
@@ -205,6 +173,40 @@
                     </div>
                 </div>
                 <script>
+                    getAkunKas(1, 'akunPemasukan')
+                    getAkunKas(2, 'akunPengeluaran')
+
+                    function getAkunKas(kode, jenis) {
+                        var akunKas = $('#' + jenis).DataTable({
+                            "processing": true,
+                            "language": {
+                                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                            },
+                            'ajax': {
+                                "type": "POST",
+                                "url": '<?= base_url('akun/getAkunKas/') ?>' + kode,
+                                "dataSrc": ""
+                            },
+                            "pageLength" : 50,
+                            "destroy": true,
+                            'columns': [{
+                                    "data": "no"
+                                },
+                                {
+                                    "data": "kode_akun"
+                                },
+                                {
+                                    "data": "nama"
+                                },
+                                {
+                                    "data": "id",
+                                    "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
+                                        $(nTd).html('<div class="d-flex"><a class="mr-1 btn btn-sm btn-info" href="" data-id="' + oData.id + '" data-id="' + oData.id_user + '" data-num="' + oData.id + '" ><i class="fa fa-search"></i></a></div>');
+                                    }
+                                }
+                            ]
+                        });
+                    }
                     $('.add').click(function(e) {
                         $('.form-control').val('')
                         $('.addAkun').attr('action', '<?= base_url('akun/add/') ?>')

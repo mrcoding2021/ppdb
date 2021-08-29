@@ -121,18 +121,18 @@
                                                                     <?php endforeach; ?>
                                                                 </select>
                                                             </td>
-                                                            <td><input type="number" value="0" class="bayar form-control form-control-sm" readonly name="bayar[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
+                                                            <td><input type="text" value="0" class="tagihan form-control form-control-sm" readonly name="tagihan[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
                                                             <td>
-                                                                <select type="number" value="0" class="diskon1 form-control form-control-sm" name="metode[]">
+                                                                <select value="0" class="diskon1 form-control form-control-sm" name="metode[]">
                                                                     <option value="1">CASH</option>
                                                                     <option value="2">TRANSFER BNI</option>
                                                                     <option value="3">POTONG TABUNGAN</option>
                                                                     <option value="4">POTONG KEGIATAN</option>
                                                                 </select>
                                                             </td>
-                                                            <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="jml_byr[]"></td>
-                                                            <td><input type="number" value="0" class="diskon1 form-control form-control-sm" name="diskon[]"></td>
-                                                            <td><input type="number" value="0" class="jumlah form-control form-control-sm" name="jml[]"></td>
+                                                            <td><input type="number" value="0" class="jml_byr form-control form-control-sm" name="jml_byr[]"></td>
+                                                            <td><input type="number" value="0" class="diskon form-control form-control-sm" name="diskon[]"></td>
+                                                            <td><input type="number" readonly value="0" class="jumlah form-control form-control-sm" name="jml[]"></td>
                                                             <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
                                                         </tr>
                                                     <?php } ?>
@@ -155,9 +155,9 @@
                                         </div>
                                     </div>
                                     <div class="card-footer">
-                                        <div class="p-3 text-right">
-                                            <button type="submit" class="p-1 btn btn-lg btn-success"><i class="fa fa-hand-holding-usd"></i> Bayar Sekarang</button>
-                                            <a href="<?= base_url('pembayaran/siswa') ?>" class="cetak p-1 btn btn-lg btn-secondary"><i class="fa fa-print"></i> Cetak invoice</a>
+                                        <div class="p-3">
+                                            <button type="submit" class="p-1 btn btn-sm btn-success px-3"><i class="fa fa-hand-holding-usd"></i> Bayar Sekarang</button>
+                                            <a target="_blank" href="<?= base_url('cetaks/invoice') ?>" id="cetak" class=" p-1 btn btn-sm px-3 btn-secondary"><i class="fa fa-print"></i> Cetak invoice</a>
                                         </div>
                                     </div>
                                 </form>
@@ -221,9 +221,12 @@
                             type: 'POST',
                             success: function(res) {
                                 console.log(res)
-                                for (let i = 0; i < res.length; i++) {
-                                    $('.bayar:eq(' + [i] + ')').val(res[i].totalX)
-                                    // $('.jumlah:eq(' + [i] + ')').val(res[i].totalX)
+                                if (res.length != 0) {
+                                    for (let i = 0; i < res.length; i++) {
+                                        $('.tagihan:eq(' + [i] + ')').val(res[i].totalX)
+                                    }
+                                } else {
+                                    $('.tagihan').val(0)
                                 }
 
                             }
@@ -235,32 +238,25 @@
                         var inv = $.trim($('#inv').html())
                         $('input[name="ta"]').val(ta)
                         $('input[name="inv"]').val(inv)
+                        $('.tagihan').val(0)
                     })
 
-                    $('input[type="number"]').keyup(function() {
-                        var grandDiskon = parseInt($('.diskon1').val()) + parseInt($('.diskon5').val()) + parseInt($('.diskon2').val()) + parseInt($('.diskon3').val()) + parseInt($('.diskon4').val()) + parseInt($('.diskon6').val()) + parseInt($('.diskon7').val())
-                        $('.grandDiskon').val(grandDiskon)
+                    $('.jml_byr').keyup(function() {
+                        var diskon = $(this).parents('td').next().find('.diskon').val()
+                        var jumlah = parseInt($(this).val()) - parseInt(diskon)
+                        
+                        $(this).parents('tr').find('.jumlah').val(jumlah)
+                    })
 
-                        var jumlah = parseInt($(this).parents('td').prev().find('input').val()) - parseInt($(this).val())
-                        console.log(jumlah)
-                        // $(this).parents('td').next().find('input').val(jumlah)
-
-                        var spp = $('.jumlah1').val()
-                        var gedung = $('.jumlah2').val()
-                        var seragam = $('.jumlah3').val()
-                        var kegiatan = $('.jumlah4').val()
-                        var komite = $('.jumlah5').val()
-                        var buku = $('.jumlah6').val()
-                        var sarpras = $('.jumlah7').val()
-
-                        var gTotal = parseInt(spp) + parseInt(gedung) + parseInt(seragam) + parseInt(kegiatan) + parseInt(komite) + parseInt(buku) + parseInt(sarpras)
-                        console.log(gTotal)
-                        $('.gTotal').html(gTotal)
-                        $('.grandTotal').html(number_format(gTotal, 0, ',', '.'))
-
+                    $('.diskon').keyup(function() {
+                        var bayar = $(this).parents('td').prev().find('.jml_byr').val()
+                        var jumlah = parseInt(bayar) - parseInt($(this).val())
+                        
+                        $(this).parents('tr').find('.jumlah').val(jumlah)
                     })
 
                     $('.pembayaranSiswa').submit(function(e) {
+                        var id_trx = $('#inv').text().trim()
                         e.preventDefault()
                         Swal.fire({
                             title: "Yakin ingin disimpan?",
@@ -290,8 +286,11 @@
                                                 title: 'Berhasil',
                                                 html: `${res.sukses}`
                                             })
-                                            $('.cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
-                                        } else if (res.warning){
+                                            $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
+                                            var cetak = $('#cetak').attr('href')
+                                            console.log(cetak);
+                                            
+                                        } else if (res.warning) {
                                             Swal.fire({
                                                 icon: 'warning',
                                                 title: 'Gagal !',

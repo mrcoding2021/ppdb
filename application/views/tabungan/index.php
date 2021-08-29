@@ -8,11 +8,13 @@
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold ">
                                         <?= $title;
-                                        if ($user['level'] == 1) : ?> <a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><?php endif ?><a href="#" class="btn btn-success input-baru btn-border-circle float-right">Input Baru</a></h3>
+                                        if ($user['level'] == 1) : ?> <a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><?php endif ?>
+                                        <a href="#addTabungan" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Input Baru</a>
+                                    </h3>
                                 </div>
                                 <form action="<?= base_url('pembayaran/siswa') ?>" class="pembayaranSiswa">
                                     <div class="card-body row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <div class="form-group row">
                                                 <div class="col-sm-6">
                                                     <label for="1">Nama Murid</label>
@@ -43,7 +45,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 d-none">
                                             <div class="form-group row border-bottom-danger">
                                                 <label for="1">No. Invoice :</label>
                                                 <?php
@@ -65,99 +67,30 @@
                                                 </h4>
 
                                             </div>
-                                            <div class="form-group row">
-                                                <div class="col-md-6">
 
-                                                    <label for="1">Tahun Ajaran</label>
-                                                    <select type="text" class="form-control ta_s" name="ta">
-                                                        <?php $n = 16;
-                                                        $m = 17;
-                                                        for ($i = 0; $i < 15; $i++) { ?>
-                                                            <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                        <?php $n++;
-                                                            $m++;
-                                                        } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="1">Tgl. Bayar</label>
-                                                    <input type="date" value="<?= date('Y-m-d') ?>" name="tgl_byr" class="form-control">
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-12 col-lg-12 container">
-                                            <table class="table table-striped table-sm" width="100%">
+                                            <table class="table table-striped table-sm" width="100%" id="dataTabungan">
                                                 <thead class="bg-dark text-white text-center">
                                                     <tr>
-                                                        <th scope="col">#</th>
-                                                        <th scope="col">Jenis Tagihan</th>
-                                                        <th scope="col">Kode Akun</th>
-                                                        <th scope="col">Jumlah Tagihan</th>
-                                                        <th scope="col">Bayar</th>
-                                                        <th scope="col">Jumlah Bayar</th>
-                                                        <th scope="col">Diskon</th>
-                                                        <th scope="col">Total dibayar</th>
+                                                        <th>#</th>
+                                                        <th>Tanggal</th>
+                                                        <th>Deibt</th>
+                                                        <th>Kredit</th>
+                                                        <th>Saldo</th>
                                                         <th>Keterangan</th>
+                                                        <th>Aksi</th>
                                                     </tr>
 
                                                 </thead>
                                                 <tbody>
-                                                    <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
-                                                    $parent = ['1-30000', '1-10000', '1-40000', '1-50000', '1-80000', '1-60000', '1-70000'];
-                                                    $no = 1;
-                                                    for ($i = 0; $i < 7; $i++) { ?>
-                                                        <tr>
-                                                            <th scope="row"><?= $no++ ?></th>
-                                                            <td><?= $kode[$i] ?></td>
-                                                            <td>
-                                                                <select name="akun_trx[]" class="form-control form-control-sm">
-                                                                    <?php $this->db->where('parent', $parent[$i]);
-                                                                    $akuntrx = $this->db->get('tb_rab')->result();
-                                                                    foreach ($akuntrx as $key) : ?>
-                                                                        <option value="<?= $key->kode_akun ?>"> <?= $key->nama ?></option>
-                                                                    <?php endforeach; ?>
-                                                                </select>
-                                                            </td>
-                                                            <td><input type="text" value="0" class="tagihan form-control form-control-sm" readonly name="tagihan[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
-                                                            <td>
-                                                                <select value="0" class="diskon1 form-control form-control-sm" name="metode[]">
-                                                                    <option value="1">CASH</option>
-                                                                    <option value="2">TRANSFER BNI</option>
-                                                                    <option value="3">POTONG TABUNGAN</option>
-                                                                    <option value="4">POTONG KEGIATAN</option>
-                                                                </select>
-                                                            </td>
-                                                            <td><input type="number" value="0" class="jml_byr form-control form-control-sm" name="jml_byr[]"></td>
-                                                            <td><input type="number" value="0" class="diskon form-control form-control-sm" name="diskon[]"></td>
-                                                            <td><input type="number" readonly value="0" class="jumlah form-control form-control-sm" name="jml[]"></td>
-                                                            <td><input type="text" value="0" class="ket form-control form-control-sm" name="ket[]"></td>
-                                                        </tr>
-                                                    <?php } ?>
-                                                    <tr class="bg-dark text-white text-right">
-                                                        <td colspan="5">Total</td>
-                                                        <td class="total text-right">0</td>
-                                                        <td><input type="number" readonly class="grandDiskon form-control form-control-sm"></td>
-                                                        <td class="gTotal text-right">0</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr class="bg-primary text-white text-right">
-                                                        <td colspan="5">Grand Total</td>
-                                                        <td colspan="2" class="grandTotal text-right">0</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                    </tr>
+
                                                 </tbody>
                                             </table>
 
-                                        </div>
-                                    </div>
-                                    <div class="card-footer">
-                                        <div class="p-3">
-                                            <button type="submit" class="p-1 btn btn-sm btn-success px-3"><i class="fa fa-hand-holding-usd"></i> Bayar Sekarang</button>
-                                            <a target="_blank" href="<?= base_url('cetaks/invoice') ?>" id="cetak" class=" p-1 btn btn-sm px-3 btn-secondary"><i class="fa fa-print"></i> Cetak invoice</a>
                                         </div>
                                     </div>
                                 </form>
@@ -208,55 +141,163 @@
                     </div>
                 </div>
 
+                <div class="modal fade" id="addTabungan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="exampleModalLabel">Input Tabungan</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" class="addTabungan" action="<?= base_url('tabungan/add') ?>">
+                                    <div class="row form-group">
+                                        <div class="col-sm-6">
+                                            <label>No. Invoice</label>
+                                            <input type="text" readonly class="form-control id_trx" name="id_trx">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Tanggal Trx.</label>
+                                            <input type="date" value="<?= date('Y-m-d')?>" class="form-control date" name="date">
+                                            <input type="hidden" class="form-control id" name="id">
+                                            <input type="hidden" class="form-control id_murid" name="id_murid">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <label>Metode</label>
+                                            <select name="metode" class="form-control metode">
+                                                <option>Pilih Metode</option>
+                                                <option value="1">CASH</option>
+                                                <option value="2">TRANSFER</option>
+                                                <option value="4">POTONG KEGIATAN</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="1">Tahun Ajaran</label>
+                                            <select type="text" class="form-control ta" name="ta">
+                                                <?php $n = 16;
+                                                $m = 17;
+                                                for ($i = 0; $i < 15; $i++) { ?>
+                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                <?php $n++;
+                                                    $m++;
+                                                } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <label>Jenis Transaksi</label>
+                                            <select name="kategori" class="form-control kategori">
+                                                <option>Pilih Transaksi</option>
+                                                <option value="1">Pemasukan</option>
+                                                <option value="0">Pengeluaran</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Nilai</label>
+                                            <input type="text" class="form-control nilai" name="nilai">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12">
+                                            <label>Keterangan</label>
+                                            <textarea type="text" class="form-control ket" name="ket"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
+                                        <button class="btn btn-success btn-border-circle btn-block" type="submit">Simpan</button>
+                                    </div>
+                                </form>
+                            </div>
 
+                        </div>
+                    </div>
+                </div>
                 <script>
-                    $('.ta_s').change(function(e) {
-                        var ta = $(this).val()
-                        var inv = $.trim($('#inv').html())
-                        $('.inv').val(inv)
-                        var id = $('.id_user').val()
-                        $.ajax({
-                            url: '<?= base_url('setting/getTagihan/') ?>' + id + '/' + ta,
-                            dataType: 'json',
-                            type: 'POST',
-                            success: function(res) {
-                                console.log(res)
-                                if (res.length != 0) {
-                                    for (let i = 0; i < res.length; i++) {
-                                        $('.tagihan:eq(' + [i] + ')').val(res[i].totalX)
+                    var id = $('.id_murid').val()
+                    // getTabungan(id)
+                    function getTabungan(id) {
+                        var getTabungan = $('#dataTabungan').DataTable({
+                            "processing": true,
+                            "language": {
+                                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                            },
+                            'ajax': {
+                                "type": "POST",
+                                "url": '<?= base_url('tabungan/getTabungan/') ?>' + id,
+                                "dataSrc": ""
+                            },
+                            "pageLength": 100,
+                            "destroy": true,
+                            'columns': [{
+                                    "data": "no"
+                                },
+                                {
+                                    "data": "date"
+                                },
+                                {
+                                    "data": "debit"
+                                },
+                                {
+                                    "data": "kredit"
+                                },
+                                {
+                                    "data": "saldo"
+                                },
+                                {
+                                    "data": "ket"
+                                },
+                                {
+                                    "data": "id",
+                                    "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
+                                        $(nTd).html('<a data-toggle="modal" class="detailTabungan mr-1 btn btn-sm btn-info" href="#addTabungan" data-id="' + oData.id + '"><i class="fa fa-search"></i></a><a target="_blank" class="mr-1 btn btn-sm btn-success" href="<?= base_url('cetak/invoice/') ?>' + oData.id_trx + '"><i class="fa fa-print"></i></a>');
                                     }
-                                } else {
-                                    $('.tagihan').val(0)
                                 }
+                            ]
+                        });
+                    }
+                    $('.inputBaru').click(function(e) {
+                        var inv = $.trim($('#inv').html())
+                        $('.id_trx').val(inv)
+                    })
 
+                    $(document).on('click', '.detailTabungan', function(e) {
+                        e.preventDefault()
+                        var id = $(this).data('id')
+                        console.log(id);
+                        
+                        $.ajax({
+                            url: '<?= base_url('tabungan/getTabungan/') ?>',
+                            type: 'post',
+                            dataType: 'json',
+                            data: {
+                                'id': id
+                            },
+                            success: function(res) {
+                                console.log(res);
+                                $('.id_trx').val(res.id_trx)
+                                $('.id').val(res.id)
+                                $('.id_murid').val(res.id_murid)
+                                $('.date').val(res.date)
+                                $('.nilai').val(res.jumlah)
+                                $('.ket').text(res.ket)
+                                $('.metode option[value="' + res.metode + '"]').attr('selected', true)
+                                $('.metode option[value="' + res.metode + '"]').siblings().attr('selected', false)
+                                $('.ta option[value="' + res.ta + '"]').attr('selected', true)
+                                $('.ta option[value="' + res.ta + '"]').siblings().attr('selected', false)
+                                $('.kategori option[value="' + res.kategori + '"]').attr('selected', true)
+                                $('.kategori option[value="' + res.kategori + '"]').siblings().attr('selected', false)
                             }
                         })
                     })
 
-                    $('.input-baru').click(function(e) {
-                        var ta = $('.ta').val()
-                        var inv = $.trim($('#inv').html())
-                        $('input[name="ta"]').val(ta)
-                        $('input[name="inv"]').val(inv)
-                        $('.tagihan').val(0)
-                    })
-
-                    $('.jml_byr').keyup(function() {
-                        var diskon = $(this).parents('td').next().find('.diskon').val()
-                        var jumlah = parseInt($(this).val()) - parseInt(diskon)
-                        
-                        $(this).parents('tr').find('.jumlah').val(jumlah)
-                    })
-
-                    $('.diskon').keyup(function() {
-                        var bayar = $(this).parents('td').prev().find('.jml_byr').val()
-                        var jumlah = parseInt(bayar) - parseInt($(this).val())
-                        
-                        $(this).parents('tr').find('.jumlah').val(jumlah)
-                    })
-
-                    $('.pembayaranSiswa').submit(function(e) {
-                        var id_trx = $('#inv').text().trim()
+                    $('.addTabungan').submit(function(e) {
+                        var id_trx = $('#inv').text()
+                        var id_murid = $('.id_murid').val()
                         e.preventDefault()
                         Swal.fire({
                             title: "Yakin ingin disimpan?",
@@ -286,16 +327,10 @@
                                                 title: 'Berhasil',
                                                 html: `${res.sukses}`
                                             })
+                                            $('.modal').modal('hide')
+                                            getTabungan(id_murid)
                                             $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
                                             var cetak = $('#cetak').attr('href')
-                                            console.log(cetak);
-                                            
-                                        } else if (res.warning) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Gagal !',
-                                                html: `${res.warning}`
-                                            })
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',

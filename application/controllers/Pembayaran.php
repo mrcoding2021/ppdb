@@ -163,19 +163,20 @@ class Pembayaran extends CI_Controller
         'warning' => 'No. Invoice sudah ada, silahkan klik input baru!'
       );
     } else {
-      $kode = ['SPP', 'INFAQ GEDUNG', 'SERAGAM', 'KEGIATAN', 'KOMITE', 'BUKU', 'SARPRAS'];
+      $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
       for ($i = 0; $i < count($kode); $i++) {
         $data = [
           'date_created' => $this->input->post('tgl_byr') . ' ' . date('H:i:s'),
           'inputer'   => $this->session->userdata('id'),
+          'id_murid'     => $this->input->post('id_murid'),
           'id_trx'       => $id_trx,
           'ta'           => $this->input->post('ta'),
-          'metode'       => $this->input->post('metode')[$i],
-          'id_murid'     => $this->input->post('id_murid'),
-          'bayar'        => $this->input->post('bayar')[$i],
           'kode'         => $kode[$i],
           'akun_kas'     => '0-10001',
           'akun_trx'     => $this->input->post('akun_trx')[$i],
+          'tagihan'        => str_replace('.','',$this->input->post('tagihan')[$i]),
+          'metode'       => $this->input->post('metode')[$i],
+          'kredit'        => $this->input->post('jml_byr')[$i],
           'diskon'       => $this->input->post('diskon')[$i],
           'jumlah'        => $this->input->post('jml')[$i],
           'ket'          => $this->input->post('ket')[$i],

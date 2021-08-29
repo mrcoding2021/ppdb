@@ -154,15 +154,29 @@ class Data extends CI_Controller
             $id  = $this->input->post('nama');
             $this->db->where('nama', $id);
             $data = $this->db->get('tb_user')->row();
-            $this->db->where('kode_kelas', $data->kelas);
-            $kelas = $this->db->get('tb_user_kelas')->row();
+
+            if (date('m') > 6) {
+                $this->db->where('ta', date('Y') . '-' . (date('Y') + 1));
+            } elseif (date('m') < 7) {
+                $this->db->where('ta', (date('Y') - 1) . '-' . date('Y'));
+            }
+            $this->db->where('id_siswa', $data->id_user);
+            $ajaran = $this->db->get('tb_user_tagihan')->result();
+
+            if ($ajaran) {
+                $this->db->where('kode_kelas', $ajaran[0]->kelas);
+                $kelas = $this->db->get('tb_user_kelas')->row();
+            } else {
+                $kelas = '';
+            }
+
             $result = [
                 'id_user'       => $data->id_user,
                 'nis'       => $data->nis,
                 'nisn'       => $data->nisn,
                 'wali'       => $data->pj,
                 'hp'       => $data->hp,
-                'kelas'       => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : '',
+                'kelas'       => ($kelas != null) ? $kelas->ket . ' - ' . $kelas->nama : $kelas,
                 'nama'      => $data->nama
             ];
             echo json_encode($result);

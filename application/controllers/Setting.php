@@ -79,25 +79,22 @@ class Setting extends CI_Controller
                     $this->db->where('id_siswa', $key->id_user);
                     $tab = $this->db->get('tb_user_tagihan')->row();
 
-                    $this->db->where('kode_kelas', $key->kelas);
-                    $kelas = $this->db->get('tb_user_kelas')->row();
-
                     $tagihan = [];
                     $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
                     for ($i = 0; $i < 7; $i++) {
                         $this->db->where('kode', $kode[$i]);
                         $this->db->where('id_siswa', $key->id_user);
-                        // $this->db->where('ta', $ta);
+                        $this->db->select_sum('bayar', 'total');
                         $tagihan[] = $this->db->get('tb_user_tagihan')->row();
                     }
 
                     $result[] = [
-                        'no'        => $no++,
+                        'no'        => $no,
                         'id_user'        => $key->id_user,
                         'nis'        => $key->nis . '<br>' . $key->nisn,
                         'nama'      => $key->nama,
-                        'id'      => ($tagihan[0] != null) ? $tagihan[0]->id : '',
-                        'kelas'      => ($tagihan[0] != null) ? $tagihan[0]->kelas : '',
+                        // 'id'      => ($tagihan[0] != null) ? $tagihan[0]->id : '',
+                        // 'kelas'      => ($tagihan[0] != null) ? $tagihan[0]->kelas : '',
                         'ta'      => ($tab != null) ? $tab->ta : '',
                         'spp'      => ($tagihan[0] != null) ? rupiah($tagihan[0]->total) : 0,
                         'gedung'      => ($tagihan[1] != null) ? rupiah($tagihan[1]->total) : 0,
@@ -107,6 +104,7 @@ class Setting extends CI_Controller
                         'seragam'      => ($tagihan[5] != null) ? rupiah($tagihan[5]->total) : 0,
                         'sarpras'      => ($tagihan[6] != null) ? rupiah($tagihan[6]->total) : 0,
                     ];
+                    $no++;
                 }
             }
             if ($result != null) {
@@ -119,16 +117,26 @@ class Setting extends CI_Controller
 
     public function getTagihan($id = 0, $ta = 0)
     {
-        if ($this->scm->cetSecurity() == true) {
+        if ($this->scm->cekSecurity() == true) {
             $result = [];
             for ($i = 0; $i < 7; $i++) {
                 $this->db->where('id_siswa', $id);
                 $this->db->where('ta', $ta);
                 $tagihan = $this->db->get('tb_user_tagihan')->result();
-                $result[] = [
-                    'total'      => ($tagihan != null) ? rupiah($tagihan[$i]->total) : 0,
-                    'totalX'      => ($tagihan != null) ? ($tagihan[$i]->total) : 0,
-                ];
+                if ($tagihan) {
+                    if ($tagihan[$i]->kode == 'SPP') {
+                        $bayar = ($tagihan[$i]->bayar / 12);
+                    } else {
+                        $bayar = ($tagihan[$i]->bayar);
+                    }
+                    $result[] = [
+                        'kode'         => $tagihan[$i]->kode ?? '',
+                        'total'      => ($tagihan != null) ? rupiah($bayar) : 0,
+                        'totalX'      => ($tagihan != null) ? rupiah($bayar) : 0,
+                    ];
+                } else {
+                    $result = [];
+                }
             }
             echo json_encode($result);
         }

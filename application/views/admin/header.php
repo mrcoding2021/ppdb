@@ -198,7 +198,7 @@
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item my-auto">
                             <span>
-                                
+                                <?= longdate_indo(date('Y-m-d'))?>
                             </span>
                         </li>
                         <!-- Nav Item - Alerts -->

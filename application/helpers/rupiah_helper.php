@@ -5,7 +5,7 @@ function rupiah($data){
     if ($data == '') {
         return '';
     } else {
-        $rupiah = number_format($data,0,',','.').',-';
+        $rupiah = number_format($data,0,',','.');
         return $rupiah;
     }
 }
