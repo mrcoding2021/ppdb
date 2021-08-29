@@ -199,7 +199,7 @@
 
                     $('.inputBaru').click(function(e) {
                         var inv = $.trim($('#inv').html())
-                        $('input').val('')
+                        $('.nama').val('')
                         $('.id_trx').val(inv)
 
                     })

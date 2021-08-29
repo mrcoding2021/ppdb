@@ -71,7 +71,7 @@
                         <div class="modal-content">
                             <div class="modal-body">
                                 <div class="table-responsive">
-                                    <form action="<?= base_url('pembayaran/inputData') ?>" class="inputData" method="POST">
+                                    <form action="<?= base_url('acc/accept') ?>" class="inputData" method="POST">
                                         <table class="table table-bordered table-sm" width="100%" cellspacing="0">
                                             <thead class="bg-primary text-white">
                                                 <tr>
@@ -96,7 +96,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button data-dismiss="modal" class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px">Close</button>
-                                <button class="btn btn-success aksi terima btn-border-circle btn-block">Terima</button>
+                                <button class="btn btn-success terima btn-border-circle btn-block">Terima</button>
                             </div>
                         </div>
                     </div>
@@ -192,11 +192,10 @@
                     $('.terima').click(function(e) {
                         e.preventDefault()
                         var inv = $(this).data('id')
-                        var link = 1
-                        accept(inv, link)
+                        accept(inv)
                     })
 
-                    function accept(inv, link) {
+                    function accept(inv) {
 
                         Swal.fire({
                             title: "Yakin ?",
@@ -209,23 +208,29 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 $.ajax({
-                                    url: '<?= base_url('acc/accept/') ?>' + inv + '/' + link,
+                                    url: '<?= base_url('acc/accept/') ?>',
                                     data: {
-                                        'inv': inv
+                                        'inv': inv,
                                     },
                                     dataType: 'json',
                                     type: 'POST',
                                     success: function(response) {
-                                        if (response.sukses) {
+                                        if (response.success) {
                                             $('.modal').modal('hide')
                                             Swal.fire({
                                                 icon: 'success',
-                                                title: 'Berasil',
-                                                html: `${response.sukses}`
+                                                title: 'Berhasil',
+                                                html: `${response.success}`
                                             })
                                             var bln = $('.bulan').val()
                                             var thn = $('.tahun').val()
                                             getAcc(bln, thn)
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                html: `${response.error}`
+                                            })
                                         }
 
                                     }

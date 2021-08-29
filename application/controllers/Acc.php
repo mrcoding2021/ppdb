@@ -41,7 +41,7 @@ class Acc extends CI_Controller
   public function index()
   {
     $data = [
-      'title'   => 'Pengajuan Persetujuan Keuangan',
+      'title'   => 'Transaksi Pengajuan',
       'page'    => 'index',
       'parent'  => 'Acc'
     ];
@@ -101,15 +101,17 @@ class Acc extends CI_Controller
     }
   }
 
-  public function accept($inv, $id = 0)
+  public function accept()
   {
+    $inv = $this->input->post('inv');
     if ($this->scm->cekSecurity() == true) {
-      $return = $this->database->accept('tb_transaksi', $inv, $id);
-      if ($return) {
-        $result = ['sukses' => 'Data pengajuan telah diterima dan sudah masuk ke pembukuan'];
+      $this->db->set('approve', 1);
+      $this->db->where('id_trx', $inv);
+      $this->db->update('tb_transaksi');
+      if ($this->db->affected_rows() > 0) {
+        $result = ['success' => "Transaksi berhasil masuk ke pembukuan"];
       } else {
-        $this->database->accept('tb_transaksi', $inv, $id);
-        $result = ['sukses' => 'Data pengajuan ditolak'];
+        $result = ['error' => "Transaksi gagal"];
       }
       echo json_encode($result);
     }

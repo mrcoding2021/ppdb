@@ -123,7 +123,11 @@
                 </td>
                 <td colspan="3" style="text-align: right;"><strong>
                         <?php $murid = $this->db->get_where('tb_user', array('id_user' => $key[0]->id_murid))->row();
-                        echo $murid->nama . '<br>' . $murid->hp . '<br>' . $murid->alamat;
+                        if ($murid != null) {
+                            echo $murid->nama . '<br>' . $murid->hp . '<br>' . $murid->alamat;
+                        } else {
+                            echo 'TRANSAKSI KAS';
+                        }
                         ?><br>
                     </strong>
 
