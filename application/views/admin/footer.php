@@ -90,7 +90,8 @@
                 dataType: 'json',
                 type: 'post',
                 success: function(res) {
-                    if (res != null) {
+                    var title = '<?= $title ?>'
+                    if (title == 'Input Tabungan') {
                         getTabungan(res.id_user)
                     }
                     console.log(res)

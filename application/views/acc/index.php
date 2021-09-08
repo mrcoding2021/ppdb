@@ -196,7 +196,6 @@
                     })
 
                     function accept(inv) {
-
                         Swal.fire({
                             title: "Yakin ?",
                             text: "Pastikan data sudah benar dan sesuai",

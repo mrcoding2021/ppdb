@@ -263,6 +263,16 @@
                     $('.inputBaru').click(function(e) {
                         var inv = $.trim($('#inv').html())
                         $('.id_trx').val(inv)
+                        $.ajax({
+                            url: '<?= base_url('tabungan/getKode/') ?>',
+                            type: 'post',
+                            dataType: 'json',
+                            success: function(res) {
+                                console.log(res);
+                                $('.id_trx').val(res.id_trx)
+                               
+                            }
+                        })
                     })
 
                     $(document).on('click', '.detailTabungan', function(e) {

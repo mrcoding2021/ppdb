@@ -76,6 +76,7 @@ class Tabungan extends CI_Controller
       'kredit' => ($kategori == 1) ? $nilai : 0,
       'jumlah' => $nilai,
       'ket' => $this->input->post('ket'),
+      'approve'=> 1
     );
 
     if ($this->form_validation->run() == TRUE) {
@@ -154,6 +155,23 @@ class Tabungan extends CI_Controller
     }
     echo json_encode($result);
   }
+
+  public function getKode()
+  {
+    $this->db->select_max('id_trx');
+    $data = $this->db->get('tb_transaksi')->row();
+    
+    $id_trx = $data->id_trx;
+    $id_trx = substr($id_trx,0,-9);
+    $id_trx = $id_trx + 1;
+    $id_trx = $id_trx . '.'.date('Ymd');
+
+    $result = [
+      'id_trx' => $id_trx
+    ];
+    echo json_encode($result);
+    
+  } 
 }
 
 
