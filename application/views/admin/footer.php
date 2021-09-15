@@ -94,6 +94,7 @@
                     if (title == 'Input Tabungan') {
                         getTabungan(res.id_user)
                     }
+                    getTa(res.id_user, '2016-2017')
                     console.log(res)
                     var inv = $('#inv').html()
                     iuranLunas(res.id_user)

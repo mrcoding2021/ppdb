@@ -198,7 +198,7 @@ class Data extends CI_Controller
                     'nama' => strtoupper($this->input->post('nama')),
                     'nis' => $this->input->post('nis'),
                     'nisn' => $this->input->post('nisn'),
-                    'ta'    => $this->input->post('ta'),
+                    // 'ta'    => $this->input->post('ta'),
                     'email' => $this->input->post('email'),
                     'alamat' => $this->input->post('alamat'),
                     'tempat_lahir' => $this->input->post('tempat_lahir'),

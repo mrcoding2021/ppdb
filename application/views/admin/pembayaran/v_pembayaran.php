@@ -210,11 +210,9 @@
 
 
                 <script>
-                    $('.ta_s').change(function(e) {
-                        var ta = $(this).val()
-                        var inv = $.trim($('#inv').html())
-                        $('.inv').val(inv)
-                        var id = $('.id_user').val()
+                   
+
+                    function getTa(id, ta) {
                         $.ajax({
                             url: '<?= base_url('setting/getTagihan/') ?>' + id + '/' + ta,
                             dataType: 'json',
@@ -231,6 +229,14 @@
 
                             }
                         })
+                    }
+                    
+                    $('.ta_s').change(function(e) {
+                        var ta = $(this).val()
+                        var inv = $.trim($('#inv').html())
+                        $('.inv').val(inv)
+                        var id = $('.id_user').val()
+                        getTa(id, ta)
                     })
 
                     $('.input-baru').click(function(e) {
@@ -244,14 +250,14 @@
                     $('.jml_byr').keyup(function() {
                         var diskon = $(this).parents('td').next().find('.diskon').val()
                         var jumlah = parseInt($(this).val()) - parseInt(diskon)
-                        
+
                         $(this).parents('tr').find('.jumlah').val(jumlah)
                     })
 
                     $('.diskon').keyup(function() {
                         var bayar = $(this).parents('td').prev().find('.jml_byr').val()
                         var jumlah = parseInt(bayar) - parseInt($(this).val())
-                        
+
                         $(this).parents('tr').find('.jumlah').val(jumlah)
                     })
 
@@ -289,7 +295,7 @@
                                             $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
                                             var cetak = $('#cetak').attr('href')
                                             console.log(cetak);
-                                            
+
                                         } else if (res.warning) {
                                             Swal.fire({
                                                 icon: 'warning',

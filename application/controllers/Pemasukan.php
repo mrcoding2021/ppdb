@@ -176,6 +176,23 @@ class Pemasukan extends CI_Controller
     }
     echo json_encode($data);
   }
+
+  public function getKode()
+  {
+    // 1 penasukan
+    $this->db->order_by('id', 'DESC');
+    $data = $this->db->get('tb_transaksi')->result();
+
+    $id_trx = $data[0]->id_trx;
+    $id_trx = substr($id_trx, 0, -9);
+    $id_trx = (int)$id_trx + 1;
+    $id_trx = $id_trx . '.' . date('Ymd') . '1' . $this->session->userdata('id');
+
+    $result = [
+      'id_trx' => $id_trx
+    ];
+    echo json_encode($result);
+  }
 }
 
 

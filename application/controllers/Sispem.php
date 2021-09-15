@@ -28,6 +28,7 @@ class Sispem extends CI_Controller
             WHERE `tb_menu_acces`.`role_id`= $level
           ORDER BY `tb_menu_acces`.`menu_id` ASC";
       $data['title'] = $title;
+      $data['parent'] = 'Laporan';
       $data['admin'] = $this->db->query($query)->result_array();
       $data['menu'] = $this->db->get('tb_menu')->result_array();
       $this->db->order_by('id_paket', 'DESC');
@@ -108,15 +109,16 @@ class Sispem extends CI_Controller
       }
 
       $hasil[] =  array(
-        'no'  => $no++,
+        'no'  => $no,
         'nis' => $key->nis,
         'nisn' => $key->nisn,
         'id_user' => $key->id_user,
         'tgl' => $key->date_created,
-        'nama' => $key->nama,
+        'nama' => $key->nama .' - '. $key->id_user,
         'kelas' => ($kelas) ? $kelas->nama : $kelas,
         'spp' => rupiah($key->spp)
       );
+      $no++;
     }
     echo json_encode($hasil);
   }

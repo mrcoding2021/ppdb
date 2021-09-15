@@ -11,7 +11,6 @@
                                     if ($user['level'] == 1) : ?> <a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><?php endif ?><a href="#" class="btn btn-success input-baru btn-border-circle float-right">Input Baru</a></h3>
                            </div>
                            <div class="card-body">
-
                                <div class="col">
                                    <table class="table table-bordered">
                                        <tr>

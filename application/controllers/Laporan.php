@@ -136,6 +136,26 @@ class Laporan extends CI_Controller
     );
     $this->index($data);
   }
+
+  public function pemasukanHarian()
+  {
+    $data = array(
+      'title'   => 'Laporan Pemasukan Harian',
+      'view'    => 'pemasukanHarian',
+      'parent'  => 'Laporan'
+    );
+    $this->index($data);
+  }
+
+  public function pengeluaranHarian()
+  {
+    $data = array(
+      'title'   => 'Laporan Pengeluaran Harian',
+      'view'    => 'pengeluaranHarian',
+      'parent'  => 'Laporan'
+    );
+    $this->index($data);
+  }
 }
 
 

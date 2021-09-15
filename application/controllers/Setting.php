@@ -119,18 +119,28 @@ class Setting extends CI_Controller
     {
         if ($this->scm->cekSecurity() == true) {
             $result = [];
-            for ($i = 0; $i < 7; $i++) {
+            $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+            for ($i = 0; $i < count($kode); $i++) {
+                $this->db->where('kode', $kode[$i]);
                 $this->db->where('id_siswa', $id);
                 $this->db->where('ta', $ta);
-                $tagihan = $this->db->get('tb_user_tagihan')->result();
+                $tagihan = $this->db->get('tb_user_tagihan')->row();
+
+                $this->db->where('kode', $kode[$i]);
+                $this->db->where('id_murid', $id);
+                $this->db->where('ta', $ta);
+                $this->db->select_sum('kredit', 'total');
+                $bayars = $this->db->get('tb_transaksi')->row();
+
                 if ($tagihan) {
-                    if ($tagihan[$i]->kode == 'SPP') {
-                        $bayar = ($tagihan[$i]->bayar / 12);
+                    if ($tagihan->kode == 'SPP') {
+                        $bayar = (int)($tagihan->bayar / 12) - (int)$bayars->total;
                     } else {
-                        $bayar = ($tagihan[$i]->bayar);
+                        $bayar = (int)$tagihan->bayar - (int)$bayars->total;
                     }
+
                     $result[] = [
-                        'kode'         => $tagihan[$i]->kode ?? '',
+                        'kode'         => $tagihan->kode ?? '',
                         'total'      => ($tagihan != null) ? rupiah($bayar) : 0,
                         'totalX'      => ($tagihan != null) ? rupiah($bayar) : 0,
                     ];

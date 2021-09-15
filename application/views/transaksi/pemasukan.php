@@ -10,23 +10,7 @@
                                         <a href="#addPemasukan" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Input Baru</a>
                                     </h3>
                                 </div>
-                                <?php
-                                $this->db->where('parent', '1');
-                                $this->db->where('kategori', '1');
-                                $akun_trx = $this->db->get('tb_rab')->result();
-                                $this->db->order_by('id', 'desc');
-                                $inv = $this->db->get('tb_transaksi')->row();
-                                $d = 1 . '.' . str_replace('-', '', date('Y-m-d'));
-                                $date = str_replace('-', '', date('Y-m-d')) ?>
-                                <h4 class="mx-2 d-none" id="inv">
-                                    <?php
-                                    if ($inv == null) {
-                                        echo $d;
-                                    } else {
-                                        $e = intval($inv->id_trx) + 1;
-                                        echo $e . '.' . $date;
-                                    }; ?>
-                                </h4>
+                               
                                 <div class="row mt-3">
                                     <div class="col-md-12 col-lg-12 container">
                                         <table class="table table-striped table-sm text-center" width="100%" id="dataPemasukan">
@@ -65,13 +49,13 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Input Tabungan</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Input <?= $title?></h5>
                                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" class="addTabungan" action="<?= base_url('pemasukan/add') ?>">
+                                <form method="post" class="addPemasukan" action="<?= base_url('pemasukan/add') ?>">
                                     <div class="row form-group">
                                         <div class="col-sm-6">
                                             <label>No. Invoice</label>
@@ -92,7 +76,7 @@
                                             <label>ke Kas</label>
                                             <select name="akun_kas" class="form-control akun_kas">
                                                 <?php foreach ($kas as $key) { ?>
-                                                    <option value="<?= $key->kode_akun?>"><?= $key->nama?></option>
+                                                    <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
                                                 <?php  } ?>
                                             </select>
                                         </div>
@@ -153,6 +137,7 @@
                 </div>
                 <script>
                     getPemasukan()
+
                     function getPemasukan() {
                         var getPemasukan = $('#dataPemasukan').DataTable({
                             "processing": true,
@@ -199,9 +184,16 @@
 
                     $('.inputBaru').click(function(e) {
                         var inv = $.trim($('#inv').html())
-                        $('.nama').val('')
                         $('.id_trx').val(inv)
-
+                        $.ajax({
+                            url: '<?= base_url('pemasukan/getKode/') ?>',
+                            type: 'post',
+                            dataType: 'json',
+                            success: function(res) {
+                                console.log(res);
+                                $('.id_trx').val(res.id_trx)
+                            }
+                        })
                     })
 
                     $(document).on('click', '.detailPemasukan', function(e) {
@@ -237,7 +229,7 @@
                         })
                     })
 
-                    $('.addTabungan').submit(function(e) {
+                    $('.addPemasukan').submit(function(e) {
                         var id_trx = $('#inv').text()
                         var id_murid = $('.id_murid').val()
                         e.preventDefault()

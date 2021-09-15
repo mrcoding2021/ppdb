@@ -33,8 +33,8 @@ class Rabps extends CI_Controller
       $data['produk'] = $this->db->get('paket')->result_array();
       $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
 
-      $this->db->group_by('ta');
-      $data['thn_ajaran'] = $this->db->get('tb_ta')->result();
+      // $this->db->group_by('ta');
+      // $data['thn_ajaran'] = $this->db->get('tb_ta')->result();
       // var_dump($data['thn_ajaran']);
       // die;
 
@@ -42,7 +42,7 @@ class Rabps extends CI_Controller
       $this->load->view('admin/rabps/' . $data['page'], $data);
       $this->load->view('admin/footer', $data);
     } else {
-      # code...
+      
       redirect('home/login_page');
     }
   }
@@ -59,14 +59,16 @@ class Rabps extends CI_Controller
 
   public function rencana()
   {
+    // $this->db->where('is_active', 1);
+    // $this->db->group_by('ta');
+    $rab = $this->db->get('tb_rab_kertas')->result();
+    // var_dump($rab);die;
     $data = array(
       'page' => 'v_kertas',
       'title' => 'Kertas Kerja RABPS',
-      'parent' => 'Input'
+      'parent' => 'Input',
+      'rab'   => $rab
     );
-    $this->db->where('is_active', 1);
-    $this->db->group_by('ta');
-    $data['rab'] = $this->db->get('tb_rab_kertas')->result();
     $this->core($data);
   }
 
