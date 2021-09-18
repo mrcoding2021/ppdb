@@ -49,11 +49,14 @@ class Pengeluaran extends CI_Controller
     $this->db->where('is_active', 1);
     $this->db->where('kategori', 0);
     $kas = $this->db->get('tb_rab')->result();
-
+    $this->db->where('is_active', 1);
+    $this->db->where('kategori', 0);
+    $akun = $this->db->get('tb_rab')->result();
     $data = [
       'title'   => 'Pengeluaran Kas',
       'view'    => 'transaksi/pengeluaran',
-      'kas'     => $kas
+      'kas'     => $kas, 
+      'akun'    => $akun
     ];
     $this->core($data);
   }

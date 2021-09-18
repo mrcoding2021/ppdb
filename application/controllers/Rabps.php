@@ -33,16 +33,16 @@ class Rabps extends CI_Controller
       $data['produk'] = $this->db->get('paket')->result_array();
       $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
 
-      // $this->db->group_by('ta');
-      // $data['thn_ajaran'] = $this->db->get('tb_ta')->result();
+      $query = 'SELECT ta FROM tb_rab_kertas GROUP BY ta';
+      $data['thn_ajaran'] = $this->db->query($query)->result();
       // var_dump($data['thn_ajaran']);
       // die;
 
       $this->load->view('admin/header', $data);
-      $this->load->view('admin/rabps/' . $data['page'], $data);
+      $this->load->view('rabps/' . $data['page'], $data);
       $this->load->view('admin/footer', $data);
     } else {
-      
+      # code...
       redirect('home/login_page');
     }
   }
@@ -59,27 +59,39 @@ class Rabps extends CI_Controller
 
   public function rencana()
   {
-    // $this->db->where('is_active', 1);
-    // $this->db->group_by('ta');
-    $rab = $this->db->get('tb_rab_kertas')->result();
-    // var_dump($rab);die;
+    $query = 'SELECT ta FROM tb_rab_kertas GROUP BY ta';
+    $rab = $this->db->query($query)->result();
+
     $data = array(
       'page' => 'v_kertas',
       'title' => 'Kertas Kerja RABPS',
       'parent' => 'Input',
       'rab'   => $rab
     );
+    // $this->db->where('is_active', 1);
+    // var_dump($data['rab']->result());
+    $this->core($data);
+  }
+
+  public function adds()
+  {
+    $data = array(
+      'page' => 'v_add',
+      'title' => 'Input Kertas Kerja RABPS',
+      'parent'  => 'Input',
+      'ta'    => '2016-2017'
+    );
     $this->core($data);
   }
 
   public function tambah($ta = '')
   {
-    
+
     // $data['ta'] = $this->uri->segment(3);
     if ($ta != '') {
       $data = array(
         'page' => 'v_update',
-        'title' => 'Update Kertas Kerja RABPS tahun '. $ta,
+        'title' => 'Update Kertas Kerja RABPS tahun ' . $ta,
         'parent' => 'Input',
         'id_page'   => 'update',
         'ta' => $ta
@@ -94,14 +106,14 @@ class Rabps extends CI_Controller
       );
     }
     $this->db->where('kategori', 1);
-    $this->db->where('parent', 0);
+    // $this->db->where('parent', 0);
     $data['pemasukan'] = $this->db->get('tb_rab')->result();
 
     $this->db->where('kategori', 2);
-    $this->db->where('parent', 0);
+    // $this->db->where('parent', 0);
     $data['pengeluaran'] = $this->db->get('tb_rab')->result();
     $data['rab'] = $this->db->get('tb_rab')->result();
-    
+
     $this->core($data);
   }
 
@@ -399,11 +411,12 @@ class Rabps extends CI_Controller
     }
   }
 
-  public function hapusRab($id){
+  public function hapusRab($id)
+  {
     $this->db->where('ta', $id);
     $this->db->delete('tb_rab_kertas');
     if ($this->db->affected_rows() > 0) {
-      $this->session->set_flashdata('alert', '<div class="alert alert-info">Data RABPS tahun '.$id.' berhasil terhapus</div>');
+      $this->session->set_flashdata('alert', '<div class="alert alert-info">Data RABPS tahun ' . $id . ' berhasil terhapus</div>');
       redirect('rabps/rencana');
     } else {
       $this->session->set_flashdata('alert', '<div class="alert alert-danger">Mohon maaf. data RABPS tahun ' . $id . ' gagal terhapus</div>');

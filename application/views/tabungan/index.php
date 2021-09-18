@@ -10,10 +10,10 @@
                                         <?= $title;
                                         if ($user['level'] == 1) : ?> <a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><?php endif ?>
                                         <a href="#addTabungan" data-toggle="modal" class="mx-1 btn btn-success inputBaru btn-border-circle float-right">Input Baru</a>
-                                        <a href="#addTabungan" data-toggle="modal" class="btn btn-danger export btn-border-circle float-right">Export Excel</a>
+                                        <a href="#" id="exportData" class="btn btn-danger btn-border-circle float-right">Export</a>
                                     </h3>
                                 </div>
-                                <form action="<?= base_url('pembayaran/siswa') ?>" class="pembayaranSiswa">
+                                <form action="#" class="pembayaranSiswa">
                                     <div class="card-body row">
                                         <div class="col-md-12">
                                             <div class="form-group row">
@@ -46,30 +46,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 d-none">
-                                            <div class="form-group row border-bottom-danger">
-                                                <label for="1">No. Invoice :</label>
-                                                <?php
-                                                $this->db->where('parent', '1');
-                                                $this->db->where('kategori', '1');
-                                                $akun_trx = $this->db->get('tb_rab')->result();
-                                                $this->db->order_by('id', 'desc');
-                                                $inv = $this->db->get('tb_transaksi')->row();
-                                                $d = 1 . '.' . str_replace('-', '', date('Y-m-d'));
-                                                $date = str_replace('-', '', date('Y-m-d')) ?>
-                                                <h4 class="mx-2" id="inv">
-                                                    <?php
-                                                    if ($inv == null) {
-                                                        echo $d;
-                                                    } else {
-                                                        $e = intval($inv->id_trx) + 1;
-                                                        echo $e . '.' . $date;
-                                                    }; ?>
-                                                </h4>
 
-                                            </div>
-
-                                        </div>
                                     </div>
 
                                     <div class="row">
@@ -160,7 +137,7 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <label>Tanggal Trx.</label>
-                                            <input type="date" value="<?= date('Y-m-d')?>" class="form-control date" name="date">
+                                            <input type="date" value="<?= date('Y-m-d') ?>" class="form-control date" name="date">
                                             <input type="hidden" class="form-control id" name="id">
                                             <input type="hidden" class="form-control id_murid" name="id_murid">
                                         </div>
@@ -255,15 +232,15 @@
                                 {
                                     "data": "id",
                                     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html('<a data-toggle="modal" class="detailTabungan mr-1 btn btn-sm btn-info" href="#addTabungan" data-id="' + oData.id + '"><i class="fa fa-search"></i></a><a target="_blank" class="mr-1 btn btn-sm btn-success" href="<?= base_url('cetak/invoice/') ?>' + oData.id_trx + '"><i class="fa fa-print"></i></a>');
+                                        $(nTd).html('<a data-toggle="modal" class="detailTabungan mr-1 btn btn-sm btn-info" href="#addTabungan" data-id="' + oData.id + '"><i class="fa fa-search"></i></a><a target="_blank" class="mr-1 btn btn-sm btn-success" href="<?= base_url('cetak/invoice/') ?>' + oData.id_trx + '"><i class="fa fa-print"></i></a><a class="delete mr-1 btn btn-sm btn-danger" href="#" data-id="' + oData.id + '"><i class="fa fa-times"></i></a>');
                                     }
                                 }
                             ]
                         });
                     }
                     $('.inputBaru').click(function(e) {
-                        var inv = $.trim($('#inv').html())
-                        $('.id_trx').val(inv)
+                        var id = $('.id_murid').val()
+                        $('.id_murid').val(id)
                         $.ajax({
                             url: '<?= base_url('tabungan/getKode/') ?>',
                             type: 'post',
@@ -279,7 +256,7 @@
                         e.preventDefault()
                         var id = $(this).data('id')
                         console.log(id);
-                        
+
                         $.ajax({
                             url: '<?= base_url('tabungan/getTabungan/') ?>',
                             type: 'post',
@@ -341,6 +318,57 @@
                                             getTabungan(id_murid)
                                             $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
                                             var cetak = $('#cetak').attr('href')
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal !',
+                                                html: `${res.error}`
+                                            })
+                                        }
+
+                                    }
+                                })
+                            }
+                        });
+                    })
+
+                    $(document).on('click', '.delete', function(e) {
+                        var id = $(this).data('id')
+                        var id_trx = $('#inv').text()
+                        var id_murid = $('.id_murid').val()
+                        e.preventDefault()
+                        Swal.fire({
+                            title: "Yakin ingin dihapus?",
+                            text: "Data transaksi ini akan terhapus permanen",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, hapus!",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '<?= base_url('tabungan/delete') ?>',
+                                    data: {
+                                        'id': id
+                                    },
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    beforeSend: function() {
+                                        Swal.fire({
+                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                            showConfirmButton: false
+                                        })
+                                    },
+                                    success: function(res) {
+                                        if (res.sukses) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil',
+                                                html: `${res.sukses}`
+                                            })
+                                            getTabungan(id_murid)
+
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',

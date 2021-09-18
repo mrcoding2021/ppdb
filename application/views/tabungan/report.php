@@ -34,19 +34,19 @@
                                                         <tbody>
                                                             <tr>
                                                                 <th scope="col">Saldo Keseluruhan</th>
-                                                                <td scope="col"><?= rupiah($saldoAll)?></td>
+                                                                <td scope="col"><?= rupiah($saldoAll) ?></td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="col">Saldo Tahun Ini</th>
-                                                                <td scope="col"><?= rupiah($saldoTahunIni)?></td>
+                                                                <td scope="col"><?= rupiah($saldoTahunIni) ?></td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="col">Saldo Bulan ini</th>
-                                                                <td scope="col"><?= rupiah($saldoBulanIni)?></td>
+                                                                <td scope="col"><?= rupiah($saldoBulanIni) ?></td>
                                                             </tr>
                                                             <tr>
                                                                 <th scope="col">Saldo Hari ini</th>
-                                                                <td scope="col"><?= rupiah($saldoHariIni)?></td>
+                                                                <td scope="col"><?= rupiah($saldoHariIni) ?></td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -88,7 +88,14 @@
                                                     <label for="1" class="col-form-label">.</label>
                                                     <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
                                                 </div>
-
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                                </div>
+                                                <!-- <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
+                                                </div> -->
                                             </div>
                                             <div class="table-responsive">
                                                 <table class="table table-bordered" id="dataTabungan" width="100%" cellspacing="0">
@@ -136,6 +143,9 @@
                         var bln = $('.bulan').val()
                         var thn = $('.tahun').val()
                         getTabungan(bln, thn, hari)
+                        $('.excel').attr('href', '<?= base_url('tabungan/export/') ?>' + bln + '/' + thn)
+                        // $('.pdf').attr('href', '<?= base_url('tabungan/export/') ?>' + bln + '/' + thn + '/pdf')
+                        
                     })
 
 

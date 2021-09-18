@@ -69,7 +69,11 @@
                                     <div class="row form-group">
                                         <div class="col-sm-6">
                                             <label>Dikeluarkan untuk</label>
-                                            <input type="text" class="form-control nama" name="nama">
+                                            <select name="akun_kas" class="form-control akun_kas">
+                                                <?php foreach ($kas as $key) { ?>
+                                                    <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
+                                                <?php  } ?>
+                                            </select>
                                         </div>
                                         <div class="col-sm-6">
                                             <label>Dari Kas</label>

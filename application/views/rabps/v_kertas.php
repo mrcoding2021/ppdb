@@ -13,7 +13,7 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold "><?= $title ?>
-                                        <a href="<?= base_url('rabps/tambah') ?>" class="btn input-ajaran-baru btn-success btn-border-circle float-right">Input Baru</a>
+                                        <a href="<?= base_url('rabps/adds') ?>" class="btn input-ajaran-baru btn-success btn-border-circle float-right">Input Baru</a>
                                     </h3>
                                 </div>
                                 <div class="card-body">
