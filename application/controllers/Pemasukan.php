@@ -160,21 +160,39 @@ class Pemasukan extends CI_Controller
 
   public function harian()
   {
-    $this->db->group_by('created_at');
-    $date = $this->db->get('tb_pemasukan')->result();
-
-    $data = array();
-    foreach ($date as $key) {
-      $this->db->select_sum('kredit', 'total');
-      $this->db->where('created_at', $key->created_at);
-      $sum = $this->db->get('tb_pemasukan')->row();
-      $data[] = array(
-        'created_at' => $key->created_at,
-        'inv' => $key->no_invoice,
-        'total' => rupiah($sum->total)
-      );
+    $this->db->where('approve', 1);
+    $this->db->where('kode', 'PEMASUKAN KAS');
+    $data = $this->db->get('tb_transaksi')->result();
+    if ($data == null) {
+      $result = [];
     }
-    echo json_encode($data);
+    $no = 1;
+    $saldo = 0;
+    foreach ($data as $key) {
+      if ($key->kredit == 0) {
+        $saldo = $saldo + $key->jumlah;
+      }
+      $this->db->where('kode_akun', $key->akun_kas);
+      $kas = $this->db->get('tb_rab')->row();
+      $this->db->where('id_sumber', $key->metode);
+      $metode = $this->db->get('tb_metode')->row();
+      $this->db->where('kode_akun', $key->akun_trx);
+      $akun = $this->db->get('tb_rab')->row();
+      $result[] = [
+        'id'    => $key->id,
+        'no'    => $no,
+        'date'  => $key->date_created,
+        'id_trx'    => $key->id_trx,
+        'nama'  => $akun->nama,
+        'kas'  => $kas->nama,
+        'metode'  => $metode->nama,
+        'jumlah' => rupiah($key->jumlah),
+        'ket'   => $key->ket,
+        'saldo' => rupiah($saldo)
+      ];
+      $no++;
+    }
+    echo json_encode($result);
   }
 
   public function getKode()

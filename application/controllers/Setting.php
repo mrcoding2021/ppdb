@@ -120,10 +120,14 @@ class Setting extends CI_Controller
         if ($this->scm->cekSecurity() == true) {
             $result = [];
             $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+            $ta = explode('-',$ta);
+            $ta_now = $ta[0];
+            $ta_before = $ta[1];
             for ($i = 0; $i < count($kode); $i++) {
                 $this->db->where('kode', $kode[$i]);
                 $this->db->where('id_siswa', $id);
-                $this->db->where('ta', $ta);
+                $this->db->like('ta', $ta_now);
+                $this->db->or_like('ta', $ta_before);
                 $tagihan = $this->db->get('tb_user_tagihan')->row();
 
                 $this->db->where('kode', $kode[$i]);
@@ -195,7 +199,7 @@ class Setting extends CI_Controller
     {
 
         $this->form_validation->set_rules('ta', 'Tahun Ajaran', 'trim|required');
-        $this->form_validation->set_rules('id_siswa[]', 'Id siswa', 'trim|required');
+        $this->form_validation->set_rules('id_user[]', 'Id siswa', 'trim|required');
 
         if ($this->form_validation->run() == TRUE) {
             $id = $this->input->post('id[]');
@@ -217,7 +221,7 @@ class Setting extends CI_Controller
             if ($this->db->affected_rows() > 0) {
                 $res = ['sukses' => $aff];
             } else {
-                $res = ['error' => 'DAta gagal tersimpan'];
+                $res = ['error' => 'Data gagal tersimpan'];
             }
         } else {
             $res = ['error' => validation_errors()];

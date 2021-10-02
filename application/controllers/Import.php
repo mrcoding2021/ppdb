@@ -15,7 +15,6 @@ class Import extends CI_Controller
         $this->load->library(array('PHPExcel', 'PHPExcel/IOFactory'));
 
         $this->load->helper('rupiah');
-
     }
 
 
@@ -25,7 +24,6 @@ class Import extends CI_Controller
     {
 
         $this->load->view('v_import');
-
     }
 
 
@@ -61,7 +59,6 @@ class Import extends CI_Controller
             $this->session->set_flashdata('alert', '<div class="alert alert-danger">Upload data produk gagal ditambahan</div>');
 
             redirect('sipajar');
-
         } else {
 
             $media = $this->upload->data();
@@ -77,11 +74,9 @@ class Import extends CI_Controller
                 $objReader = IOFactory::createReader($inputFileType);
 
                 $objPHPExcel = $objReader->load($inputFileName);
-
             } catch (Exception $e) {
 
                 die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
-
             }
 
 
@@ -116,11 +111,11 @@ class Import extends CI_Controller
 
                     "pj" => $rowData[0][2],
 
-                    "email" => $rowData[0][3],  
+                    "email" => $rowData[0][3],
 
                     "hp" => $rowData[0][4],
 
-                    "password" => str_replace('-','',$rowData[0][5]),
+                    "password" => str_replace('-', '', $rowData[0][5]),
 
                     "level" => $rowData[0][6],
 
@@ -133,15 +128,12 @@ class Import extends CI_Controller
                 );
 
                 $this->db->insert('tb_user', $data);
-
             }
 
             $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data murid berhasiil ditambahan</div>');
 
             redirect('sipajar/saldo');
-
         }
-
     }
 
 
@@ -177,7 +169,6 @@ class Import extends CI_Controller
             $this->session->set_flashdata('alert', '<div class="alert alert-danger">Upload data produk gagal ditambahan</div>');
 
             redirect('produk');
-
         } else {
 
             $media = $this->upload->data();
@@ -193,11 +184,9 @@ class Import extends CI_Controller
                 $objReader = IOFactory::createReader($inputFileType);
 
                 $objPHPExcel = $objReader->load($inputFileName);
-
             } catch (Exception $e) {
 
                 die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
-
             }
 
 
@@ -235,15 +224,12 @@ class Import extends CI_Controller
                 );
 
                 $this->db->insert('tb_user', $data);
-
             }
 
             $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data produk berhasiil ditambahan</div>');
 
             redirect('user');
-
         }
-
     }
 
 
@@ -279,7 +265,6 @@ class Import extends CI_Controller
             $this->session->set_flashdata('alert', '<div class="alert alert-danger">Upload data produk gagal ditambahan</div>');
 
             redirect('sipajar/mutasi');
-
         } else {
 
             $media = $this->upload->data();
@@ -295,11 +280,9 @@ class Import extends CI_Controller
                 $objReader = IOFactory::createReader($inputFileType);
 
                 $objPHPExcel = $objReader->load($inputFileName);
-
             } catch (Exception $e) {
 
                 die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
-
             }
 
 
@@ -338,21 +321,18 @@ class Import extends CI_Controller
 
                     'kredit' => $rowData[0][4],
 
-		'date_created' => $rowData[0][5]
+                    'date_created' => $rowData[0][5]
 
 
                 );
 
                 $this->db->insert('tb_tansaksi', $data);
-
             }
 
             $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data produk berhasiil ditambahan</div>');
 
             redirect('sipajar/mutasi');
-
         }
-
     }
 
     public function pembayaran()
@@ -389,23 +369,29 @@ class Import extends CI_Controller
                     TRUE,
                     FALSE
                 );
-
-                $this->db->where('nama', $rowData[0][3]);
-                $user = $this->db->get('tb_user')->row();
-                
+                if ($rowData[0][5] == NULL) {
+                    $kredit = 0;
+                    $tagihan = 0;
+                } else {
+                    $kredit = $rowData[0][5];
+                    $tagihan = $rowData[0][4];
+                }
                 $data = array(
-                    "id_pembayaran" => $rowData[0][0],
-                    "no_invoice" => $rowData[0][1],
-                    "created_at" => "2021-01-01",
-                    "id_murid" => $user->id_user,
-                    'byr_utk' => $rowData[0][4],
-                    'id_sumber' => $rowData[0][5],
-                    'kredit' => $rowData[0][6],
+                    "date_created" => "2021-01-01 " . date('H:i:s'),
+                    "akun_kas"  => '0-10001',
+                    "id_trx" => $rowData[0][0],
+                    "id_murid" => $rowData[0][1],
+                    "tagihan" => $tagihan,
+                    "kategori" => 1,
+                    'kode' => $rowData[0][3],
+                    'metode' => 1,
+                    'kredit' => $kredit,
+                    'jumlah' => $kredit,
+                    "akun_trx" => $rowData[0][6],
                     'ta' => $rowData[0][7],
-                    "kategori_murid" => $user->kategori_murid
                 );
 
-                $this->db->insert('tb_pembayaran', $data);
+                $this->db->insert('tb_transaksi', $data);
             }
 
             $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data pembayaran berhasiil ditambahan</div>');
@@ -413,7 +399,6 @@ class Import extends CI_Controller
             redirect('pembayaran');
         }
     }
-
 }
 
 
@@ -423,4 +408,3 @@ class Import extends CI_Controller
 /* End of file Menu.php */
 
 /* Location: ./application/controllers/Menu.php */
-

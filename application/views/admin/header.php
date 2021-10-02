@@ -28,7 +28,8 @@
     <script src="//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
     <script src="<?= base_url() ?>asset/admin/js/demo/datatables-demo.js"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+
 </head>
 <style>
     .bg {
@@ -64,19 +65,24 @@
             transform: rotate(360deg);
         }
     }
-               
+
     .ui-autocomplete {
         max-height: 200px;
-                   overflow-y: auto;
-                   /* prevent horizontal scrollbar */
-                   overflow-x: hidden;
-               }
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+    }
 
-              
-               * html .ui-autocomplete {
-                   height: 200px;
-               }
+
+    * html .ui-autocomplete {
+        height: 200px;
+    }
+
+    #ui-id-1{
+        z-index: 99999;
+    }
 </style>
+
 <body id="page-top">
 
 
@@ -198,7 +204,7 @@
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item my-auto">
                             <span>
-                                <?= longdate_indo(date('Y-m-d'))?>
+                                <?= longdate_indo(date('Y-m-d')) ?>
                             </span>
                         </li>
                         <!-- Nav Item - Alerts -->

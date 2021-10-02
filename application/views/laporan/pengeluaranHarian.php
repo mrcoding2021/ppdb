@@ -6,26 +6,73 @@
 
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
-                                    <h3 class="m-0 text-white font-weight-bold "> <?= $title ?>
-                                        <a href="#addPengeluaran" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Eksport Data</a>
-                                    </h3>
+                                    <h3 class="m-0 text-white font-weight-bold "> <?= $title ?></h3>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-md-12 col-lg-12 container">
-                                        <table class="table table-striped table-sm text-center" width="100%" id="dataPengeluaran">
-                                            <thead class="bg-dark text-white ">
+                                        <div class="mb-3 row">
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Jenis KAS</label>
+                                                <select name="kas" class="form-control form-control-sm kas">
+                                                    <option value="0-10001">Kas Yayasan</option>
+                                                    <option value="0-10002">Kas BOS</option>
+                                                    <option value="0-10003">Kas Kecil</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Tanggal</label>
+                                                <select class="form-control form-control-sm hari" name="hari">
+                                                    <option value="0">Semua</option>
+                                                    <?php for ($i = 1; $i <= 31; $i++) { ?>
+                                                        <option value="<?= $i ?>"><?= $i ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Bulan</label>
+                                                <select class="form-control form-control-sm bulan" name="bulan">
+                                                    <?php for ($i = 1; $i < 12; $i++) { ?>
+                                                        <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-1 col-sm-4">
+                                                <label for="1" class="col-form-label">Tahun</label>
+                                                <select class="form-control form-control-sm tahun" name="tahun">
+                                                    <?php for ($i = 0; $i < 10; $i++) { ?>
+                                                        <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-1 col-sm-4">
+                                                <label for="1" class="col-form-label">.</label>
+                                                <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">.</label>
+                                                <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                            </div>
+                                            <!-- <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
+                                                </div> -->
+                                        </div>
+                                        <table class="table table-striped table-sm " width="100%" id="dataPengeluaran">
+                                            <thead class="bg-dark text-white text-center">
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Tanggal</th>
                                                     <th>Dikeluarkan kepada</th>
                                                     <th>Dari Kas</th>
                                                     <th>Metode</th>
-                                                    <th>Jumlah</th>
+                                                    <th>Nilai</th>
+                                                    <th>Total</th>
                                                     <th>Keterangan</th>
                                                 </tr>
 
                                             </thead>
-                                            <tbody>
+                                            <tbody class="text-left">
 
                                             </tbody>
                                         </table>
@@ -42,101 +89,25 @@
 
                 </div>
 
-
-                <div class="modal fade" id="addPengeluaran" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Input <?= $title?></h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" class="addPengeluaran" action="<?= base_url('pengeluaran/add') ?>">
-                                    <div class="row form-group">
-                                        <div class="col-sm-6">
-                                            <label>No. Invoice</label>
-                                            <input type="text" readonly class="form-control id_trx" name="id_trx">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label>Tanggal Trx.</label>
-                                            <input type="date" value="<?= date('Y-m-d') ?>" class="form-control date" name="date">
-                                            <input type="hidden" class="form-control id" name="id">
-                                        </div>
-                                    </div>
-                                    <div class="row form-group">
-                                        <div class="col-sm-6">
-                                            <label>Dikeluarkan untuk</label>
-                                            <input type="text" class="form-control nama" name="nama">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label>Dari Kas</label>
-                                            <select name="akun_kas" class="form-control akun_kas">
-                                                <?php foreach ($kas as $key) { ?>
-                                                    <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
-                                                <?php  } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <label>Metode</label>
-                                            <select name="metode" class="form-control metode">
-                                                <option>Pilih Metode</option>
-                                                <option value="1">CASH</option>
-                                                <option value="2">TRANSFER</option>
-                                                <option value="3">TABUNGAN</option>
-                                                <option value="4">POTONG KEGIATAN</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label for="1">Tahun Ajaran</label>
-                                            <select type="text" class="form-control ta" name="ta">
-                                                <?php $n = 16;
-                                                $m = 17;
-                                                for ($i = 0; $i < 15; $i++) { ?>
-                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                <?php $n++;
-                                                    $m++;
-                                                } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <label>Jenis Transaksi</label>
-                                            <select name="kategori" class="form-control kategori">
-                                                <!-- <option>Pilih Transaksi</option> -->
-                                                <!-- <option value="1">Pemasukan</option> -->
-                                                <option value="0">Pengeluaran</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label>Nilai</label>
-                                            <input type="text" class="form-control nilai" name="nilai">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <label>Keterangan</label>
-                                            <textarea type="text" class="form-control ket" name="ket"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
-                                        <button class="btn btn-success btn-border-circle btn-block" type="submit">Simpan</button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
                 <script>
-                    getPengeluaran()
+                    var kas = $('.kas').val()
+                    var hari = $('.hari').val()
+                    var bln = $('.bulan').val()
+                    var thn = $('.tahun').val()
+                    getPengeluaran(kas, bln, thn, hari)
 
-                    function getPengeluaran() {
+                    $('.cari').click(function(e) {
+                        e.preventDefault()
+                        var kas = $('.kas').val()
+                        var hari = $('.hari').val()
+                        var bln = $('.bulan').val()
+                        var thn = $('.tahun').val()
+                        getPengeluaran(kas, bln, thn, hari)
+                        $('.excel').attr('href', '<?= base_url('pengeluaran/export/') ?>' + kas + '/' + bln + '/' + thn)
+
+                    })
+
+                    function getPengeluaran(kas, bln, thn, hari) {
                         var getPengeluaran = $('#dataPengeluaran').DataTable({
                             "processing": true,
                             "language": {
@@ -144,7 +115,7 @@
                             },
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('pengeluaran/get/') ?>',
+                                "url": '<?= base_url('pengeluaran/harian/') ?>' + kas + '/' + bln + '/' + thn + '/' + hari,
                                 "dataSrc": ""
                             },
                             "pageLength": 100,
@@ -168,106 +139,12 @@
                                     "data": "jumlah"
                                 },
                                 {
+                                    "data": "saldo"
+                                },
+                                {
                                     "data": "ket"
                                 }
                             ]
                         });
                     }
-
-                    $('.inputBaru').click(function(e) {
-                        var inv = $.trim($('#inv').html())
-                        $('.id_trx').val(inv)
-                        $.ajax({
-                            url: '<?= base_url('pengeluaran/getKode/') ?>',
-                            type: 'post',
-                            dataType: 'json',
-                            success: function(res) {
-                                console.log(res);
-                                $('.id_trx').val(res.id_trx)
-                            }
-                        })
-                    })
-
-                    $(document).on('click', '.detailPemasukan', function(e) {
-                        e.preventDefault()
-                        var id = $(this).data('id')
-                        console.log(id);
-
-                        $.ajax({
-                            url: '<?= base_url('pemasukan/get/') ?>',
-                            type: 'post',
-                            dataType: 'json',
-                            data: {
-                                'id': id
-                            },
-                            success: function(res) {
-                                console.log(res);
-                                $('.id_trx').val(res.id_trx)
-                                $('.nama').val(res.nama)
-                                $('.id').val(res.id)
-                                $('.id_murid').val(res.id_murid)
-                                $('.date').val(res.date)
-                                $('.nilai').val(res.jumlah)
-                                $('.ket').text(res.ket)
-                                $('.metode option[value="' + res.metode + '"]').attr('selected', true)
-                                $('.metode option[value="' + res.metode + '"]').siblings().attr('selected', false)
-                                $('.ta option[value="' + res.ta + '"]').attr('selected', true)
-                                $('.ta option[value="' + res.ta + '"]').siblings().attr('selected', false)
-                                $('.kategori option[value="' + res.kategori + '"]').attr('selected', true)
-                                $('.kategori option[value="' + res.kategori + '"]').siblings().attr('selected', false)
-                                $('.akun_kas option[value="' + res.akun_kas + '"]').attr('selected', true)
-                                $('.akun_kas option[value="' + res.akun_kas + '"]').siblings().attr('selected', false)
-                            }
-                        })
-                    })
-
-                    $('.addPengeluaran').submit(function(e) {
-                        var id_trx = $('#inv').text()
-                        var id_murid = $('.id_murid').val()
-                        e.preventDefault()
-                        Swal.fire({
-                            title: "Yakin ingin disimpan?",
-                            text: "Pastikan data sudah benar dan sesuai",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Yes, simpan sekarang!",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: $(this).attr('action'),
-                                    data: $(this).serialize(),
-                                    dataType: 'json',
-                                    type: 'POST',
-                                    beforeSend: function() {
-                                        Swal.fire({
-                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
-                                            showConfirmButton: false
-                                        })
-                                    },
-                                    success: function(res) {
-                                        if (res.sukses) {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Berhasil',
-                                                html: `${res.sukses}`
-                                            })
-                                            $('.modal').modal('hide')
-                                            getPemasukan()
-                                            $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
-                                            var cetak = $('#cetak').attr('href')
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Gagal !',
-                                                html: `${res.error}`
-                                            })
-                                        }
-
-                                    }
-                                })
-                            }
-                        });
-                    })
                 </script>

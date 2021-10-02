@@ -49,12 +49,12 @@ class Akun extends CI_Controller
       'judul' => 'Akun Perkiraan',
       'view'  => 'v_kodeAkun'
     );
-    $this->db->where('parent', 0);
+    
     $this->db->where('kategori', 1);
     $this->db->where('is_active', 1);
     $data['akunPemasukan'] = $this->db->get('tb_rab')->result();
 
-    $this->db->where('parent', 0);
+    
     $this->db->where('kategori', 2);
     $this->db->where('is_active', 1);
     $data['akunPengeluaran'] = $this->db->get('tb_rab')->result();

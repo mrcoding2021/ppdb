@@ -92,7 +92,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-12">
                                             <label>Kategori</label>
-                                            <select name="kategori" class="form-control">
+                                            <select name="kategori" class="form-control kategori">
                                                 <option>Pilik kategori</option>
                                                 <option value="0">KAS</option>
                                                 <option value="1">Pemasukan</option>
@@ -103,11 +103,8 @@
                                     <div class="form-group row pemasukan">
                                         <div class="col-sm-12">
                                             <label>Grup</label>
-                                            <select name="parent" class="form-control">
+                                            <select name="parent" class="form-control selectpicker"  data-live-search="true">
                                                 <option value="0">Pilik Grup</option>
-                                                <option value="1">Pemasukan</option>
-                                                <option value="2">Pengeluaran</option>
-                                                <option value="0">KAS</option>
                                                 <?php foreach ($akunPemasukan as $key) { ?>
                                                     <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
                                                 <?php } ?>
@@ -117,10 +114,8 @@
                                     <div class="form-group row pengeluaran">
                                         <div class="col-sm-12">
                                             <label>Grup</label>
-                                            <select name="ortu" class="form-control">
-                                                <option value="1">Pemasukan</option>
-                                                <option value="2">Pengeluaran</option>
-                                                <option value="0">KAS</option>
+                                            <select name="ortu" class="form-control selectpicker"  data-live-search="true">
+                                                <option value="0">Pilih Group</option>
                                                 <?php foreach ($akunPengeluaran as $key) { ?>
                                                     <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
                                                 <?php } ?>
@@ -201,18 +196,18 @@
                                 {
                                     "data": "id",
                                     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html('<div class="d-flex"><a class="mr-1 btn btn-sm btn-info" href="" data-id="' + oData.id + '" data-id="' + oData.id_user + '" data-num="' + oData.id + '" ><i class="fa fa-search"></i></a></div>');
+                                        $(nTd).html('<div class="d-flex"><a data-toggle="modal" class="edit mr-1 btn btn-sm btn-info" href="#add" data-kode="' + oData.kode_akun + '" data-id="' + oData.id + '" data-nama="' + oData.nama + '" ><i class="fa fa-search"></i></a></div>');
                                     }
                                 }
                             ]
                         });
                     }
                     $('.add').click(function(e) {
-                        $('.form-control').val('')
+                        $('input').val('')
                         $('.addAkun').attr('action', '<?= base_url('akun/add/') ?>')
                     })
                     $('.pengeluaran').hide()
-                    $('select[name="kategori"]').on('change', function(e) {
+                    $('.kategori').on('change', function(e) {
                         if ($(this).val() == 1) {
                             $('.pemasukan').show()
                             $('.pengeluaran').hide()
@@ -221,7 +216,7 @@
                             $('.pengeluaran').show()
                         }
                     })
-                    $('.edit').click(function(e) {
+                    $(document).on('click','.edit',function(e) {
                         $('input[name="kode"]').focus()
                         var id = $(this).data('id')
                         console.log(id)
@@ -241,6 +236,7 @@
                                     $('select[name="ortu"] option[value="' + res.parent + '"]').siblings().attr('selected', false)
                                     $('select[name="kategori"] option[value="' + res.kategori + '"]').attr('selected', true)
                                     $('select[name="kategori"] option[value="' + res.kategori + '"]').siblings().attr('selected', false)
+                                    $('.selectpicker').selectpicker('val', res.parent);
                                 } else if (res.kategori == 2) {
                                     $('.pemasukan').hide()
                                     $('.pengeluaran').show()
@@ -248,6 +244,7 @@
                                     $('select[name="ortu"] option[value="' + res.parent + '"]').siblings().attr('selected', false)
                                     $('select[name="kategori"] option[value="' + res.kategori + '"]').attr('selected', true)
                                     $('select[name="kategori"] option[value="' + res.kategori + '"]').siblings().attr('selected', false)
+                                    $('.selectpicker').selectpicker('val', res.parent);
                                 }
                             }
                         })

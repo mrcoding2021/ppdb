@@ -121,7 +121,7 @@
                                                                     <?php endforeach; ?>
                                                                 </select>
                                                             </td>
-                                                            <td><input type="text" value="0" class="tagihan form-control form-control-sm" readonly name="tagihan[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
+                                                            <td><input type="text" value="0" class="tagihan form-control form-control-sm"  name="tagihan[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
                                                             <td>
                                                                 <select value="0" class="diskon1 form-control form-control-sm" name="metode[]">
                                                                     <option value="1">CASH</option>

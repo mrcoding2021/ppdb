@@ -37,7 +37,7 @@ class Sispem extends CI_Controller
       $data['slider'] = $this->db->get('tb_slider')->result_array();
 
       $this->load->view('admin/header', $data);
-      $this->load->view('admin/' . $content, $data);
+      $this->load->view($content, $data);
       $this->load->view('admin/footer', $data);
     } else {
       # code...
@@ -131,13 +131,13 @@ class Sispem extends CI_Controller
   public function pemasukanHarian()
   {
 
-    $this->menu('pembayaran/v_pemasukanHarian', 'Pemasukan Harian');
+    $this->menu('laporan/pemasukanHarian', 'Pemasukan Harian');
   }
 
   public function pengeluaranHarian()
   {
 
-    $this->menu('pembayaran/v_pengeluaranHarian', 'Pengeluaran Harian');
+    $this->menu('laporan/pengeluaranHarian', 'Pengeluaran Harian');
   }
 
   public function siswa()

@@ -58,62 +58,52 @@ class Laporan extends CI_Controller
     $this->index($data);
   }
 
-  public function getBukuKas($ta = '2020-2021', $bln = '1', $thn = '2021')
+  public function getBukuKas($kas = '0-10000',$ta = '2020-2021', $bln = 0, $thn = '2021')
   {
 
-    $this->db->select('*');
+    if ($bln != 0) {
+      $this->db->where('month(date_created)', $bln);
+    }
+    $this->db->where('approve', 1);
+    $this->db->where('akun_kas', $kas);
     $this->db->where('ta', $ta);
-    $this->db->order_by('id_pembayaran', 'desc');
-    $this->db->where('month(created_at)', $bln);
-    $this->db->where('year(created_at)', $thn);
-    $data = $this->db->get('tb_pembayaran')->result();
+    $this->db->where('year(date_created)', $thn);
+    $data = $this->db->get('tb_transaksi')->result();
 
-    $this->db->select('*');
     $this->db->where('ta', $ta);
-    $this->db->order_by('id_pembayaran', 'desc');
-    $this->db->where('month(created_at)', $bln);
-    $this->db->where('year(created_at)', $thn);
+    $this->db->where('month(date_created)', $bln);
+    $this->db->where('year(date_created)', $thn);
     $this->db->select_sum('jumlah', 'total');
-    $jumlah = $this->db->get('tb_pembayaran')->row();
+    $jumlah = $this->db->get('tb_transaksi')->row();
     // var_dump($data);die;
     $result = array();
     if ($data != null) {
       $sum = $jumlah->total;
       foreach ($data as $key) {
-        $this->db->where('kode_akun', $key->byr_utk);
+        $this->db->where('kode_akun', $key->akun_trx);
         $akun = $this->db->get('tb_rab')->row();
 
-        $this->db->where('id_user', $key->id_murid);
-        $user = $this->db->get('tb_user')->row();
-
-        if ($sum == 0) {
-          $sum = $key->kredit - $key->diskon;
+        if ($key->kredit == 0) {
+          $sum = $sum - $key->debit;
         } else {
-          $sum = $sum - $key->kredit - $key->diskon;
+          $sum = $sum + $key->kredit - $key->debit;
         }
 
         $this->db->where('id', $akun->parent);
         $parent = $this->db->get('tb_rab')->row_array();
         // var_dump($parent->nama);die;
         $result[] = array(
-          'created_at' => shortdate_indo(substr($key->created_at, 0, 10)),
-          'kode_akun' => $key->byr_utk,
-          'nama'      => $user->nama,
-          'keterangan'  => $parent['alias'] . ' - ' . $akun->nama,
+          'created_at' => shortdate_indo(substr($key->date_created, 0, 10)),
+          'kode_akun' => $key->akun_trx,
+          'nama'      => '',
+          'keterangan'  =>'',
           'debit'   => rupiah($key->jumlah),
           'kredit'  => rupiah($key->diskon),
           'saldo'   => rupiah($sum)
         );
       }
     } else {
-      $result = array(
-        'created_at' => '',
-        'kode_akun' => '',
-        'keterangan'  =>  'Tidak ada data',
-        'debit'   => '',
-        'kredit'  => '',
-        'saldo'   => ''
-      );
+      $result = [];
     }
     echo json_encode($result);
   }

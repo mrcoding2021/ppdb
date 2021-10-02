@@ -98,22 +98,34 @@
                                                 </div> -->
                                             </div>
                                             <div class="table-responsive">
-                                                <table class="table table-bordered" id="dataTabungan" width="100%" cellspacing="0">
-                                                    <thead class="bg-dark text-white">
-                                                        <tr>
-                                                            <th>No</th>
-                                                            <th>Tanggal</th>
-                                                            <th>Nama Siswa</th>
-                                                            <th>HP</th>
-                                                            <th>Debit</th>
-                                                            <th>Kredit</th>
-                                                            <th>Saldo</th>
-                                                            <!-- <th>Aksi</th> -->
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    </tbody>
-                                                </table>
+                                            <table class="table table-striped table-sm text-center" width="100%" id="dataBni">
+                                            <thead class="bg-dark text-white ">
+                                                <tr>
+                                                    <th rowspan="2">No</th>
+                                                    <th rowspan="2">Tanggal</th>
+                                                    <th rowspan="2">Th. Ajaran</th>
+                                                    <th rowspan="2">Bank</th>
+                                                    <th rowspan="2">Penyetor</th>
+                                                    <th rowspan="2">Nama Siswa</th>
+                                                    <th rowspan="2">Kelas</th>
+                                                    <th colspan="8">Rincian Transfer</th>
+                                                    <th rowspan="2">Total</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>SPP</th>
+                                                    <th>INFAQ GEDUNG</th>
+                                                    <th>KEGIATAN</th>
+                                                    <th>SERAGAM</th>
+                                                    <th>KOMITE</th>
+                                                    <th>BUKU</th>
+                                                    <th>SARPRAS</th>
+                                                    <th>FORMULIR</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
                                             </div>
                                         </div>
 
@@ -135,25 +147,20 @@
                     var hari = $('.hari').val()
                     var bln = $('.bulan').val()
                     var thn = $('.tahun').val()
-                    getTabungan(bln, thn, hari)
-
+                    getBni(bln, thn, hari)
                     $('.cari').click(function(e) {
                         e.preventDefault()
                         var hari = $('.hari').val()
                         var bln = $('.bulan').val()
                         var thn = $('.tahun').val()
-                        getTabungan(bln, thn, hari)
-                        $('.excel').attr('href', '<?= base_url('tabungan/export/') ?>' + bln + '/' + thn)
-                        // $('.pdf').attr('href', '<?= base_url('tabungan/export/') ?>' + bln + '/' + thn + '/pdf')
-                        
+                        getBni(bln, thn, hari)
+                        $('.excel').attr('href', '<?= base_url('bni/export/') ?>' + bln + '/' + thn)
                     })
-
-
-                    function getTabungan(bln, thn, hari) {
-                        var dataTabungan = $('#dataTabungan').DataTable({
+                    function getBni(bln, thn, hari) {
+                        var dataBni = $('#dataBni').DataTable({
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('tabungan/getAll/') ?>' + bln + '/' + thn + '/' + hari,
+                                "url": '<?= base_url('bni/getAll/') ?>' + bln + '/' + thn + '/' + hari,
                                 "dataSrc": ""
                             },
                             'pageLength': 100,
@@ -166,115 +173,50 @@
                                     "data": "date"
                                 },
                                 {
+                                    "data": "ta"
+                                },
+                                {
+                                    "data": "bank"
+                                },
+                                {
+                                    "data": "penyetor"
+                                },
+                                {
                                     "data": "nama"
                                 },
                                 {
-                                    "data": "hp"
+                                    "data": "kelas"
                                 },
                                 {
-                                    "data": "debit"
+                                    "data": "spp"
                                 },
                                 {
-                                    "data": "kredit"
+                                    "data": "gedung"
                                 },
                                 {
-                                    "data": "saldo"
+                                    "data": "kegiatan"
                                 },
-                                // {
-                                //     "data": "saldo",
-                                //     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                //         $(nTd).html("<a data-toggle='modal' class='mr-1 detail btn btn-info btn-border-circle btn-sm' href='#detail' data-id=" + oData.id + ">Detail</a><a class='hapus mr-1 btn btn-border-circle btn-danger btn-sm' href='#' data-id=" + oData.id + ">Hapus</a>");
-                                //     },
-                                //     "className": 'details-control',
-                                //     "orderable": false,
-                                //     "data": null,
-                                //     "defaultContent": ''
-                                // },
+                                {
+                                    "data": "seragam"
+                                },
+                                {
+                                    "data": "komite"
+                                },
+                                {
+                                    "data": "buku"
+                                },
+                                {
+                                    "data": "sarpras"
+                                },
+                                {
+                                    "data": "formulir"
+                                },
+                                {
+                                    "data": "total"
+                                }
                             ]
                         });
 
 
-                    }
-
-                    $(document).on('click', '.detail', function() {
-                        var inv = $(this).data('id')
-                        $('.terima').attr('data-id', inv)
-
-                        $.ajax({
-                            url: '<?= base_url('acc/getInv/') ?>',
-                            type: 'post',
-                            dataType: 'json',
-                            data: {
-                                'inv': inv
-                            },
-                            success: function(res) {
-                                console.log(res)
-
-                                $('.aksi').attr('data-id', inv)
-                                var bayar = ''
-
-                                $.each(res, function(i, v) {
-                                    bayar += `<tr><td>` + v.no + `</td>'+                                    
-                                    '<td>` + v.ta + `</td>'+
-                                    '<td>` + v.akun + `</td>'+
-                                    '<td>` + v.tagihan + `</td>'+
-                                    '<td>` + v.metode + `</td>'+
-                                    '<td>` + v.nilai + `</td>'+
-                                    '<td>` + v.diskon + `</td>'+
-                                    '<td>` + v.total + `</td></tr>`
-                                })
-
-                                $('#table-bayar').html(bayar)
-                            }
-                        })
-                    })
-
-                    $('.terima').click(function(e) {
-                        e.preventDefault()
-                        var inv = $(this).data('id')
-                        accept(inv)
-                    })
-
-                    function accept(inv) {
-                        Swal.fire({
-                            title: "Yakin ?",
-                            text: "Pastikan data sudah benar dan sesuai",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Yes !",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: '<?= base_url('acc/accept/') ?>',
-                                    data: {
-                                        'inv': inv,
-                                    },
-                                    dataType: 'json',
-                                    type: 'POST',
-                                    success: function(response) {
-                                        if (response.success) {
-                                            $('.modal').modal('hide')
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Berhasil',
-                                                html: `${response.success}`
-                                            })
-                                            var bln = $('.bulan').val()
-                                            var thn = $('.tahun').val()
-                                            getAcc(bln, thn)
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error',
-                                                html: `${response.error}`
-                                            })
-                                        }
-
-                                    }
-                                })
-                            }
-                        });
                     }
                 </script>

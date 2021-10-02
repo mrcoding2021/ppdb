@@ -10,18 +10,59 @@
                                         <a href="#addPemasukan" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Eksport Data</a>
                                     </h3>
                                 </div>
-                               
+
                                 <div class="row mt-3">
                                     <div class="col-md-12 col-lg-12 container">
+                                    <div class="mb-3 row">
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">Tanggal</label>
+                                                    <select class="form-control form-control-sm hari" name="hari">
+                                                        <option value="0">Semua</option>
+                                                        <?php for ($i = 1; $i <= 31; $i++) { ?>
+                                                            <option value="<?= $i ?>"><?= $i ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">Bulan</label>
+                                                    <select class="form-control form-control-sm bulan" name="bulan">
+                                                        <?php for ($i = 1; $i < 12; $i++) { ?>
+                                                            <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">Tahun</label>
+                                                    <select class="form-control form-control-sm tahun" name="tahun">
+                                                        <?php for ($i = 0; $i < 10; $i++) { ?>
+                                                            <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-lg-1 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                                </div>
+                                                <!-- <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
+                                                </div> -->
+                                            </div>
                                         <table class="table table-striped table-sm text-center" width="100%" id="dataPemasukan">
                                             <thead class="bg-dark text-white ">
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Tanggal</th>
-                                                    <th>Diterima dari</th>
-                                                    <th>Ke Kas</th>
+                                                    <th>Dikeluarkan kepada</th>
+                                                    <th>Dari Kas</th>
                                                     <th>Metode</th>
-                                                    <th>Jumlah</th>
+                                                    <th>Nilai</th>
+                                                    <th>Total</th>
                                                     <th>Keterangan</th>
                                                 </tr>
 
@@ -43,97 +84,6 @@
 
                 </div>
 
-
-                <div class="modal fade" id="addPemasukan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Input <?= $title?></h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" class="addPemasukan" action="<?= base_url('pemasukan/add') ?>">
-                                    <div class="row form-group">
-                                        <div class="col-sm-6">
-                                            <label>No. Invoice</label>
-                                            <input type="text" readonly class="form-control id_trx" name="id_trx">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label>Tanggal Trx.</label>
-                                            <input type="date" value="<?= date('Y-m-d') ?>" class="form-control date" name="date">
-                                            <input type="hidden" class="form-control id" name="id">
-                                        </div>
-                                    </div>
-                                    <div class="row form-group">
-                                        <div class="col-sm-6">
-                                            <label>Diterima Dari</label>
-                                            <input type="text" class="form-control nama" name="nama">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label>ke Kas</label>
-                                            <select name="akun_kas" class="form-control akun_kas">
-                                                <?php foreach ($kas as $key) { ?>
-                                                    <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
-                                                <?php  } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <label>Metode</label>
-                                            <select name="metode" class="form-control metode">
-                                                <option>Pilih Metode</option>
-                                                <option value="1">CASH</option>
-                                                <option value="2">TRANSFER</option>
-                                                <option value="3">TABUNGAN</option>
-                                                <option value="4">POTONG KEGIATAN</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label for="1">Tahun Ajaran</label>
-                                            <select type="text" class="form-control ta" name="ta">
-                                                <?php $n = 16;
-                                                $m = 17;
-                                                for ($i = 0; $i < 15; $i++) { ?>
-                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                <?php $n++;
-                                                    $m++;
-                                                } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <label>Jenis Transaksi</label>
-                                            <select name="kategori" class="form-control kategori">
-                                                <!-- <option>Pilih Transaksi</option> -->
-                                                <option value="1">Pemasukan</option>
-                                                <!-- <option value="0">Pengeluaran</option> -->
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label>Nilai</label>
-                                            <input type="text" class="form-control nilai" name="nilai">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12">
-                                            <label>Keterangan</label>
-                                            <textarea type="text" class="form-control ket" name="ket"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
-                                        <button class="btn btn-success btn-border-circle btn-block" type="submit">Simpan</button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
                 <script>
                     getPemasukan()
 
@@ -145,7 +95,7 @@
                             },
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('pemasukan/get/') ?>',
+                                "url": '<?= base_url('pemasukan/harian/') ?>',
                                 "dataSrc": ""
                             },
                             "pageLength": 100,
@@ -167,6 +117,9 @@
                                 },
                                 {
                                     "data": "jumlah"
+                                },
+                                {
+                                    "data": "saldo"
                                 },
                                 {
                                     "data": "ket"

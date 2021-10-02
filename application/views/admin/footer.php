@@ -59,7 +59,7 @@
 
 <script src="<?= base_url() ?>asset/admin/js/sb-admin-2.min.js"></script>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </script>
 <script>
@@ -100,10 +100,10 @@
                     var inv = $('#inv').html()
                     iuranLunas(res.id_user)
                     iuranHutang(res.id_user)
+                    $('input[name="id_murid"]').val(res.id_user)
                     $('input[name="no_invoice"]').val(inv)
                     $('input[name="kelas"]').val(res.kelas)
                     $('input[name="hp"]').val(res.hp)
-                    $('input[name="id_murid"]').val(res.id_user)
                     $('input[name="nis"]').val(res.nis)
                     $('input[name="nisn"]').val(res.nisn)
                     $('input[name="wali"]').val(res.wali)

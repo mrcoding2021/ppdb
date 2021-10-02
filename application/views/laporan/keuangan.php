@@ -30,28 +30,46 @@
                                     </ul>
                                     <div class="tab-content mt-3" id="myTabContent">
                                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                            <div class="form-group row">
-                                                <div class="col-sm-4">
-                                                    <label>Bulan</label>
-                                                    <select name="bulan" class="thun-ajaran form-control">
-                                                        <?php
-                                                        $bulan = [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
-                                                        for ($i = 0; $i < count($bulan); $i++) : ?>
-                                                            <option <?= ($bulan[$i] == date('m')) ? 'selected' : '' ?> value="<?= $bulan[$i] ?>"><?= bulan($bulan[$i]) ?></option>
-                                                        <?php endfor ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-4">
-                                                    <label>Tahun</label>
-                                                    <select name="thn-ajaran" class="thun-ajaran form-control">
-                                                        <?php
-                                                        $tahun = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027];
-                                                        for ($i = 0; $i < count($tahun); $i++) : ?>
-                                                            <option <?= ($tahun[$i] == date('Y')) ? 'selected' : '' ?> value="<?= $tahun[$i] ?>"><?= $tahun[$i] ?></option>
-                                                        <?php endfor ?>
-                                                    </select>
-                                                </div>
+                                        <div class="mb-3 row">
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Tanggal</label>
+                                                <select class="form-control form-control-sm hari" name="hari">
+                                                    <option value="0">Semua</option>
+                                                    <?php for ($i = 1; $i <= 31; $i++) { ?>
+                                                        <option value="<?= $i ?>"><?= $i ?></option>
+                                                    <?php } ?>
+                                                </select>
                                             </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Bulan</label>
+                                                <select class="form-control form-control-sm bulan" name="bulan">
+                                                    <?php for ($i = 1; $i < 13; $i++) { ?>
+                                                        <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-1 col-sm-4">
+                                                <label for="1" class="col-form-label">Tahun</label>
+                                                <select class="form-control form-control-sm tahun" name="tahun">
+                                                    <?php for ($i = 0; $i < 10; $i++) { ?>
+                                                        <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-1 col-sm-4">
+                                                <label for="1" class="col-form-label">.</label>
+                                                <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">.</label>
+                                                <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                            </div>
+                                            <!-- <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
+                                                </div> -->
+                                        </div>
                                             <div class="form-group row">
                                                 <div class="table-responsive">
                                                     <form action="<?= base_url('pembayaran/inputData') ?>" class="inputData" method="POST">
@@ -110,15 +128,7 @@
                                             <div class="form-group row">
                                                 <div class="col-sm-4">
                                                     <label>Tahun Ajaran</label>
-                                                    <select name="thn-ajaran" class="thun-ajaran form-control">
-                                                        <?php $this->db->group_by('ta');
-
-                                                        $ta = $this->db->get('tb_ta')->result();
-
-                                                        foreach ($ta as $key) : ?>
-                                                            <option <?= (substr($key->ta, 5) == date('Y')) ? 'selected' : '' ?> value="<?= $key->id_ajaran ?>"><?= $key->ta ?></option>
-                                                        <?php endforeach ?>
-                                                    </select>
+                                                   
                                                 </div>
                                             </div>
                                             <div class="table-responsive">

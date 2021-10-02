@@ -13,8 +13,7 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold "><?= $title ?>
-                                        <a href="<?= base_url('rabps/rencana') ?>" class="btn input-ajaran-baru btn-success btn-border-circle float-right">Kembali</a>
-                                        <a href="<?= base_url('rabps/tambah') ?>" class="btn input-ajaran-baru btn-primary btn-border-circle float-right">Input Baru</a>
+                                        <a href="<?= base_url('rabps/detailRencana/' . $ta) ?>" class="btn input-ajaran-baru btn-success btn-border-circle float-right">Kembali</a>
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -40,15 +39,13 @@
                                         </li>
                                     </ul>
                                     <div class="tab-content mt-3" id="myTabContent">
-
                                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                                             <table class="table table-hover table-sm table-bordered" id="tablePemasukan">
                                                 <thead class="bg-dark text-white text-center">
                                                     <tr>
                                                         <th scope="col" width="5%" rowspan="2">#</th>
-                                                        <th scope="col" width="5%" rowspan="2">Kode Akun</th>
+                                                        <th scope="col" width="7%" rowspan="2">Kode Akun</th>
                                                         <th scope="col" rowspan="2" width="30%">Uraian</th>
-                                                        <th scope="col" rowspan="2">Tgl. Input</th>
                                                         <th scope="col" class="text-center" colspan="3">Perhitungan</th>
                                                         <th scope="col" rowspan="2">Total</th>
                                                         <th scope="col" rowspan="2">Simpan</th>
@@ -63,19 +60,34 @@
                                                 <tbody>
                                                     <?php foreach ($pemasukan as $key) : ?>
                                                         <tr>
-                                                            <td><a href="#key<?= $key->kode_akun ?>" class="badge badge-success" data-toggle="collapse"><i class="fa fa-plus"></i></a></td>
-                                                            <td><?= $key->kode_akun ?></td>
-                                                            <td colspan="6"><?= strtoupper($key->nama) ?></td>
+                                                            <?php
+                                                            $this->db->where('parent', $key->kode_akun);
+                                                            $pem = $this->db->get('tb_rab')->result();
+                                                            if (count($pem) != null) { ?>
+                                                                <td><a href="#" data-target="#data<?= $key->kode_akun ?>" class="badge badge-success" data-toggle="collapse"><i class="fa fa-plus"></i></a></td>
+                                                            <?php  } else { ?>
+                                                                <td></td>
+                                                            <?php } ?>
+                                                            <td><strong><?= $key->kode_akun ?></strong></td>
+                                                            <td colspan="6"><strong><?= strtoupper($key->nama) ?></strong></td>
                                                         </tr>
-                                                        <?php
-                                                        $this->db->where('parent', $key->id);
-                                                        $pem = $this->db->get('tb_rab')->result();
-                                                        foreach ($pem as $p) :
-                                                            if ($id_page == 'update') {
-                                                                $this->db->where('ta', $ta);
-                                                                $this->db->where('kode_akun', $p->kode_akun);
-                                                                $rinci = $this->db->get('tb_rab_kertas')->row();
-                                                                if ($rinci == null) {
+                                                        <thead class="collapse" id="data<?= $key->kode_akun ?>">
+                                                            <?php
+
+                                                            foreach ($pem as $p) :
+                                                                if ($id_page == 'update') {
+                                                                    $this->db->where('ta', $ta);
+                                                                    $this->db->where('kode_akun', $p->kode_akun);
+                                                                    $rinci = $this->db->get('tb_rab_kertas')->row();
+                                                                    if ($rinci == null) {
+                                                                        $rinci = (object)[
+                                                                            'jml_siswa'     => '',
+                                                                            'qty'           => '',
+                                                                            'hrg_satuan'    => '',
+                                                                            'jumlah'        => '',
+                                                                        ];
+                                                                    }
+                                                                } else {
                                                                     $rinci = (object)[
                                                                         'jml_siswa'     => '',
                                                                         'qty'           => '',
@@ -83,30 +95,21 @@
                                                                         'jumlah'        => '',
                                                                     ];
                                                                 }
-                                                            } else {
-                                                                $rinci = (object)[
-                                                                    'jml_siswa'     => '',
-                                                                    'qty'           => '',
-                                                                    'hrg_satuan'    => '',
-                                                                    'jumlah'        => '',
-                                                                ];
-                                                            }
+                                                            ?>
 
-                                                        ?>
-                                                            <form action="<?= base_url('rabps/add') ?>" method="post">
-                                                                <tr class="collapse" id="key<?= $key->kode_akun ?>">
+                                                                <tr>
                                                                     <td></td>
                                                                     <td><?= $p->kode_akun ?></td>
-                                                                    <td><?= strtoupper($p->nama) ?></td>
-                                                                    <td><input style="max-width:150px" type="date" name="tgl_input" value="<?= $rinci->tgl_input ?>"></td>
-                                                                    <td><input style=" max-width:150px" type="hidden" name="kode_akun" value="<?= $p->kode_akun ?>"><input type="hidden" name="kategori" value="1"><input type="hidden" name="parent" value="<?= $key->kode_akun ?>"><input type="text" name="jml_siswa" style="width: 140px;" value="<?= $rinci->jml_siswa ?>"><input type="hidden" name="ta" value="<?= $ta ?>"></td>
-                                                                    <td><input style="width: 70px;" type="text" name="qty" value="<?= $rinci->qty ?>"></td>
-                                                                    <td><input type="text" name="hrg_satuan" style="width: 140px;" value="<?= $rinci->hrg_satuan ?>"></td>
-                                                                    <td><input style="width: 140px;" type="text" name="jumlah" value="<?= $rinci->jumlah ?>"></td>
-                                                                    <td><button type="submit" class="badge badge-success">Simpan</button></td>
+                                                                    <td><?= $p->nama ?></td>
+                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
+                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
+                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
+                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
+                                                                    <td><span class="badge badge-primary">Simpan</span></td>
                                                                 </tr>
-                                                            </form>
-                                                        <?php endforeach ?>
+
+                                                            <?php endforeach ?>
+                                                        </thead>
                                                     <?php endforeach ?>
 
                                                 </tbody>

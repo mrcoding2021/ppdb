@@ -59,6 +59,11 @@
 
         .invoice-box table tr.item td {
             border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+
+        .invoice-box table tr.item td.angka {
+           text-align: right;
         }
 
         .invoice-box table tr.item.last td {
@@ -117,7 +122,7 @@
             </tr>
 
             <tr>
-                <td colspan="3" >Alamat : <br>
+                <td colspan="3">Alamat : <br>
                     The Palm Green Residence Sriamur, Kec. Tambun <br> Utara, Bekasi, Jawa Barat 17510
                     <br> Kontak Kami : 082388880459 / 085312029800
                 </td>
@@ -149,12 +154,12 @@
                 $metode = $this->db->get('tb_metode')->row();
                 ?>
                 <tr class="item">
-                    <td width="30%"> <?= $k->kode ?></td>
-                    <td><?= rupiah($k->tagihan) ?></td>
+                    <td width="30%"> <?= $k->kode . ' - ' . $k->ket ?></td>
+                    <td class="angka"><?= rupiah($k->tagihan) ?></td>
                     <td><?= $metode->nama ?></td>
-                    <td><?= rupiah($k->jumlah) ?></td>
-                    <td><?= rupiah($k->diskon) ?></td>
-                    <td><?= rupiah($k->jumlah) ?></td>
+                    <td class="angka"><?= rupiah($k->jumlah) ?></td>
+                    <td class="angka"><?= rupiah($k->diskon) ?></td>
+                    <td class="angka"><?= rupiah($k->jumlah) ?></td>
                 </tr>
             <?php } ?>
 

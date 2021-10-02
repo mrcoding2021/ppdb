@@ -203,6 +203,7 @@ class Tabungan extends CI_Controller
           'id_murid'    => $data->id_murid,
         ];
       } else {
+        $this->db->order_by('date_created', 'asc');
         $this->db->where('approve', 1);
         $this->db->where('id_murid', $id_murid);
         $this->db->where('kode', 'TABUNGAN');
@@ -254,6 +255,7 @@ class Tabungan extends CI_Controller
           'id_murid'    => $data->id_murid,
         ];
       } else {
+        $this->db->order_by('date_created', 'asc');
         if ($hari == 0) {
           $this->db->where('month(date_created)', $bln);
           $this->db->where('year(date_created)', $thn);
@@ -417,6 +419,8 @@ class Tabungan extends CI_Controller
     $border = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN;
 
     if ($this->scm->cekSecurity() == true) {
+      $this->db->order_by('date_created', 'asc');
+      
       if ($hari == 0) {
         $this->db->where('month(date_created)', $bln);
         $this->db->where('year(date_created)', $thn);
@@ -628,6 +632,7 @@ class Tabungan extends CI_Controller
     $border = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN;
 
     if ($this->scm->cekSecurity() == true) {
+      $this->db->order_by('date_created', 'asc');
       $this->db->where('approve', 1);
       $this->db->where('id_murid', $id);
       $this->db->where('kode', 'TABUNGAN');

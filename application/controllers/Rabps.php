@@ -79,19 +79,17 @@ class Rabps extends CI_Controller
       'page' => 'v_add',
       'title' => 'Input Kertas Kerja RABPS',
       'parent'  => 'Input',
-      'ta'    => '2016-2017'
+      'ta'    => ''
     );
     $this->core($data);
   }
 
-  public function tambah($ta = '')
+  public function tambah($ta, $bulan = '')
   {
-
-    // $data['ta'] = $this->uri->segment(3);
-    if ($ta != '') {
+    if ($ta != 0) {
       $data = array(
         'page' => 'v_update',
-        'title' => 'Update Kertas Kerja RABPS tahun ' . $ta,
+        'title' => 'Update Kertas Kerja RABPS bulan ' . bulan($bulan) . ' Tahun Ajaran ' . $ta,
         'parent' => 'Input',
         'id_page'   => 'update',
         'ta' => $ta
@@ -105,22 +103,22 @@ class Rabps extends CI_Controller
         'ta' => ''
       );
     }
-    $this->db->where('kategori', 1);
-    // $this->db->where('parent', 0);
+    
+    $this->db->where('parent', '1');
     $data['pemasukan'] = $this->db->get('tb_rab')->result();
 
-    $this->db->where('kategori', 2);
-    // $this->db->where('parent', 0);
+    $this->db->where('parent', '2');
     $data['pengeluaran'] = $this->db->get('tb_rab')->result();
-    $data['rab'] = $this->db->get('tb_rab')->result();
 
+    $data['rab'] = $this->db->get('tb_rab')->result();
+    $data['bulan'] = $bulan;
     $this->core($data);
   }
 
   public function detailRencana($id)
   {
     $data = array(
-      'page' => 'v_detail',
+      'page' => 'v_add',
       'title' => 'Detail Kertas Kerja ' . $id,
       'parent' => 'RABPS'
     );
