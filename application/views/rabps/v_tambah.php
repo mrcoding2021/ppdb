@@ -66,9 +66,9 @@
                                                             $pem = $this->db->get('tb_rab')->result();
                                                             if (count($pem) != null) { ?>
                                                                 <td><a href="#" data-target="#data<?= $key->kode_akun ?>" class="badge badge-success" data-toggle="collapse"><i class="fa fa-plus"></i></a></td>
-                                                            <?php  } else {?>
-                                                            <td></td>
-                                                            <?php }?>
+                                                            <?php  } else { ?>
+                                                                <td></td>
+                                                            <?php } ?>
                                                             <td><strong><?= $key->kode_akun ?></strong></td>
                                                             <td colspan="6"><strong><?= strtoupper($key->nama) ?></strong></td>
                                                         </tr>
@@ -102,13 +102,19 @@
                                                                     <td></td>
                                                                     <td><?= $p->kode_akun ?></td>
                                                                     <td><?= $p->nama ?></td>
-                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
-                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
-                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
-                                                                    <td><input type="text" class="form-control-sm form-control" value="<?= $rinci->jml_siswa ?>"></td>
-                                                                    <td><span class="badge badge-primary">Simpan</span></td>
-                                                                </tr>
+                                                                    <td>
+                                                                        <input type="text" class="form-control-sm form-control jml_siswa" value="<?= $rinci->jml_siswa ?>" name="jml_siswa">
+                                                                        <input type="hidden" class="form-control-sm form-control id" value="<?= $pem->kode_akun ?>" name="id">
+                                                                        <input type="hidden" class="form-control-sm form-control parent" value="<?= $key->kode_akun ?>" name="parent">
+                                                                    </td>
+                                                                    <td><input type="text" class="form-control-sm form-control qty" value="<?= $rinci->jml_siswa ?>" name="qty"></td>
+                                                                    <td><input type="text" class="form-control-sm form-control hrg_Satuan" value="<?= $rinci->jml_siswa ?>" name="hrg_satuan"></td>
+                                                                    <td><input type="text" class="form-control-sm form-control total" value="<?= $rinci->jml_siswa ?>" name="total"></td>
+                                                                    <td>
+                                                                        <a href="#" class="save badge badge-primary">Simpan</a>
 
+                                                                    </td>
+                                                                </tr>
                                                             <?php endforeach ?>
                                                         </thead>
                                                     <?php endforeach ?>
@@ -206,56 +212,60 @@
                 <!-- End of Main Content -->
 
                 <script>
-                    $(document).ready(function() {
-
-                        $('input[name="ta"]').val('<?= $ta ?>')
-                        $('#ta').change(function() {
-                            var ta = $(this).find('option:selected').text()
-                            console.log(ta)
-                            $('input[name="ta"]').val(ta)
-                        })
-                        $('form').submit(function(e) {
-                            e.preventDefault()
-                            Swal.fire({
-                                title: "Yakin ingin disimpan?",
-                                text: "Pastikan data sudah benar dan sesuai",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonColor: "#3085d6",
-                                cancelButtonColor: "#d33",
-                                confirmButtonText: "Yes, simpan sekarang!",
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    $.ajax({
-                                        url: $(this).attr('action'),
-                                        data: $(this).serialize(),
-                                        dataType: 'json',
-                                        type: 'POST',
-                                        beforeSend: function() {
-                                            $('.bg').show()
-                                        },
-                                        complete: function() {
-                                            $('.bg').hide()
-                                        },
-                                        success: function(response) {
-                                            if (response.sukses) {
-                                                Swal.fire({
-                                                    icon: 'success',
-                                                    title: 'Berhasil',
-                                                    html: `${response.sukses}`
-                                                })
-                                            } else {
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Gagal!',
-                                                    html: `${response.error}`
-                                                })
-                                            }
-
+                    $('input[name="ta"]').val('<?= $ta ?>')
+                    $('#ta').change(function() {
+                        var ta = $(this).find('option:selected').text()
+                        console.log(ta)
+                        $('input[name="ta"]').val(ta)
+                    })
+                    $('.save').click(function(e) {
+                        e.preventDefault()
+                        var jml_siswa = $(this).parents('td').parents('tr').find('.jml_siswa').val()
+                        var qty = $(this).parents('td').parents('tr').find('.qty').val()
+                        var hrg_satuan = $(this).parents('td').parents('tr').find('.hrg_satuan').val()
+                        var total = $(this).parents('td').parents('tr').find('.total').val()
+                        var id = $(this).parents('td').parents('tr').find('.id').val()
+                        var parent = $(this).parents('td').parents('tr').find('.parent').val()
+                        Swal.fire({
+                            title: "Yakin ingin disimpan?",
+                            text: "Pastikan data sudah benar dan sesuai",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, simpan sekarang!",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '<?= base_url('rabps/add')?>',
+                                    data: {
+                                        'id'    : id,
+                                        'jml_siswa': jml_siswa,
+                                        'qty': jml_siswa,
+                                        'hrg_Satuan': hrg_Satuan,
+                                        'total': total,
+                                        'parent': parent,
+                                    },
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    success: function(response) {
+                                        if (response.sukses) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil',
+                                                html: `${response.sukses}`
+                                            })
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal!',
+                                                html: `${response.error}`
+                                            })
                                         }
-                                    })
-                                }
-                            });
-                        })
+
+                                    }
+                                })
+                            }
+                        });
                     })
                 </script>
