@@ -106,7 +106,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
-                                                    $parent = ['1-30000', '1-10000', '1-40000', '1-50000', '1-80000', '1-60000', '1-70000'];
+                                                    $parent = ['1-30000', '1-10000', '1-40000', '1-50000', '1-80000', '1-60000', '1-20000'];
                                                     $no = 1;
                                                     for ($i = 0; $i < 7; $i++) { ?>
                                                         <tr>
@@ -114,6 +114,7 @@
                                                             <td><?= $kode[$i] ?></td>
                                                             <td>
                                                                 <select name="akun_trx[]" class="form-control form-control-sm">
+                                                                    <option value="0">Pilih Akun</option>
                                                                     <?php $this->db->where('parent', $parent[$i]);
                                                                     $akuntrx = $this->db->get('tb_rab')->result();
                                                                     foreach ($akuntrx as $key) : ?>
@@ -121,11 +122,11 @@
                                                                     <?php endforeach; ?>
                                                                 </select>
                                                             </td>
-                                                            <td><input type="text" value="0" class="tagihan form-control form-control-sm"  name="tagihan[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
+                                                            <td><input type="text" value="0" class="tagihan form-control form-control-sm" name="tagihan[]"><input type="hidden" value="2021-2022" name="ta"><input class="inv" type="hidden" value="0" name="inv"><input type="hidden" value="<?= $kode[$i] ?>" name="kode"><input type="hidden" value="0" name="id_murid"></td>
                                                             <td>
                                                                 <select value="0" class="diskon1 form-control form-control-sm" name="metode[]">
                                                                     <option value="1">CASH</option>
-                                                                    <option value="2">TRANSFER BNI</option>
+                                                                    <option value="2">TRANSFER BSI</option>
                                                                     <option value="3">POTONG TABUNGAN</option>
                                                                     <option value="4">POTONG KEGIATAN</option>
                                                                 </select>
@@ -210,8 +211,6 @@
 
 
                 <script>
-                   
-
                     function getTa(id, ta) {
                         $.ajax({
                             url: '<?= base_url('setting/getTagihan/') ?>' + id + '/' + ta,
@@ -221,7 +220,7 @@
                                 console.log(res)
                                 if (res.length != 0) {
                                     for (let i = 0; i < res.length; i++) {
-                                        $('.tagihan:eq(' + [i] + ')').val(res[i].totalX)
+                                        $('.tagihan').eq(i).val(res[i].totalX)
                                     }
                                 } else {
                                     $('.tagihan').val(0)
@@ -230,7 +229,7 @@
                             }
                         })
                     }
-                    
+
                     $('.ta_s').change(function(e) {
                         var ta = $(this).val()
                         var inv = $.trim($('#inv').html())
@@ -286,6 +285,8 @@
                                         })
                                     },
                                     success: function(res) {
+                                        console.log(res);
+                                        
                                         if (res.sukses) {
                                             Swal.fire({
                                                 icon: 'success',
@@ -295,13 +296,6 @@
                                             $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
                                             var cetak = $('#cetak').attr('href')
                                             console.log(cetak);
-
-                                        } else if (res.warning) {
-                                            Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Gagal !',
-                                                html: `${res.warning}`
-                                            })
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',

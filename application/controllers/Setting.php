@@ -115,41 +115,57 @@ class Setting extends CI_Controller
         }
     }
 
-    public function getTagihan($id = 0, $ta = 0)
+    public function getTagihan($id = 0, $ta = '2016-2017')
     {
         if ($this->scm->cekSecurity() == true) {
             $result = [];
             $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
-            $ta = explode('-',$ta);
-            $ta_now = $ta[0];
-            $ta_before = $ta[1];
+           
             for ($i = 0; $i < count($kode); $i++) {
                 $this->db->where('kode', $kode[$i]);
                 $this->db->where('id_siswa', $id);
-                $this->db->like('ta', $ta_now);
-                $this->db->or_like('ta', $ta_before);
+                $this->db->where('ta', $ta);
                 $tagihan = $this->db->get('tb_user_tagihan')->row();
+                
+                if ($tagihan == null) {
+                    $this->db->where('kode', $kode[$i]);
+                    $this->db->where('id_siswa', $id);
+                    $this->db->where('ta_lalu', $ta);
+                    $tagihan = $this->db->get('tb_user_tagihan')->row();
+                    if ($tagihan) {
+                        $tagih = $tagihan->bayar_lalu;
+                    } else {
+                        $tagih = null;
+                    }
+                } else {
+                    $tagih = $tagihan->bayar;
+                }
 
                 $this->db->where('kode', $kode[$i]);
                 $this->db->where('id_murid', $id);
                 $this->db->where('ta', $ta);
+                $this->db->where('approve', 1);
                 $this->db->select_sum('kredit', 'total');
                 $bayars = $this->db->get('tb_transaksi')->row();
 
                 if ($tagihan) {
-                    if ($tagihan->kode == 'SPP') {
-                        $bayar = (int)($tagihan->bayar / 12) - (int)$bayars->total;
-                    } else {
-                        $bayar = (int)$tagihan->bayar - (int)$bayars->total;
-                    }
+                    $bayar = (int)$tagih - (int)$bayars->total;
+                    // if ($tagihan->kode == 'SPP') {
+                    // } else {
+                    //     $bayar = (int)$tagih - (int)$bayars->total;
+                    // }
 
                     $result[] = [
                         'kode'         => $tagihan->kode ?? '',
-                        'total'      => ($tagihan != null) ? rupiah($bayar) : 0,
-                        'totalX'      => ($tagihan != null) ? rupiah($bayar) : 0,
+                        'total'      => rupiah($bayar) ?? 0,
+                        'totalX'      => rupiah($bayar) ?? 0,
                     ];
                 } else {
-                    $result = [];
+                    $result[] = [
+                        'kode'         => 0,
+                        'total'      => 0,
+                        'totalX'      => 0,
+                    ];
                 }
             }
             echo json_encode($result);

@@ -79,31 +79,46 @@ class Rabps extends CI_Controller
       'page' => 'v_add',
       'title' => 'Input Kertas Kerja RABPS',
       'parent'  => 'Input',
+      'cara'  => 'tambah',
       'ta'    => ''
     );
     $this->core($data);
   }
 
-  public function tambah($ta, $bulan = '')
+  public function tambah($ta, $bulan)
   {
-    if ($ta != 0) {
-      $data = array(
-        'page' => 'v_update',
-        'title' => 'Update Kertas Kerja RABPS bulan ' . bulan($bulan) . ' Tahun Ajaran ' . $ta,
-        'parent' => 'Input',
-        'id_page'   => 'update',
-        'ta' => $ta
-      );
-    } else {
-      $data = array(
-        'page' => 'v_tambah',
-        'title' => 'Input Kertas Kerja RABPS',
-        'parent' => 'Input',
-        'id_page'   => 'tambah',
-        'ta' => ''
-      );
-    }
-    
+
+    $data = array(
+      'page' => 'v_tambah',
+      'title' => 'Input Kertas Kerja RABPS',
+      'parent' => 'Input',
+      'id_page'   => 'tambah',
+      'cara'  => 'tambah'
+    );
+
+    $this->db->where('parent', '1');
+    $data['pemasukan'] = $this->db->get('tb_rab')->result();
+
+    $this->db->where('parent', '2');
+    $data['pengeluaran'] = $this->db->get('tb_rab')->result();
+
+    $data['rab'] = $this->db->get('tb_rab')->result();
+    $data['ta'] = $ta;
+    $data['bulan'] = $bulan;
+    $this->core($data);
+  }
+
+  public function update($ta, $bulan)
+  {
+    $data = array(
+      'page' => 'v_update',
+      'title' => 'Update Kertas Kerja RABPS bulan ' . bulan($bulan) . ' Tahun Ajaran ' . $ta,
+      'parent' => 'Input',
+      'id_page'   => 'update',
+      'ta' => $ta,
+      'cara'  => 'update'
+    );
+
     $this->db->where('parent', '1');
     $data['pemasukan'] = $this->db->get('tb_rab')->result();
 
@@ -120,7 +135,8 @@ class Rabps extends CI_Controller
     $data = array(
       'page' => 'v_add',
       'title' => 'Detail Kertas Kerja ' . $id,
-      'parent' => 'RABPS'
+      'parent' => 'RABPS',
+      'cara'  => 'update'
     );
     $this->db->where('kategori', 1);
     $this->db->where('parent', 0);
@@ -420,6 +436,51 @@ class Rabps extends CI_Controller
       $this->session->set_flashdata('alert', '<div class="alert alert-danger">Mohon maaf. data RABPS tahun ' . $id . ' gagal terhapus</div>');
       redirect('rabps/rencana');
     }
+  }
+
+  public function save()
+  {
+    $jumlah = $this->input->post('jumlah');
+    $id_rab = $this->input->post('id_rab');
+    if ($id_rab == 0) {
+      $object = [
+        'created_at'    => date('Y-m-d H:i:s'),
+        'kode_akun'     => $this->input->post('id'),
+        'bulan'         => $this->input->post('bulan'),
+        'ta'            => $this->input->post('ta'),
+        'jml_siswa'     => $this->input->post('jml_siswa'),
+        'qty'           => $this->input->post('qty'),
+        'kategori'      => $this->input->post('kategori'),
+        'hrg_satuan'    => str_replace('.', '', $this->input->post('hrg_satuan')),
+        'jumlah'        => str_replace('.', '', $jumlah),
+        'id_rab'        => $this->input->post('ta'),
+      ];
+      $this->db->insert('tb_rab_kertas', $object);
+      $hasil = 'Dada berhasil ditambahkan';
+    } else {
+      $object = [
+        'jml_siswa'     => $this->input->post('jml_siswa'),
+        'qty'           => $this->input->post('qty'),
+        'hrg_satuan'    => str_replace('.', '', $this->input->post('hrg_satuan')),
+        'jumlah'        => str_replace('.', '', $jumlah),
+      ];
+      $ta = $this->input->post('ta');
+      $this->db->where('bulan', $this->input->post('bulan'));
+      $this->db->where('kode_akun', $this->input->post('id'));
+      $this->db->where('ta', $ta);
+      $this->db->update('tb_rab_kertas', $object);
+      $hasil = 'Data berhasil dirubah';
+    }
+
+    $aff = $this->db->affected_rows();
+
+    if ($aff > 0) {
+      $result = ['sukses' => $hasil];
+    } else {
+      $result = ['error' => 'Data gagal ditambahkan/dirubah'];
+    }
+
+    echo json_encode($result);
   }
 }
 

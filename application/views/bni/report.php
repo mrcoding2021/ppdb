@@ -8,7 +8,7 @@
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold ">
                                         <?= $title; ?>
-                                        <a href="#" class="btn btn-success export btn-border-circle float-right"><i class="fas fa-file-excel"></i> Export Excel</a>
+                                        <a href="#addSetoran" data-toggle="modal" class="btn btn-success btn-border-circle float-right"><i class="fas fa-plus"></i> Buat Setoran</a>
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -33,99 +33,40 @@
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <th scope="col">Saldo Keseluruhan</th>
-                                                                <td scope="col"><?= rupiah($saldoAll) ?></td>
+                                                                <th scope="col">Total yg Sudah disetor</th>
+                                                                <td scope="col"><?= rupiah($disetor) ?></td>
                                                             </tr>
                                                             <tr>
-                                                                <th scope="col">Saldo Tahun Ini</th>
-                                                                <td scope="col"><?= rupiah($saldoTahunIni) ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="col">Saldo Bulan ini</th>
-                                                                <td scope="col"><?= rupiah($saldoBulanIni) ?></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="col">Saldo Hari ini</th>
-                                                                <td scope="col"><?= rupiah($saldoHariIni) ?></td>
+                                                                <th scope="col">Total yg Belum disetor</th>
+                                                                <td scope="col"><?= rupiah($belumDisetor) ?></td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
                                                 <div class="col-md-7">
-
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                            <div class="mb-3 row">
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Tanggal</label>
-                                                    <select class="form-control form-control-sm hari" name="hari">
-                                                        <option value="0">Semua</option>
-                                                        <?php for ($i = 1; $i <= 31; $i++) { ?>
-                                                            <option value="<?= $i ?>"><?= $i ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Bulan</label>
-                                                    <select class="form-control form-control-sm bulan" name="bulan">
-                                                        <?php for ($i = 1; $i < 12; $i++) { ?>
-                                                            <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Tahun</label>
-                                                    <select class="form-control form-control-sm tahun" name="tahun">
-                                                        <?php for ($i = 0; $i < 10; $i++) { ?>
-                                                            <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
 
-                                                <div class="col-lg-1 col-sm-4">
-                                                    <label for="1" class="col-form-label">.</label>
-                                                    <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">.</label>
-                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
-                                                </div>
-                                                <!-- <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">.</label>
-                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
-                                                </div> -->
-                                            </div>
                                             <div class="table-responsive">
-                                            <table class="table table-striped table-sm text-center" width="100%" id="dataBni">
-                                            <thead class="bg-dark text-white ">
-                                                <tr>
-                                                    <th rowspan="2">No</th>
-                                                    <th rowspan="2">Tanggal</th>
-                                                    <th rowspan="2">Th. Ajaran</th>
-                                                    <th rowspan="2">Bank</th>
-                                                    <th rowspan="2">Penyetor</th>
-                                                    <th rowspan="2">Nama Siswa</th>
-                                                    <th rowspan="2">Kelas</th>
-                                                    <th colspan="8">Rincian Transfer</th>
-                                                    <th rowspan="2">Total</th>
-                                                </tr>
-                                                <tr>
-                                                    <th>SPP</th>
-                                                    <th>INFAQ GEDUNG</th>
-                                                    <th>KEGIATAN</th>
-                                                    <th>SERAGAM</th>
-                                                    <th>KOMITE</th>
-                                                    <th>BUKU</th>
-                                                    <th>SARPRAS</th>
-                                                    <th>FORMULIR</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
+                                                <table class="table table-striped table-sm text-center" width="100%" id="dataBni">
+                                                    <thead class="bg-dark text-white ">
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Tanggal</th>
+                                                            <th>Pembayaran Cash</th>
+                                                            <th>Potong Setoran</th>
+                                                            <th>Pembayaran Transfer</th>
+                                                            <th>Jumlah Setoran Cash BSI</th>
+                                                            <th>Aksi</th>
+                                                            <th>Disetor</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                            </tbody>
-                                        </table>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
 
@@ -141,26 +82,156 @@
                 <!-- /.container-fluid -->
 
                 </div>
+                <div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="exampleModalLabel">Rekap Pembayaran</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered table-sm table-hover" id="" width="100%" cellspacing="0">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Jenis Setoran</th>
+                                            <th>Pembayaran Cash</th>
+                                            <th>Potong Setoran</th>
+                                            <th>Pembayaran Transfer</th>
+                                            <th>Jumlah Setoran Cash BSI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailBni">
+                                    </tbody>
+                                    <tfoot class="bg-secondary text-white">
+                                        <tr>
+                                            <th colspan="2">GRAND TOTAL</th>
+                                            <th id="totalCash">0</th>
+                                            <th id="totalPotong">0</th>
+                                            <th id="totalTransfer">0</th>
+                                            <th id="grandTotal">0</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Terbilang</th>
+                                            <th colspan="5" id="terbilang" class="text-italic">Jumlah Bayar</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="modal-footer">
+                                    <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
+                                    <a href="#" class="setor btn btn-success btn-border-circle btn-block">Setorkan</a>
+                                </div>
+                            </div>
 
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="addSetoran" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="exampleModalLabel">Tambah Setoran</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3 row">
+                                    <div class="col-lg-2 col-sm-4">
+                                        <label for="1" class="col-form-label">Dari Tanggal</label>
+                                        <input type="date" name="start_date" class="start form-control form-control-sm">
+                                    </div>
+                                    <div class="col-lg-2 col-sm-4">
+                                        <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                        <input type="date" name="end_date" class="end form-control form-control-sm">
+                                    </div>
+
+                                    <div class="col-lg-1 col-sm-4">
+                                        <label for="1" class="col-form-label">.</label>
+                                        <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-sm table-hover text-center" width="100%" cellspacing="0">
+                                    <thead class="bg-primary text-white ">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Tanggal</th>
+                                            <th>Pembayaran Cash</th>
+                                            <th>Potong Setoran</th>
+                                            <th>Pembayaran Transfer</th>
+                                            <th>Jumlah Setoran Cash BSI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dataSetoran">
+                                    </tbody>
+                                    <tfoot class="bg-secondary text-white ">
+                                        <tr>
+                                            <th colspan="2">Total</th>
+                                            <th class="cash">0</th>
+                                            <th class="potong">0</th>
+                                            <th class="transfer">0</th>
+                                            <th class="total">0</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="modal-footer">
+                                    <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
+                                    <a href="#" class="addSetoran btn btn-success btn-border-circle btn-block">Buat Setoran</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
                 <script>
-                    var hari = $('.hari').val()
-                    var bln = $('.bulan').val()
-                    var thn = $('.tahun').val()
-                    getBni(bln, thn, hari)
+                    function getSetoran(start, end) {
+                        $.ajax({
+                            url: '<?= base_url('bni/getSetoran/') ?>',
+                            type: 'post',
+                            dataType: 'json',
+                            data: {
+                                'start': start,
+                                'end': end
+                            },
+                            success: function(res) {
+                                var html = ''
+                                $.each(res, function(i, v) {
+                                    html += '<tr>'
+                                    html += '<td>' + v.no + '</td>' +
+                                        '<td>' + v.date + '</td>' +
+                                        '<td>' + v.cash + '</td>' +
+                                        '<td>' + v.potong + '</td>' +
+                                        '<td>' + v.transfer + '</td>' +
+                                        '<td>' + v.total + '</td>'
+                                    html += '</tr>'
+                                }
+                                $('#dataSetoran').html(html)
+                                $('.cash').html(res[0].totalCash)
+                                $('.potong').html(res[0].totalPotong)
+                                $('.transfer').html(res[0].totalTransfer)
+                                $('.total').html(res[0].totalTotal)
+
+                            }
+                        })
+                    }
+
                     $('.cari').click(function(e) {
                         e.preventDefault()
-                        var hari = $('.hari').val()
-                        var bln = $('.bulan').val()
-                        var thn = $('.tahun').val()
-                        getBni(bln, thn, hari)
-                        $('.excel').attr('href', '<?= base_url('bni/export/') ?>' + bln + '/' + thn)
+                        var start = $('.start').val()
+                        var end = $('.end').val()
+                        getSetoran(start, end)
                     })
-                    function getBni(bln, thn, hari) {
+
+                    getBni()
+
+                    function getBni() {
                         var dataBni = $('#dataBni').DataTable({
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('bni/getAll/') ?>' + bln + '/' + thn + '/' + hari,
+                                "url": '<?= base_url('bni/getAll/') ?>',
                                 "dataSrc": ""
                             },
                             'pageLength': 100,
@@ -173,50 +244,182 @@
                                     "data": "date"
                                 },
                                 {
-                                    "data": "ta"
+                                    "data": "cash"
                                 },
                                 {
-                                    "data": "bank"
+                                    "data": "potong"
                                 },
                                 {
-                                    "data": "penyetor"
-                                },
-                                {
-                                    "data": "nama"
-                                },
-                                {
-                                    "data": "kelas"
-                                },
-                                {
-                                    "data": "spp"
-                                },
-                                {
-                                    "data": "gedung"
-                                },
-                                {
-                                    "data": "kegiatan"
-                                },
-                                {
-                                    "data": "seragam"
-                                },
-                                {
-                                    "data": "komite"
-                                },
-                                {
-                                    "data": "buku"
-                                },
-                                {
-                                    "data": "sarpras"
-                                },
-                                {
-                                    "data": "formulir"
+                                    "data": "transfer"
                                 },
                                 {
                                     "data": "total"
-                                }
+                                },
+                                {
+                                    "data": "aksi"
+                                },
+                                {
+                                    "data": "status"
+                                },
+
                             ]
                         });
 
 
                     }
+
+                    $(document).on('click', '.detailBni', function(e) {
+                        e.preventDefault()
+                        var ta = $(this).data('id')
+                        $('.setor').attr('data-date', ta)
+                        getDetailBni(ta)
+                    })
+
+                    function getDetailBni(ta) {
+                        $.ajax({
+                            url: '<?= base_url('bni/getDetailBni/') ?>',
+                            type: 'post',
+                            dataType: 'json',
+                            data: {
+                                'ta': ta
+                            },
+                            success: function(res) {
+                                var html = ''
+                                $.each(res, function(i, v) {
+                                    html += '<tr>'
+                                    if (i == 0) {
+                                        html += '<td>' + v.date + '</td>' +
+                                            '<td>' + v.kode + '</td>' +
+                                            '<td>' + v.cash + '</td>' +
+                                            '<td>' + v.potong + '</td>' +
+                                            '<td>' + v.transfer + '</td>' +
+                                            '<td>' + v.total + '</td>'
+                                    } else {
+                                        html += '<td></td>' +
+                                            '<td>' + v.kode + '</td>' +
+                                            '<td>' + v.cash + '</td>' +
+                                            '<td>' + v.potong + '</td>' +
+                                            '<td>' + v.transfer + '</td>' +
+                                            '<td>' + v.total + '</td>'
+                                    }
+                                    html += '</tr>'
+                                })
+                                $('#detailBni').html(html)
+                                $('#totalCash').html(res[6].totalCash)
+                                $('#totalPotong').html(res[6].totalPotong)
+                                $('#totalTransfer').html(res[6].totalTransfer)
+                                $('#grandTotal').html(res[6].grandTotal)
+                                $('#terbilang').html(res[0].terbilang)
+
+                            }
+                        })
+                    }
+
+                    $('.setor').click(function(e) {
+                        var date = $(this).data('date')
+                        Swal.fire({
+                            title: "Yakin ingin disetorkan?",
+                            text: "Pastikan data sudah benar dan sesuai",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes!",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '<?= base_url('bni/setor') ?>',
+                                    data: {
+                                        'date': date
+                                    },
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    beforeSend: function() {
+                                        Swal.fire({
+                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                            showConfirmButton: false
+                                        })
+                                    },
+                                    success: function(res) {
+                                        if (res.sukses) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil',
+                                                html: `${res.sukses}`
+                                            })
+                                            $('#cetak').attr('href', '<?= base_url('bnni/invoiceSetoran/') ?>' + date)
+                                            var hari = $('.hari').val()
+                                            var bln = $('.bulan').val()
+                                            var thn = $('.tahun').val()
+                                            getBni()
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal !',
+                                                html: `${res.error}`
+                                            })
+                                        }
+
+                                    }
+                                })
+                            }
+                        });
+                    })
+
+                    $('.addSetoran').click(function(e) {
+                        var date = $(this).data('date')
+                        var start = $('.start').val()
+                        var end = $('.end').val()
+                        var cash = $('.cash').val()
+                        var transfer = $('.transfer').val()
+                        var potong = $('.potong').val()
+                        var total = $('.total').val()
+                        Swal.fire({
+                            title: "Yakin ingin ditambahkan?",
+                            text: "Pastikan data sudah benar dan sesuai",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes!",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '<?= base_url('bni/setor') ?>',
+                                    data: {
+                                        'date': date
+                                    },
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    beforeSend: function() {
+                                        Swal.fire({
+                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                            showConfirmButton: false
+                                        })
+                                    },
+                                    success: function(res) {
+                                        if (res.sukses) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil',
+                                                html: `${res.sukses}`
+                                            })
+                                            $('#cetak').attr('href', '<?= base_url('bnni/invoiceSetoran/') ?>' + date)
+                                            var hari = $('.hari').val()
+                                            var bln = $('.bulan').val()
+                                            var thn = $('.tahun').val()
+                                            getBni()
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal !',
+                                                html: `${res.error}`
+                                            })
+                                        }
+
+                                    }
+                                })
+                            }
+                        });
+                    })
                 </script>

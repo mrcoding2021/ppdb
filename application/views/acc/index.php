@@ -216,8 +216,8 @@
                         getAcc(bln, thn)
                     })
 
-                    var bln = 1
-                    var thn = '2021'
+                    var bln = $('.bulan').val()
+                    var thn = $('.tahun').val()
                     getAcc(bln, thn)
 
                     function getAcc(bln, thn) {
@@ -249,7 +249,7 @@
                                 {
                                     "data": "jumlah",
                                     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a>");
+                                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a><a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a>");
                                     },
                                     "className": 'details-control',
                                     "orderable": false,

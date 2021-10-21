@@ -143,10 +143,13 @@ class Acc extends CI_Controller
       foreach ($data as $key) {
         $this->db->where('kode_akun', $key->akun_trx);
         $akun = $this->db->get('tb_rab')->row();
+        $this->db->where('id_sumber', $key->metode);
+        $metode = $this->db->get('tb_metode')->row();
         $result[] = [
           'tagihan'      => rupiah($key->tagihan),
           'jns'    => $key->kode,
           'akun'  => $akun->nama,
+          'metode'  => $metode->nama,
           'bayar'     => rupiah($key->kredit),
           'diskon'  => rupiah($key->diskon),
           'jml'   => rupiah($key->jumlah),

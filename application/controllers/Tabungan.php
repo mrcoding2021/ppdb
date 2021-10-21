@@ -139,6 +139,8 @@ class Tabungan extends CI_Controller
         'inputer'   => $this->session->userdata('id'),
         'id_murid' => htmlspecialchars($this->input->post('id_murid')),
         'id_trx' => htmlspecialchars($this->input->post('id_trx')),
+        'date' => $this->input->post('tgl_byr'),
+        'time' => date('H:i:s'),
         'kode' => 'TABUNGAN',
         'akun_kas' => '0-10005',
         'akun_trx' => '0-10005',

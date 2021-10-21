@@ -124,6 +124,19 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div id="kode" class="form-group row d-none">
+                                                <div class="col-sm-12">
+                                                    <label>Dari Setoran</label>
+                                                    <select name="kode" class="form-control kode">
+                                                        <option>Pilih</option>
+                                                        <?php
+                                                        $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+                                                        for ($i = 0; $i < 7; $i++) { ?>
+                                                            <option value="<?= $kode[$i] ?>"><?= $kode[$i] ?></option>
+                                                        <?php  } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="form-group row">
                                                 <div class="col-sm-12">
                                                     <label>Nilai</label>
@@ -458,5 +471,14 @@
                                 })
                             }
                         });
+                    })
+
+                    $('.metode').change(function(e){
+                        var metode = $('.metode option:selected').val()
+                        if (metode == 5) {
+                            $('#kode').removeClass('d-none')
+                        } else {
+                            $('#kode').addClass('d-none')
+                        }
                     })
                 </script>

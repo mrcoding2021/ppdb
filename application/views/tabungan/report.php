@@ -70,7 +70,7 @@
                                                 <div class="col-lg-2 col-sm-4">
                                                     <label for="1" class="col-form-label">Bulan</label>
                                                     <select class="form-control form-control-sm bulan" name="bulan">
-                                                        <?php for ($i = 1; $i < 12; $i++) { ?>
+                                                        <?php for ($i = 1; $i < 13; $i++) { ?>
                                                             <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
                                                         <?php } ?>
                                                     </select>

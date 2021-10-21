@@ -9,18 +9,18 @@
         .invoice-box {
             max-width: 800px;
             margin: auto;
-            padding: 30px;
-            border: 1px solid #eee;
-            box-shadow: 0 0 10px rgba(0, 0, 0, .15);
-            font-size: 16px;
-            line-height: 24px;
+            padding: 10px;
+            /* border: 1px solid #eee; */
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, .15); */
+            font-size: 12px;
+            line-height: 16px;
             font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
             color: #555;
         }
 
         .invoice-box table {
             width: 100%;
-            line-height: inherit;
+            line-height: 16px;
             text-align: left;
         }
 
@@ -39,7 +39,7 @@
 
         .invoice-box table tr.top table td.title {
             font-size: 45px;
-            line-height: 45px;
+            line-height: 20px;
             color: #333;
         }
 
@@ -63,7 +63,7 @@
         }
 
         .invoice-box table tr.item td.angka {
-           text-align: right;
+            text-align: right;
         }
 
         .invoice-box table tr.item.last td {
@@ -102,6 +102,13 @@
         .rtl table tr td:nth-child(2) {
             text-align: left;
         }
+
+        @page {
+            size: auto;
+            /* auto is the initial value */
+            margin: 0;
+            /* this affects the margin in the printer settings */
+        }
     </style>
 </head>
 
@@ -114,8 +121,8 @@
                     <img src="<?= base_url('asset/img/logo-sdit-full.jpg') ?>" style="width:100%; max-width:300px;margin-top:-20px">
                 </td>
 
-                <td colspan="3" style="text-align: right;">
-                    Kwitansi No. <?= $key[0]->id_trx ?><br>
+                <td colspan="3" style="text-align: right; font-size: 16px; line-height: 25px">
+                    Kwitansi No. <?= $key[0]->id_trx ?> <br>
                     <?= longdate_indo(substr($key[0]->date_created, 0, 10)) ?><br>
                     <div style="content:''; border-bottom: 2px solid black;"></div>
                 </td>
@@ -129,7 +136,7 @@
                 <td colspan="3" style="text-align: right;"><strong>
                         <?php $murid = $this->db->get_where('tb_user', array('id_user' => $key[0]->id_murid))->row();
                         if ($murid != null) {
-                            echo $murid->nama . '<br>' . $murid->hp . '<br>' . $murid->alamat;
+                            echo $murid->nama . ' - ' . $murid->hp . '<br>' . $murid->alamat;
                         } else {
                             echo 'TRANSAKSI KAS';
                         }
@@ -144,7 +151,7 @@
                 <td>Pembayaran</td>
                 <td>Tagihan</td>
                 <td>Metode</td>
-                <td>Jumlah Bayar</td>
+                <td>Jml. Bayar</td>
                 <td>Diskon</td>
                 <td>Total Bayar</td>
             </tr>
@@ -154,12 +161,12 @@
                 $metode = $this->db->get('tb_metode')->row();
                 ?>
                 <tr class="item">
-                    <td width="30%"> <?= $k->kode . ' - ' . $k->ket ?></td>
+                    <td width="20%"> <?= $k->kode . ' - ' . $k->ket ?></td>
                     <td class="angka"><?= rupiah($k->tagihan) ?></td>
                     <td><?= $metode->nama ?></td>
-                    <td class="angka"><?= rupiah($k->jumlah) ?></td>
-                    <td class="angka"><?= rupiah($k->diskon) ?></td>
-                    <td class="angka"><?= rupiah($k->jumlah) ?></td>
+                    <td class="angka" width="15%"><?= rupiah($k->jumlah) ?></td>
+                    <td class="angka" width="15%"><?= rupiah($k->diskon) ?></td>
+                    <td class="angka" width="15%"><?= rupiah($k->jumlah) ?></td>
                 </tr>
             <?php } ?>
 

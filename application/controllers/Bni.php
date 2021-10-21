@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf;
+use SebastianBergmann\Environment\Console;
 
 class Bni extends CI_Controller
 {
@@ -14,6 +15,7 @@ class Bni extends CI_Controller
     $this->load->library('form_validation');
     $this->load->helper('tgl_indo');
     $this->load->helper('rupiah');
+    $this->load->helper('terbilang');
     $this->load->model('Model_global');
   }
 
@@ -63,41 +65,34 @@ class Bni extends CI_Controller
 
   public function report()
   {
-    $this->db->where('is_active', 1);
-    $this->db->where('kategori', 0);
-    $kas = $this->db->get('tb_rab')->result();
 
     $this->db->where('approve', 1);
-    $this->db->where('kode', 'SETORAN BSI');
+    $this->db->where('disetor', 0);
+    $this->db->where_not_in('kode', 'TABUNGAN');
     $this->db->select_sum('kredit', 'total');
-    $saldoAll = $this->db->get('tb_transaksi')->row();
+    $belumDisetor = $this->db->get('tb_transaksi')->row();
+    if ($belumDisetor == null) {
+      $belum = 0;
+    } else {
+      $belum = $belumDisetor->total;
+    }
 
     $this->db->where('approve', 1);
-    $this->db->where('kode', 'SETORAN BSI');
-    $this->db->where('ta', '2021-2022');
+    $this->db->where('disetor', 1);
+    $this->db->where_not_in('kode', 'TABUNGAN');
     $this->db->select_sum('kredit', 'total');
-    $saldoTahunIni = $this->db->get('tb_transaksi')->row();
-
-    $this->db->where('approve', 1);
-    $this->db->where('kode', 'SETORAN BSI');
-    $this->db->where('month(date_created)', date('m'));
-    $this->db->select_sum('kredit', 'total');
-    $saldobulanIni = $this->db->get('tb_transaksi')->row();
-    $this->db->where('approve', 1);
-    $this->db->where('kode', 'SETORAN BSI');
-    $this->db->where('month(date_created)', date('m'));
-    $this->db->where('day(date_created)', date('d'));
-    $this->db->select_sum('kredit', 'total');
-    $saldoHariIni = $this->db->get('tb_transaksi')->row();
+    $disetor = $this->db->get('tb_transaksi')->row();
+    if ($belumDisetor == null) {
+      $sudah = 0;
+    } else {
+      $sudah = $disetor->total;
+    }
 
     $data = [
       'title'   => 'Laporan Setoran BSI',
       'view'    => 'bni/report',
-      'kas'     => $kas,
-      'saldoAll' => $saldoAll->total,
-      'saldoTahunIni' => $saldoTahunIni->total,
-      'saldoBulanIni' => $saldobulanIni->total,
-      'saldoHariIni' => $saldoHariIni->total,
+      'disetor' => $sudah,
+      'belumDisetor' => $belum
     ];
     $this->core($data);
   }
@@ -275,50 +270,100 @@ class Bni extends CI_Controller
     echo json_encode($result);
   }
 
-  public function getAll($bln, $thn, $hari)
+  public function getAll()
   {
     $no = 1;
     $result = [];
-    $this->db->select('id_trx');
-    if ($hari != 0) {
-      $this->db->where('day(date_created)', $hari);
-      $this->db->where('month(date_created)', $bln);
-      $this->db->where('year(date_created)', $thn);
-    } else {
-      $this->db->where('month(date_created)', $bln);
-      $this->db->where('year(date_created)', $thn);
+
+    $data = $this->db->get('tb_transaksi_disetor')->result();
+
+    foreach ($data as $key) {
+
+      $aksi = '<a href="#detail" data-toggle="modal" data-id="' . $key->date_created . '" class="detailBni btn btn-success btn-sm"><i class="fa fa-search"></i></a>';
+
+      if ($key->status == 0) {
+        $status = '<span class="btn btn-sm btn-danger"><i class="fa fa-times"></i> Belum</span>';
+      } else {
+        $status = '<span class="btn btn-sm btn-success"><i class="fa fa-check"></i> Sudah</span>';
+      }
+
+      $result[] = [
+        'no'    => $no,
+        'date'  => longdate_indo($key->start_date).' s/d '. longdate_indo($key->end_date),
+        'cash'    => rupiah($key->cash),
+        'transfer'  => rupiah($key->transfer),
+        'potong'  => rupiah($key->potongan),
+        'total'  => rupiah($key->total_setoran),
+        'status' => $status,
+        'aksi'  => $aksi,
+      ];
+      $no++;
     }
-    // $data = $this->db->query($query)->result();
-    $this->db->group_by('tb_transaksi.id_trx');
+
+    echo json_encode($result);
+  }
+
+  public function getSetoran()
+  {
+    $start = $this->input->post('start');
+    $end = $this->input->post('end');
+    // $start = '2021-10-1';
+    // $end = '2021-10-30';
+    $no = 1;
+    $result = [];
+
+    $this->db->select('date_created');
+    $this->db->where('date >=', $start);
+    $this->db->where('date <=', $end);
+
+    $this->db->group_by('tb_transaksi.date_created');
+    $this->db->where_not_in('kode', 'TABUNGAN');
     $this->db->where('approve', 1);
-    $this->db->where('kode', 'SETORAN BSI');
     $data = $this->db->get('tb_transaksi')->result();
 
     foreach ($data as $key) {
-      $this->db->where('id_trx', $key->id_trx);
-      $trx = $this->db->get('tb_transaksi')->result();
-      // var_dump($trx[6]);die;
-      $this->db->where('id_user', $trx[0]->id_murid);
-      $user = $this->db->get('tb_user')->row();
+      $this->db->where('date_created', $key->date_created);
+      $this->db->where('metode', 1);
+      $this->db->select_sum('jumlah', 'total');
+      $cash = $this->db->get('tb_transaksi')->row();
+
+      $this->db->where('date_created', $key->date_created);
+      $this->db->where('metode', 2);
+      $this->db->select_sum('jumlah', 'total');
+      $transfer = $this->db->get('tb_transaksi')->row();
+
+      $this->db->where('date_created', $key->date_created);
+      $this->db->where('metode', 5);
+      $this->db->select_sum('jumlah', 'total');
+      $potong = $this->db->get('tb_transaksi')->row();
+
+      $aksi = '<a href="#detail" data-toggle="modal" data-id="' . $key->date_created . '" class="detailBni btn btn-success btn-sm"><i class="fa fa-search"></i></a>';
+
+      $this->db->select('disetor');
+      $this->db->where('date_created', $key->date_created);
+      $this->db->where_not_in('kode', 'TABUNGAN');
+      $this->db->where('approve', 1);
+      $disetor = $this->db->get('tb_transaksi')->result();
+
+      if ($disetor[0]->disetor == 0) {
+        $status = '<span class="btn btn-sm btn-danger"><i class="fa fa-times"></i> Belum</span>';
+      } else {
+        $status = '<span class="btn btn-sm btn-success"><i class="fa fa-check"></i> Sudah</span>';
+      }
+
       $result[] = [
         'no'    => $no,
-        'id'    => $trx[0]->id,
-        'ta'    => $trx[0]->ta,
-        'date'  => $trx[0]->date_created,
-        'id_trx'    => $key->id_trx,
-        'penyetor'  => $trx[0]->nama,
-        'nama'  => $user->nama,
-        'kelas'  => $trx[0]->kelas,
-        'bank'  => $trx[0]->bank,
-        'spp' => rupiah($trx[0]->jumlah),
-        'gedung' => rupiah($trx[1]->jumlah),
-        'kegiatan' => rupiah($trx[2]->jumlah),
-        'seragam' => rupiah($trx[3]->jumlah),
-        'komite' => rupiah($trx[4]->jumlah),
-        'buku' => rupiah($trx[6]->jumlah),
-        'sarpras' => rupiah($trx[6]->jumlah),
-        'formulir' => rupiah($trx[7]->jumlah),
-        'total' => rupiah($trx[0]->total),
+        'date'  => longdate_indo(substr($key->date_created, 0, 10)),
+        'cash'    => rupiah($cash->total),
+        'transfer'  => rupiah($transfer->total),
+        'potong'  => rupiah($potong->total),
+        'total'  => rupiah($cash->total - $potong->total),
+        'status' => $status,
+        'aksi'  => $aksi,
+        // 'totalCash'   => $totalCash,
+        // 'totalTransfer'   => $totalTransfer,
+        // 'totalPotong'   => $totalPotong,
+        // 'total'   => $totalCash,
       ];
       $no++;
     }
@@ -459,8 +504,8 @@ class Bni extends CI_Controller
     $excel->mergeCells('H5:O5');
     $excel->getStyle('A1')->getFont()->setBold(TRUE);
     $excel->getStyle('A2')->getFont()->setBold(TRUE);
-    $excel->getStyle('A3')->getFont()->setBold(TRUE); 
-    $excel->getStyle('A1')->getFont()->setSize(15); 
+    $excel->getStyle('A3')->getFont()->setBold(TRUE);
+    $excel->getStyle('A1')->getFont()->setSize(15);
 
     $center = \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER;
 
@@ -501,7 +546,7 @@ class Bni extends CI_Controller
         $this->db->where('month(date_created)', $bln);
         $this->db->where('year(date_created)', $thn);
       }
-      
+
       $this->db->group_by('tb_transaksi.id_trx');
       $this->db->where('approve', 1);
       $this->db->where('kode', 'SETORAN BSI');
@@ -510,14 +555,14 @@ class Bni extends CI_Controller
       foreach ($data as $key) {
         $this->db->where('id_trx', $key->id_trx);
         $trx = $this->db->get('tb_transaksi')->result();
-        
+
         $this->db->where('id_user', $trx[0]->id_murid);
         $user = $this->db->get('tb_user')->row();
         $result[] = [
           'no'    => $no,
           'date'  => $trx[0]->date_created,
           'ta'    => $trx[0]->ta,
-          'bank'  => $trx[0]->bank, 
+          'bank'  => $trx[0]->bank,
           'penyetor'  => $trx[0]->nama,
           'nama'  => $user->nama,
           'kelas'  => $trx[0]->kelas,
@@ -554,7 +599,7 @@ class Bni extends CI_Controller
         $excel->setCellValue('N' . $m, $res['sarpras']);
         $excel->setCellValue('O' . $m, $res['formulir']);
         $excel->setCellValue('P' . $m, $res['total']);
-        $excel->getStyle('A'.$m.':P'. $m)->applyFromArray($style_row);
+        $excel->getStyle('A' . $m . ':P' . $m)->applyFromArray($style_row);
         $excel->getStyle('H' . $m)->applyFromArray($style_number);
         $excel->getStyle('I' . $m)->applyFromArray($style_number);
         $excel->getStyle('J' . $m)->applyFromArray($style_number);
@@ -568,7 +613,7 @@ class Bni extends CI_Controller
       }
     }
 
-    $excel->getColumnDimension('A')->setWidth(5); 
+    $excel->getColumnDimension('A')->setWidth(5);
     $excel->getColumnDimension('B')->setWidth(20);
     $excel->getColumnDimension('C')->setWidth(15);
     $excel->getColumnDimension('D')->setWidth(10);
@@ -621,8 +666,117 @@ class Bni extends CI_Controller
       exit;
     }
   }
+
+  public function getDetailBni()
+  {
+    // $thn = $this->input->post('ta');
+    $thn = '2021-10-15';
+    $result = [];
+    $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+    $totalC = 0;
+    $totalP = 0;
+    $totalT = 0;
+    for ($i = 0; $i < 7; $i++) {
+      $this->db->like('date_created', $thn);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->where('approve', 1);
+      $this->db->where('metode', 1);
+      $this->db->select_sum('kredit', 'total');
+      $cash = $this->db->get('tb_transaksi')->row();
+      if ($cash == null) {
+        $cashs = 0;
+      } else {
+        $cashs = $cash->total;
+      }
+
+      $this->db->like('date_created', $thn);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->where('approve', 1);
+      $this->db->where('metode', 5);
+      $this->db->select_sum('debit', 'total');
+      $pot = $this->db->get('tb_transaksi')->row();
+      if ($pot == null) {
+        $pots = 0;
+      } else {
+        $pots = $pot->total;
+      }
+
+      $this->db->like('date_created', $thn);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->where('approve', 1);
+      $this->db->where('metode', 2);
+      $this->db->select_sum('kredit', 'total');
+      $transfer = $this->db->get('tb_transaksi')->row();
+      if ($transfer == null) {
+        $trans = 0;
+      } else {
+        $trans = $transfer->total;
+      }
+
+      $this->db->like('date_created', $thn);
+      $this->db->where_not_in('kode', 'TABUNGAN');
+      $this->db->where('approve', 1);
+      $this->db->select_sum('kredit', 'total');
+      $grandTotal = $this->db->get('tb_transaksi')->row();
+
+      if ($kode[$i] != '') {
+        $totalC = $totalC + $cashs;
+        $totalP = $totalP + $pots;
+        $totalT = $totalT + $trans;
+      }
+
+      if ($kode[$i] == 'SPP') {
+        $result[] = [
+          'date'  => longdate_indo(substr($thn, 0, 10)),
+          'kode' => $kode[$i],
+          'cash'    => rupiah($cashs),
+          'potong'  => rupiah((int)$pots),
+          'transfer'  => rupiah($trans),
+          'total'  => rupiah((int)$cashs - (int)$pots),
+          'grandTotal'  => rupiah($totalC - $totalP),
+          'totalCash'  => rupiah($totalC),
+          'totalPotong'  => rupiah($totalP),
+          'totalTransfer'  => rupiah($totalT),
+          'terbilang'  => '<span class="text-italic">' . number_to_words($grandTotal->total - $pots) . '</span>',
+        ];
+      } else {
+        $result[] = [
+          'date'  => longdate_indo(substr($thn, 0, 10)),
+          'kode' => $kode[$i],
+          'cash'    => rupiah($cashs),
+          'potong'  => 0,
+          'transfer'  => rupiah($trans),
+          'totalCash'  => rupiah($totalC),
+          'totalPotong'  => rupiah($totalP),
+          'totalTransfer'  => rupiah($totalT),
+          'total'  => rupiah($cashs),
+          'grandTotal'  => rupiah($totalC - $totalP),
+        ];
+      }
+    }
+    echo json_encode($result);
+  }
+
+  public function setor()
+  {
+    $date = $this->input->post('date');
+    $this->db->set('disetor', 1);
+    $this->db->where_not_in('kode', 'TABUNGAN');
+    $this->db->where('date_created', $date);
+    $this->db->update('tb_transaksi');
+    if ($this->db->affected_rows()) {
+      $result = [
+        'sukses' => 'Data sudah Berhasil disetorkan ke Bank'
+      ];
+    } else {
+      $result = [
+        'error' => 'Proses gagal'
+      ];
+    }
+    echo json_encode($result);
+  }
 }
 
 
-/* End of file Pemasukan.php */
-/* Location: ./application/controllers/Pemasukan.php */
+/* End of file Bni.php */
+/* Location: ./application/controllers/Bni.php */

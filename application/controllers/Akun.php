@@ -116,74 +116,28 @@ class Akun extends CI_Controller
   public function add()
   {
     if ($this->scm->cekSecurity() == true) {
-      $id = $this->input->post('id');
-      if ($_POST['kategori'] == 1) {
-        $parent = htmlspecialchars($this->input->post('parent'));
-      } elseif ($_POST['kategori'] == 2) {
-        $parent = htmlspecialchars($this->input->post('ortu'));
+
+      if ($this->input->post('kategori') == 1) {
+        $parent = ($this->input->post('parent'));
+      } elseif ($this->input->post('kategori') == 2) {
+        $parent = ($this->input->post('ortu'));
       } else {
         $parent = 0;
       }
 
-      if ($id) {
+      $this->db->where('kode_akun', $this->input->post('kode_akun'));
+      $data = $this->db->get('tb_rab')->row();
+
+      if (!$data) {
         $data = array(
+          'created_at'    => date('Y-m-d'),
           'kode_akun'     => htmlspecialchars($this->input->post('kode_akun')),
           'nama'     => htmlspecialchars($this->input->post('nama')),
           'kategori'     => htmlspecialchars($this->input->post('kategori')),
           'parent'     => $parent,
-          'jumlah'     => $this->input->post('saldo'),
         );
-
-        $this->db->where('id', $id);
-        $this->db->update('tb_rab', $data);
-        $msg = array('sukses' => 'Success');
-      } else {
-        $this->db->where('kode_akun', $_POST['kode_akun']);
-        $data = $this->db->get('tb_rab')->row();
-
-        if ($_POST['kode_akun'] != $data->kode_akun) {
-          $data = array(
-            'created_at'    => date('Y-m-d'),
-            'kode_akun'     => htmlspecialchars($this->input->post('kode_akun')),
-            'nama'     => htmlspecialchars($this->input->post('nama')),
-            'kategori'     => htmlspecialchars($this->input->post('kategori')),
-            'jumlah'     => $this->input->post('saldo'),
-            'parent'     => $parent,
-          );
-          $this->db->insert('tb_rab', $data);
-          $msg = array('sukses' => 'Success');
-        } else {
-          $msg = array('error' => 'Kode Akun Sudah terdaftar, buat kode akun lain');
-        }
-      }
-
-      echo json_encode($msg);
-    }
-  }
-
-  public function addAkunKas()
-  {
-    if ($this->scm->cekSecurity() == true) {
-      $this->db->where('kode_akun', $_POST['kode_akun']);
-      $data = $this->db->get('tb_rab')->row();
-      if ($_POST['kode_akun'] != $data->kode_akun) {
-        $data = array(
-          // 'ta'    => $_POST['ta'],
-          'created_at'    => date('Y-m-d'),
-          // 'kode_akun'     => htmlspecialchars($this->input->post('kode_akun')),
-          // 'nama'     => htmlspecialchars(strtoupper($this->input->post('nama'))),
-          // 'alias'       => htmlspecialchars($this->input->post('ket')),
-          // 'kategori'     => 3,
-          // 'jumlah'     => $this->input->post('saldo'),
-          // 'parent'     => 0,
-        );
-
         $this->db->insert('tb_rab', $data);
-        if ($this->db->affected_rows() > 0) {
-          $msg = array('sukses' => 'Success');
-        } else {
-          $msg = array('error' => 'Gagal ditambah');
-        }
+        $msg = array('sukses' => 'Data berhasil ditambahkan');
       } else {
         $msg = array('error' => 'Kode Akun Sudah terdaftar, buat kode akun lain');
       }
@@ -207,10 +161,18 @@ class Akun extends CI_Controller
   public function edit($id)
   {
     if ($this->scm->cekSecurity() == true) {
+      if ($this->input->post('kategori') == 1) {
+        $parent = ($this->input->post('parent'));
+      } elseif ($this->input->post('kategori') == 2) {
+        $parent = ($this->input->post('ortu'));
+      } else {
+        $parent = 0;
+      }
       $data = array(
+        'kategori'     => $this->input->post('kategori'),
         'kode_akun' => $_POST['kode_akun'],
         'nama'      => $_POST['nama'],
-        'jumlah'    => $_POST['saldo']
+        'parent'     => $parent,
       );
       $this->db->where('id', $id);
       $this->db->update('tb_rab', $data);

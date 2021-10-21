@@ -73,13 +73,18 @@ class Pengeluaran extends CI_Controller
     $this->form_validation->set_rules('akun_kas', 'Akun Kas', 'trim|required');
     $this->form_validation->set_rules('metode', 'Metode', 'trim|required');
     $kategori = $this->input->post('kategori');
+    $metode = $this->input->post('metode');
     $nilai = str_replace('.', '', $this->input->post('nilai'));
-
+    if ($metode != 5) {
+      $kode = 'PENGELUARAN KAS';
+    } else {
+      $kode = $this->input->post('kode');
+    }
     $data = array(
       'inputer'   => $this->session->userdata('id'),
       'nama' => htmlspecialchars(strtoupper($this->input->post('nama'))),
       'id_trx' => htmlspecialchars($this->input->post('id_trx')),
-      'kode' => 'PENGELUARAN KAS',
+      'kode' => $kode,
       'akun_kas' => $this->input->post('akun_kas'),
       'akun_trx' => $this->input->post('akun_trx'),
       'ta' => ($this->input->post('ta')),
@@ -143,7 +148,7 @@ class Pengeluaran extends CI_Controller
       ];
     } else {
       $this->db->where('approve', 0);
-      $this->db->where('kode', 'PENGELUARAN KAS');
+      $this->db->where('kategori', 0);
       $data = $this->db->get('tb_transaksi')->result();
       foreach ($data as $key) {
         $this->db->where('kode_akun', $key->akun_kas);

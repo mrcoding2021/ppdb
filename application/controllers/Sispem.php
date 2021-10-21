@@ -142,7 +142,7 @@ class Sispem extends CI_Controller
 
   public function siswa()
   {
-    $this->menu('pembayaran/v_pembayaranSiswa', 'Pembayaran Siswa');
+    $this->menu('pembayaran/report', 'Laporan Pembayaran Siswa');
   }
 
   public function tunggakan()

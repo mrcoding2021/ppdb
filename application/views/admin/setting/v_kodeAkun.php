@@ -103,7 +103,7 @@
                                     <div class="form-group row pemasukan">
                                         <div class="col-sm-12">
                                             <label>Grup</label>
-                                            <select name="parent" class="form-control selectpicker"  data-live-search="true">
+                                            <select name="parent" class="form-control selectpicker" data-live-search="true">
                                                 <option value="0">Pilik Grup</option>
                                                 <?php foreach ($akunPemasukan as $key) { ?>
                                                     <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
@@ -114,7 +114,7 @@
                                     <div class="form-group row pengeluaran">
                                         <div class="col-sm-12">
                                             <label>Grup</label>
-                                            <select name="ortu" class="form-control selectpicker"  data-live-search="true">
+                                            <select name="ortu" class="form-control selectpicker" data-live-search="true">
                                                 <option value="0">Pilih Group</option>
                                                 <?php foreach ($akunPengeluaran as $key) { ?>
                                                     <option value="<?= $key->kode_akun ?>"><?= $key->nama ?></option>
@@ -167,6 +167,7 @@
                         </div>
                     </div>
                 </div>
+
                 <script>
                     getAkunKas(1, 'akunPemasukan')
                     getAkunKas(2, 'akunPengeluaran')
@@ -182,7 +183,7 @@
                                 "url": '<?= base_url('akun/getAkunKas/') ?>' + kode,
                                 "dataSrc": ""
                             },
-                            "pageLength" : 50,
+                            "pageLength": 50,
                             "destroy": true,
                             'columns': [{
                                     "data": "no"
@@ -196,12 +197,13 @@
                                 {
                                     "data": "id",
                                     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html('<div class="d-flex"><a data-toggle="modal" class="edit mr-1 btn btn-sm btn-info" href="#add" data-kode="' + oData.kode_akun + '" data-id="' + oData.id + '" data-nama="' + oData.nama + '" ><i class="fa fa-search"></i></a></div>');
+                                        $(nTd).html('<div class="d-flex"><a data-toggle="modal" class="edit mr-1 btn btn-sm btn-info" href="#add" data-kode="' + oData.kode_akun + '" data-id="' + oData.id + '" data-nama="' + oData.nama + '" ><i class="fa fa-search"></i></a><a class="delete mr-1 btn btn-sm btn-danger" href="#" data-id="' + oData.id + '" ><i class="fa fa-times"></i></a></div>');
                                     }
                                 }
                             ]
                         });
                     }
+
                     $('.add').click(function(e) {
                         $('input').val('')
                         $('.addAkun').attr('action', '<?= base_url('akun/add/') ?>')
@@ -216,7 +218,7 @@
                             $('.pengeluaran').show()
                         }
                     })
-                    $(document).on('click','.edit',function(e) {
+                    $(document).on('click', '.edit', function(e) {
                         $('input[name="kode"]').focus()
                         var id = $(this).data('id')
                         console.log(id)
@@ -261,32 +263,29 @@
                             confirmButtonText: "Yes, simpan sekarang!",
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                console.log('oke');
+
                                 $.ajax({
                                     url: $(this).attr('action'),
                                     data: $(this).serialize(),
                                     dataType: 'json',
                                     type: 'POST',
-                                    beforeSend: function() {
-                                        $('.bg').show()
-                                    },
-                                    complete: function() {
-                                        $('.bg').hide()
-                                    },
                                     success: function(response) {
                                         if (response.sukses) {
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Berasil',
-                                                html: 'data berhasl di simpan'
+                                                html: `${response.sukses}`
                                             }).then((result) => {
                                                 $('.modal').modal('hide')
-
+                                                getAkunKas(1, 'akunPemasukan')
+                                                getAkunKas(2, 'akunPengeluaran')
                                             });
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',
                                                 title: 'Gagal',
-                                                html: 'data gagal di simpan'
+                                                html: `${response.error}`
                                             })
                                         }
 
@@ -295,7 +294,7 @@
                             }
                         });
                     })
-                    $('.delete').click(function(e) {
+                    $(document).on('click', '.delete', function(e) {
                         e.preventDefault()
                         var id = $(this).data('id')
                         Swal.fire({
