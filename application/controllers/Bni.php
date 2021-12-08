@@ -272,6 +272,7 @@ class Bni extends CI_Controller
 
   public function getAll()
   {
+    
     $no = 1;
     $result = [];
 
@@ -289,11 +290,11 @@ class Bni extends CI_Controller
 
       $result[] = [
         'no'    => $no,
-        'date'  => longdate_indo($key->start_date).' s/d '. longdate_indo($key->end_date),
+        'date'  => longdate_indo($key->start_date) . ' s/d ' . longdate_indo($key->end_date),
         'cash'    => rupiah($key->cash),
         'transfer'  => rupiah($key->transfer),
         'potong'  => rupiah($key->potongan),
-        'total'  => rupiah($key->total_setoran),
+        'total'  => rupiah($key->total_setor),
         'status' => $status,
         'aksi'  => $aksi,
       ];
@@ -307,63 +308,87 @@ class Bni extends CI_Controller
   {
     $start = $this->input->post('start');
     $end = $this->input->post('end');
-    // $start = '2021-10-1';
+    // $start = '2020-07-1';
     // $end = '2021-10-30';
     $no = 1;
     $result = [];
 
-    $this->db->select('date_created');
+    $this->db->select('id_trx');
+    $this->db->group_by('tb_transaksi.id_trx');
     $this->db->where('date >=', $start);
     $this->db->where('date <=', $end);
-
-    $this->db->group_by('tb_transaksi.date_created');
     $this->db->where_not_in('kode', 'TABUNGAN');
     $this->db->where('approve', 1);
     $data = $this->db->get('tb_transaksi')->result();
 
+    $totalCash = 0;
+    $totalTransfer = 0;
+    $totalPotong = 0;
+
     foreach ($data as $key) {
-      $this->db->where('date_created', $key->date_created);
+      $this->db->where('id_trx', $key->id_trx);
       $this->db->where('metode', 1);
+      $this->db->where('approve', 1);
       $this->db->select_sum('jumlah', 'total');
       $cash = $this->db->get('tb_transaksi')->row();
 
-      $this->db->where('date_created', $key->date_created);
+      $this->db->where('id_trx', $key->id_trx);
+      $user = $this->db->get('tb_transaksi')->result();
+
+      $this->db->where('id_user', $user[0]->id_murid);
+      $siswa = $this->db->get('tb_user')->row();
+
+      $this->db->where('id_trx', $key->id_trx);
       $this->db->where('metode', 2);
+      $this->db->where('approve', 1);
       $this->db->select_sum('jumlah', 'total');
       $transfer = $this->db->get('tb_transaksi')->row();
 
-      $this->db->where('date_created', $key->date_created);
+      $this->db->where('id_trx', $key->id_trx);
       $this->db->where('metode', 5);
+      $this->db->where('approve', 1);
       $this->db->select_sum('jumlah', 'total');
       $potong = $this->db->get('tb_transaksi')->row();
 
-      $aksi = '<a href="#detail" data-toggle="modal" data-id="' . $key->date_created . '" class="detailBni btn btn-success btn-sm"><i class="fa fa-search"></i></a>';
+      $aksi = '<a href="#detail" data-toggle="modal" data-id="' . $key->id_trx . '" class="detailBni btn btn-success btn-sm"><i class="fa fa-search"></i></a>';
 
       $this->db->select('disetor');
-      $this->db->where('date_created', $key->date_created);
+      $this->db->where('id_trx', $key->id_trx);
       $this->db->where_not_in('kode', 'TABUNGAN');
       $this->db->where('approve', 1);
       $disetor = $this->db->get('tb_transaksi')->result();
 
-      if ($disetor[0]->disetor == 0) {
-        $status = '<span class="btn btn-sm btn-danger"><i class="fa fa-times"></i> Belum</span>';
+      if ($disetor != null) {
+        if ($disetor[0]->disetor == 0) {
+          $status = '<span class="btn btn-sm btn-danger"><i class="fa fa-times"></i> Belum</span>';
+        } else {
+          $status = '<span class="btn btn-sm btn-success"><i class="fa fa-check"></i> Sudah</span>';
+        }
       } else {
-        $status = '<span class="btn btn-sm btn-success"><i class="fa fa-check"></i> Sudah</span>';
+        $status = '<span class="btn btn-sm btn-danger"><i class="fa fa-check"></i> Belum</span>';
+      }
+
+      if ($key->id_trx != 0) {
+        $totalCash = $totalCash + $cash->total;
+        $totalPotong = $totalPotong + $potong->total;
+        $totalTransfer = $totalTransfer + $transfer->total;
       }
 
       $result[] = [
         'no'    => $no,
-        'date'  => longdate_indo(substr($key->date_created, 0, 10)),
+        'id_trx'  => $key->id_trx,
+        'date'  => longdate_indo(substr($user[0]->date_created, 0, 10)),
         'cash'    => rupiah($cash->total),
         'transfer'  => rupiah($transfer->total),
         'potong'  => rupiah($potong->total),
         'total'  => rupiah($cash->total - $potong->total),
         'status' => $status,
         'aksi'  => $aksi,
-        // 'totalCash'   => $totalCash,
-        // 'totalTransfer'   => $totalTransfer,
-        // 'totalPotong'   => $totalPotong,
-        // 'total'   => $totalCash,
+        'siswa'  => $siswa->nama,
+        'totalCash'   => rupiah(($totalCash) ?? 0),
+        'totalTransfer'   => rupiah($totalTransfer ?? 0),
+        'totalPotong'   => rupiah($totalPotong ?? 0),
+        'totalAll'   => rupiah($totalCash - $totalPotong),
       ];
       $no++;
     }
@@ -759,14 +784,32 @@ class Bni extends CI_Controller
 
   public function setor()
   {
-    $date = $this->input->post('date');
-    $this->db->set('disetor', 1);
-    $this->db->where_not_in('kode', 'TABUNGAN');
-    $this->db->where('date_created', $date);
-    $this->db->update('tb_transaksi');
-    if ($this->db->affected_rows()) {
+    $data = [
+      'date_created'      => date('Y-m-d'),
+      'time_created'      => date('H:i:s'),
+      'start_date'        => $this->input->post('start'),
+      'end_date'          => $this->input->post('end'),
+      'inputer'           => $this->session->userdata('id'),
+      'cash'              => str_replace('.','',$this->input->post('cash')),
+      'potongan'          => str_replace('.','',$this->input->post('potong')),
+      'transfer'           => str_replace('.','',$this->input->post('transfer')),
+      'total_setor'       => str_replace('.','',$this->input->post('total')),
+      'ket'               => $this->input->post('ket'),
+      'status'            => 0,
+    ];
+    $this->db->insert('tb_transaksi_disetor', $data);
+
+    if ($this->db->affected_rows() > 0) {
+      // $inv = $this->input->post('inv');
+      // for ($i = 0; $i < count($inv); $i++) {
+      //   $this->db->set('disetor', 1);
+      //   $this->db->where('id_trx', $inv[$i]);
+      //   $this->db->update('tb_transaksi');
+      // }
+      // if ($this->db->affected_rows()) {
+      // }
       $result = [
-        'sukses' => 'Data sudah Berhasil disetorkan ke Bank'
+        'sukses' => 'Data sudah Berhasil ke Bank'
       ];
     } else {
       $result = [

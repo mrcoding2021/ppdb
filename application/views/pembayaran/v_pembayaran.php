@@ -105,8 +105,8 @@
 
                                                 </thead>
                                                 <tbody>
-                                                    <?php $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
-                                                    $parent = ['1-30000', '1-10000', '1-40000', '1-50000', '1-80000', '1-60000', '1-20000'];
+                                                    <?php $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET','SPP', 'SARPRAS'];
+                                                    $parent = ['1-10000', '1-40000', '1-50000', '1-80000', '1-60000','1-30000', '1-20000'];
                                                     $no = 1;
                                                     for ($i = 0; $i < 7; $i++) { ?>
                                                         <tr>

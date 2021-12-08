@@ -9,11 +9,8 @@ class Import extends CI_Controller
     function __construct()
 
     {
-
         parent::__construct();
-
         $this->load->library(array('PHPExcel', 'PHPExcel/IOFactory'));
-
         $this->load->helper('rupiah');
     }
 
@@ -336,69 +333,92 @@ class Import extends CI_Controller
     }
 
     public function pembayaran()
-    {
-        $fileName = $this->input->post('file');
-        $config['upload_path'] = './asset/upload/';
-        $config['file_name'] = $fileName;
-        $config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
-        $config['max_size'] = 10000;
-        $this->load->library('upload', $config);
-        $this->upload->initialize($config);
-        if (!$this->upload->do_upload('file')) {
-            $error = array('error' => $this->upload->display_errors());
-            $this->session->set_flashdata('alert', '<div class="alert alert-danger">Upload data produk gagal ditambahan</div>');
-            redirect('sipajar/mutasi');
-        } else {
-            $media = $this->upload->data();
-            $inputFileName = 'asset/upload/' . $media['file_name'];
-            try {
-                $inputFileType = IOFactory::identify($inputFileName);
-                $objReader = IOFactory::createReader($inputFileType);
-                $objPHPExcel = $objReader->load($inputFileName);
-            } catch (Exception $e) {
-                die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
-            }
-            $sheet = $objPHPExcel->getSheet(0);
-            $highestRow = $sheet->getHighestRow();
-            $highestColumn = $sheet->getHighestColumn();
+	{
+		$fileName = $this->input->post('file');
+		$config['upload_path'] = './asset/upload/';
+		$config['file_name'] = $fileName;
+		$config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
+		$config['max_size'] = 10000;
 
-            for ($row = 2; $row <= $highestRow; $row++) {
-                $rowData = $sheet->rangeToArray(
-                    'A' . $row . ':' . $highestColumn . $row,
-                    NULL,
-                    TRUE,
-                    FALSE
-                );
-                if ($rowData[0][5] == NULL) {
-                    $kredit = 0;
-                    $tagihan = 0;
-                } else {
-                    $kredit = $rowData[0][5];
-                    $tagihan = $rowData[0][4];
+		$this->load->library('upload', $config);
+		$this->upload->initialize($config);
+
+		if (!$this->upload->do_upload('file')) {
+			$error = array('error' => $this->upload->display_errors());
+			$this->session->set_flashdata('alert', '<div class="alert alert-danger">' . $error['error'] . '</div>');
+			redirect('pembayaran');
+		} else {
+			$media = $this->upload->data();
+			$inputFileName = 'asset/upload/' . $media['file_name'];
+			try {
+				$inputFileType = IOFactory::identify($inputFileName);
+				$objReader = IOFactory::createReader($inputFileType);
+				$objPHPExcel = $objReader->load($inputFileName);
+				// $this->db->delete('anggota');
+			} catch (Exception $e) {
+				die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
+			}
+
+			$sheet = $objPHPExcel->getSheet(0);
+			$highestRow = $sheet->getHighestRow();
+			$highestColumn = $sheet->getHighestColumn();
+
+			for ($row = 2; $row <= $highestRow; $row++) {
+
+				$rowData = $sheet->rangeToArray(
+					'A' . $row . ':' . $highestColumn . $row,
+					NULL,
+					TRUE,
+					FALSE
+				);
+
+                $this->db->where('nama', $rowData[0][2]);
+                $user = $this->db->get('tb_user')->row();
+                
+                if ($rowData[0][3] == 'PEMBANGUNAN') {
+                    $akunTrx = '1-10000';
+                } elseif ($rowData[0][3] == 'KEGIATAN') {
+                    $akunTrx = '1-40000';
+                } elseif ($rowData[0][3] == 'SERAGAM') {
+                    $akunTrx = '1-50000';
+                } elseif ($rowData[0][3] == 'KOMITE') {
+                    $akunTrx = '1-80000';
+                } elseif ($rowData[0][3] == 'BUKU PAKET') {
+                    $akunTrx = '1-60000';
+                } elseif ($rowData[0][3] == 'SPP') {
+                    $akunTrx = '1-30000';
+                } elseif ($rowData[0][3] == 'SARPRAS') {
+                    $akunTrx = '1-20000';
                 }
-                $data = array(
-                    "date_created" => "2021-01-01 " . date('H:i:s'),
-                    "akun_kas"  => '0-10001',
-                    "id_trx" => $rowData[0][0],
-                    "id_murid" => $rowData[0][1],
-                    "tagihan" => $tagihan,
-                    "kategori" => 1,
-                    'kode' => $rowData[0][3],
-                    'metode' => 1,
-                    'kredit' => $kredit,
-                    'jumlah' => $kredit,
-                    "akun_trx" => $rowData[0][6],
-                    'ta' => $rowData[0][7],
-                );
 
-                $this->db->insert('tb_transaksi', $data);
-            }
+				$data = array(
+					"akun_kas" 				=> '0-10001',
+					"inputer"			    => 1,
+					"metode" 				=> 1,
+					"kategori" 				=> 1,
+					"approve" 				=> 1,
+					"id_murid" 			    => $user->id_user,
+					"akun_trx" 				=> $akunTrx,
+					"id_trx" 			    => $rowData[0][0],
+					"date_created" 			=> $rowData[0][1].' '.date('H:i:s'),
+					"date" 					=> $rowData[0][1],
+					"nama" 			        => $rowData[0][2],
+					"kode" 				    => $rowData[0][3],
+					"ta" 					=> $rowData[0][6],
+					"tagihan" 			    => $rowData[0][7],
+					"kredit" 				=> $rowData[0][8],
+					"jumlah" 			    => $rowData[0][8],
+					"kelas" 			    => $rowData[0][9],
+				);
 
-            $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data pembayaran berhasiil ditambahan</div>');
+				$this->db->insert('tb_transaksi', $data);
+			}
 
-            redirect('pembayaran');
-        }
-    }
+			$this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data murid berhasiil ditambahan</div>');
+			redirect('pembayaran');
+		}
+	}
+
 }
 
 

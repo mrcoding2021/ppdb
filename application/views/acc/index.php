@@ -26,9 +26,9 @@
                                         <div class="col-lg-2 col-sm-4">
                                             <label for="1" class="col-form-label">Tahun</label>
                                             <select class="form-control form-control-sm tahun" name="tahun">
-                                                <?php for ($i = 0; $i < 10; $i++) { ?>
-                                                    <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
-                                                <?php } ?>
+                                                <?php $a = 16; for ($i = 0; $i < 10; $i++) { ?>
+                                                    <option <?= (date('Y') == '20' . $a) ? 'selected' : '' ?> value="<?= '20' . $a ?>"><?= '20' . $a ?></option>
+                                                <?php $a++;} ?>
                                             </select>
                                         </div>
 

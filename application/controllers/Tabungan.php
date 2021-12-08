@@ -139,7 +139,7 @@ class Tabungan extends CI_Controller
         'inputer'   => $this->session->userdata('id'),
         'id_murid' => htmlspecialchars($this->input->post('id_murid')),
         'id_trx' => htmlspecialchars($this->input->post('id_trx')),
-        'date' => $this->input->post('tgl_byr'),
+        'date' => $this->input->post('date'),
         'time' => date('H:i:s'),
         'kode' => 'TABUNGAN',
         'akun_kas' => '0-10005',
@@ -165,7 +165,7 @@ class Tabungan extends CI_Controller
           $this->db->insert('tb_transaksi', $data);
           $msg = 'Dada berhasil ditambahkan';
         }
-        if ($this->db->affected_rows()) {
+        if ($this->db->affected_rows() > 0) {
           $result = [
             'sukses' => $msg
           ];
@@ -235,7 +235,7 @@ class Tabungan extends CI_Controller
     }
   }
 
-  public function getAll($bln = '', $thn = '', $hari = '')
+  public function getAll($start, $end)
   {
     if ($this->scm->cekSecurity() == true) {
       $id = $this->input->post('id');
@@ -258,13 +258,15 @@ class Tabungan extends CI_Controller
         ];
       } else {
         $this->db->order_by('date_created', 'asc');
-        if ($hari == 0) {
-          $this->db->where('month(date_created)', $bln);
-          $this->db->where('year(date_created)', $thn);
-        } else {
-          $this->db->where('day(date_created)', $hari);
-          $this->db->where('month(date_created)', $bln);
-          $this->db->where('year(date_created)', $thn);
+        $start = explode('-', $start);
+        $end = explode('-', $end);
+        if ($start != 0) {
+          $this->db->where('day(date_created) >=', $start[2]);
+          $this->db->where('month(date_created) >=', $start[1]);
+          $this->db->where('year(date_created) >=', $start[0]);
+          $this->db->where('day(date_created) <=', $end[2]);
+          $this->db->where('month(date_created) <=', $end[1]);
+          $this->db->where('year(date_created) <=', $end[0]);
         }
         $this->db->where('approve', 1);
         $this->db->where('kode', 'TABUNGAN');
@@ -280,11 +282,18 @@ class Tabungan extends CI_Controller
 
           $this->db->where('id_user', $key->id_murid);
           $murid = $this->db->get('tb_user')->row();
+          if ($murid == null) {
+            $namaSiswa = 'SEKOLAH';
+            $hp = '000';
+          } else {
+            $namaSiswa = $murid->nama;
+            $hp = $murid->hp;
+          }
 
           $result[] = [
             'no'    => $no,
-            'nama'  => $murid->nama,
-            'hp'  => $murid->hp,
+            'nama'  => $namaSiswa,
+            'hp'  => $hp,
             'date'  => $key->date_created,
             'debit' => rupiah($key->debit),
             'kredit'  => rupiah($key->kredit),
@@ -319,11 +328,11 @@ class Tabungan extends CI_Controller
     }
   }
 
-  public function export($bln, $thn, $id = 'excel', $hari = 0)
+  public function export($start, $end, $id = 'excel')
   {
     $spreadsheet = new Spreadsheet();
     $excel = $spreadsheet->getActiveSheet();
-    $nama_bln = strtoupper(bulan($bln)) . ' ' . $thn;
+    $nama_bln = strtoupper(($start) . ' - ' . ($end));
 
     $excel->setCellValue('A1', "LAPORAN REKAP TABUGNAN");
     $excel->setCellValue('A2', "SDIT INSAN MULIA BEKASI");
@@ -422,14 +431,15 @@ class Tabungan extends CI_Controller
 
     if ($this->scm->cekSecurity() == true) {
       $this->db->order_by('date_created', 'asc');
-      
-      if ($hari == 0) {
-        $this->db->where('month(date_created)', $bln);
-        $this->db->where('year(date_created)', $thn);
-      } else {
-        $this->db->where('day(date_created)', $hari);
-        $this->db->where('month(date_created)', $bln);
-        $this->db->where('year(date_created)', $thn);
+      $start = explode('-', $start);
+      $end = explode('-', $end);
+      if ($start != 0) {
+        $this->db->where('day(date_created) >=', $start[2]);
+        $this->db->where('month(date_created) >=', $start[1]);
+        $this->db->where('year(date_created) >=', $start[0]);
+        $this->db->where('day(date_created) <=', $end[2]);
+        $this->db->where('month(date_created) <=', $end[1]);
+        $this->db->where('year(date_created) <=', $end[0]);
       }
       $this->db->where('approve', 1);
       $this->db->where('kode', 'TABUNGAN');

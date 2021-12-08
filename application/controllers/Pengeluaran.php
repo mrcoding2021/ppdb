@@ -174,15 +174,21 @@ class Pengeluaran extends CI_Controller
     echo json_encode($result);
   }
 
-  public function harian($kas, $bln, $thn, $hari = 0)
+  public function harian($start, $end)
   {
-    if ($hari != 0) {
-      $this->db->where('day(date_created)', $hari);
+    $this->db->order_by('date_created', 'asc');
+    $start = explode('-', $start);
+    $end = explode('-', $end);
+    if ($start != 0) {
+      $this->db->where('day(date_created) >=', $start[2]);
+      $this->db->where('month(date_created) >=', $start[1]);
+      $this->db->where('year(date_created) >=', $start[0]);
+      $this->db->where('day(date_created) <=', $end[2]);
+      $this->db->where('month(date_created) <=', $end[1]);
+      $this->db->where('year(date_created) <=', $end[0]);
     }
     $this->db->where('approve', 1);
-    $this->db->where('akun_kas', $kas);
-    $this->db->where('month(date_created)', $bln);
-    $this->db->where('year(date_created)', $thn);
+    $this->db->where_not_in('kode', 'TABUNGAN');
     $this->db->where('kode', 'PENGELUARAN KAS');
     $data = $this->db->get('tb_transaksi')->result();
     if ($data == null) {
@@ -235,11 +241,11 @@ class Pengeluaran extends CI_Controller
     echo json_encode($result);
   }
 
-  public function export($kas, $bln, $thn, $id = 'excel', $hari = 0)
+  public function export($start, $end, $id = 'excel')
   {
     $spreadsheet = new Spreadsheet();
     $excel = $spreadsheet->getActiveSheet();
-    $nama_bln = strtoupper(bulan($bln)) . ' ' . $thn;
+    $nama_bln = strtoupper(($start) . ' - ' . ($end));
 
     $excel->setCellValue('A1', "LAPORAN PENGELUARAN KAS");
     $excel->setCellValue('A2', "SDIT INSAN MULIA BEKASI");
@@ -324,7 +330,7 @@ class Pengeluaran extends CI_Controller
     $excel->setCellValue('D5', "Dari Kas"); // Set kolom D5 dengan tulisan "JENIS KELAMIN"
     $excel->setCellValue('E5', "Metode");
     $excel->setCellValue('F5', "Jumlah");
-    $excel->setCellValue('G5', "Total");
+    $excel->setCellValue('G5', "Keterangan");
 
     $excel->getStyle('A5')->applyFromArray($style_col);
     $excel->getStyle('B5')->applyFromArray($style_col);
@@ -338,17 +344,18 @@ class Pengeluaran extends CI_Controller
 
     if ($this->scm->cekSecurity() == true) {
       $this->db->order_by('date_created', 'asc');
-
-      if ($hari == 0) {
-        $this->db->where('month(date_created)', $bln);
-        $this->db->where('year(date_created)', $thn);
-      } else {
-        $this->db->where('day(date_created)', $hari);
-        $this->db->where('month(date_created)', $bln);
-        $this->db->where('year(date_created)', $thn);
+      $start = explode('-', $start);
+      $end = explode('-', $end);
+      if ($start != 0) {
+        $this->db->where('day(date_created) >=', $start[2]);
+        $this->db->where('month(date_created) >=', $start[1]);
+        $this->db->where('year(date_created) >=', $start[0]);
+        $this->db->where('day(date_created) <=', $end[2]);
+        $this->db->where('month(date_created) <=', $end[1]);
+        $this->db->where('year(date_created) <=', $end[0]);
       }
-      $this->db->where('akun_kas', $kas);
       $this->db->where('approve', 1);
+      $this->db->where_not_in('kode', 'TABUNGAN');
       $this->db->where('kode', 'PENGELUARAN KAS');
       $data = $this->db->get('tb_transaksi')->result();
     }
@@ -369,7 +376,7 @@ class Pengeluaran extends CI_Controller
       $result[] = [
         'id'    => $key->id,
         'no'    => $no,
-        'date'  => substr($key->date_created, 0, 10),
+        'date'  => shortdate_indo(substr($key->date_created, 0, 10)),
         'id_trx'    => $key->id_trx,
         'nama'  => $akun->nama,
         'kas'  => $kas->nama,
@@ -390,7 +397,7 @@ class Pengeluaran extends CI_Controller
         $excel->setCellValue('D' . $m, $res['kas']);
         $excel->setCellValue('E' . $m, $res['metode']);
         $excel->setCellValue('F' . $m, $res['jumlah']);
-        $excel->setCellValue('G' . $m, $res['saldo']);
+        $excel->setCellValue('G' . $m, $res['ket']);
 
         $excel->getStyle('A' . $m)->applyFromArray($style_row);
         $excel->getStyle('B' . $m)->applyFromArray($style_row);

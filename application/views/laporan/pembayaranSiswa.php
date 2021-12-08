@@ -14,25 +14,21 @@
                                 <div class="card-body">
                                     <div class="mb-3 row">
                                         <div class="col-lg-2 col-sm-4">
-                                            <label for="1" class="col-form-label">Bulan</label>
-                                            <select class="form-control form-control-sm bulan" name="bulan">
-                                                <?php for ($i = 1; $i < 12; $i++) { ?>
-                                                    <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
-                                                <?php } ?>
-                                            </select>
+                                            <label for="1" class="col-form-label">Dari Tanggal</label>
+                                            <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
                                         </div>
                                         <div class="col-lg-2 col-sm-4">
-                                            <label for="1" class="col-form-label">Tahun</label>
-                                            <select class="form-control form-control-sm tahun" name="tahun">
-                                                <?php for ($i = 0; $i < 10; $i++) { ?>
-                                                    <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
-                                                <?php } ?>
-                                            </select>
+                                            <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                            <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
                                         </div>
 
                                         <div class="col-lg-1 col-sm-4">
                                             <label for="1" class="col-form-label">.</label>
                                             <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                        </div>
+                                        <div class="col-lg-2 col-sm-4">
+                                            <label for="1" class="col-form-label">.</label>
+                                            <a href="<?= base_url('pembayaran/export/') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
                                         </div>
 
                                     </div>
@@ -98,20 +94,21 @@
                 <script>
                     $('.cari').click(function(e) {
                         e.preventDefault()
-                        var bln = $('.bulan').val()
-                        var thn = $('.tahun').val()
-                        getAcc(bln, thn)
+                        var start = $('.start').val()
+                        var end = $('.end').val()
+                        $('.excel').attr('href', '<?= base_url('pembayaran/export/') ?>' + start + '/' + end)
+                        getPembayaranSiswa(start, end)
                     })
 
-                    var bln = $('.bulan').val()
-                    var thn = $('.tahun').val()
-                    getPembayaranSiswa(bln, thn, 1)
+                    var start = $('.start').val()
+                    var end = $('.end').val()
+                    getPembayaranSiswa(start, end)
 
-                    function getPembayaranSiswa(bln, thn, kode) {
+                    function getPembayaranSiswa(start, end) {
                         var dataAcc = $('#dataAcc').DataTable({
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('acc/getAcc/') ?>' + bln + '/' + thn + '/' + kode,
+                                "url": '<?= base_url('pembayaran/getPembayaran/') ?>' + start + '/' + end,
                                 "dataSrc": ""
                             },
                             'destroy': true,

@@ -12,37 +12,12 @@
                                     <div class="col-md-12 col-lg-12 container">
                                         <div class="mb-3 row">
                                             <div class="col-lg-2 col-sm-4">
-                                                <label for="1" class="col-form-label">Jenis KAS</label>
-                                                <select name="kas" class="form-control form-control-sm kas">
-                                                    <option value="0-10001">Kas Yayasan</option>
-                                                    <option value="0-10002">Kas BOS</option>
-                                                    <option value="0-10003">Kas Kecil</option>
-                                                </select>
+                                                <label for="1" class="col-form-label">Dari Tanggal</label>
+                                                <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
                                             </div>
                                             <div class="col-lg-2 col-sm-4">
-                                                <label for="1" class="col-form-label">Tanggal</label>
-                                                <select class="form-control form-control-sm hari" name="hari">
-                                                    <option value="0">Semua</option>
-                                                    <?php for ($i = 1; $i <= 31; $i++) { ?>
-                                                        <option value="<?= $i ?>"><?= $i ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-2 col-sm-4">
-                                                <label for="1" class="col-form-label">Bulan</label>
-                                                <select class="form-control form-control-sm bulan" name="bulan">
-                                                    <?php for ($i = 1; $i < 12; $i++) { ?>
-                                                        <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-1 col-sm-4">
-                                                <label for="1" class="col-form-label">Tahun</label>
-                                                <select class="form-control form-control-sm tahun" name="tahun">
-                                                    <?php for ($i = 0; $i < 10; $i++) { ?>
-                                                        <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
-                                                    <?php } ?>
-                                                </select>
+                                                <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                                <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
                                             </div>
 
                                             <div class="col-lg-1 col-sm-4">
@@ -51,7 +26,7 @@
                                             </div>
                                             <div class="col-lg-2 col-sm-4">
                                                 <label for="1" class="col-form-label">.</label>
-                                                <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                                <a href="<?= base_url('sispem/pemasukan') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
                                             </div>
                                             <!-- <div class="col-lg-2 col-sm-4">
                                                     <label for="1" class="col-form-label">.</label>
@@ -90,24 +65,20 @@
                 </div>
 
                 <script>
-                    var kas = $('.kas').val()
-                    var hari = $('.hari').val()
-                    var bln = $('.bulan').val()
-                    var thn = $('.tahun').val()
-                    getPengeluaran(kas, bln, thn, hari)
+                    var start = $('.start').val()
+                    var end = $('.end').val()
+                    getPengeluaran(start, end)
 
                     $('.cari').click(function(e) {
                         e.preventDefault()
-                        var kas = $('.kas').val()
-                        var hari = $('.hari').val()
-                        var bln = $('.bulan').val()
-                        var thn = $('.tahun').val()
-                        getPengeluaran(kas, bln, thn, hari)
-                        $('.excel').attr('href', '<?= base_url('pengeluaran/export/') ?>' + kas + '/' + bln + '/' + thn)
+                        var start = $('.start').val()
+                        var end = $('.end').val()
+                        getPengeluaran(start, end)
+                        $('.excel').attr('href', '<?= base_url('pengeluaran/export/') ?>' + start + '/' + end)
 
                     })
 
-                    function getPengeluaran(kas, bln, thn, hari) {
+                    function getPengeluaran(start, end) {
                         var getPengeluaran = $('#dataPengeluaran').DataTable({
                             "processing": true,
                             "language": {
@@ -115,7 +86,7 @@
                             },
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('pengeluaran/harian/') ?>' + kas + '/' + bln + '/' + thn + '/' + hari,
+                                "url": '<?= base_url('pengeluaran/harian/') ?>' + start + '/' + end,
                                 "dataSrc": ""
                             },
                             "pageLength": 100,

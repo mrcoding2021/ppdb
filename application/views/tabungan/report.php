@@ -59,29 +59,12 @@
                                         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                                             <div class="mb-3 row">
                                                 <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Tanggal</label>
-                                                    <select class="form-control form-control-sm hari" name="hari">
-                                                        <option value="0">Semua</option>
-                                                        <?php for ($i = 1; $i <= 31; $i++) { ?>
-                                                            <option value="<?= $i ?>"><?= $i ?></option>
-                                                        <?php } ?>
-                                                    </select>
+                                                    <label for="1" class="col-form-label">Dari Tanggal</label>
+                                                    <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m').'-01'?>">
                                                 </div>
                                                 <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Bulan</label>
-                                                    <select class="form-control form-control-sm bulan" name="bulan">
-                                                        <?php for ($i = 1; $i < 13; $i++) { ?>
-                                                            <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Tahun</label>
-                                                    <select class="form-control form-control-sm tahun" name="tahun">
-                                                        <?php for ($i = 0; $i < 10; $i++) { ?>
-                                                            <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
-                                                        <?php } ?>
-                                                    </select>
+                                                    <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                                    <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d')?>">
                                                 </div>
 
                                                 <div class="col-lg-1 col-sm-4">
@@ -132,28 +115,27 @@
 
 
                 <script>
-                    var hari = $('.hari').val()
-                    var bln = $('.bulan').val()
-                    var thn = $('.tahun').val()
-                    getTabungan(bln, thn, hari)
+                    var start = $('.start').val()
+                    var end = $('.end').val()
+
+                    getTabungan(start, end)
 
                     $('.cari').click(function(e) {
                         e.preventDefault()
-                        var hari = $('.hari').val()
-                        var bln = $('.bulan').val()
-                        var thn = $('.tahun').val()
-                        getTabungan(bln, thn, hari)
-                        $('.excel').attr('href', '<?= base_url('tabungan/export/') ?>' + bln + '/' + thn)
+                        var start = $('.start').val()
+                        var end = $('.end').val()
+                        getTabungan(start, end)
+                        $('.excel').attr('href', '<?= base_url('tabungan/export/') ?>' + start + '/' + end)
                         // $('.pdf').attr('href', '<?= base_url('tabungan/export/') ?>' + bln + '/' + thn + '/pdf')
-                        
+
                     })
 
 
-                    function getTabungan(bln, thn, hari) {
+                    function getTabungan(start, end) {
                         var dataTabungan = $('#dataTabungan').DataTable({
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('tabungan/getAll/') ?>' + bln + '/' + thn + '/' + hari,
+                                "url": '<?= base_url('tabungan/getAll/') ?>' + start + '/' + end,
                                 "dataSrc": ""
                             },
                             'pageLength': 100,

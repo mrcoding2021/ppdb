@@ -93,7 +93,7 @@
                     var title = '<?= $title ?>'
                     if (title == 'Input Tabungan') {
                         getTabungan(res.id_user)
-                        $('#exportData').attr('href','<?= base_url('tabungan/exportData/')?>'+res.id_user)
+                        $('#exportData').attr('href', '<?= base_url('tabungan/exportData/') ?>' + res.id_user)
                     }
                     // getTa(res.id_user, '2016-2017')
                     console.log(res)
@@ -128,38 +128,39 @@
 
     function iuranLunas(id) {
         $.ajax({
-            url: '<?= base_url('tunggakan/lunas') ?>',
+            url: '<?= base_url('tunggakan/lunas/') ?>'+id,
             type: 'post',
             dataType: 'json',
-            data: {
-                'id': id
-            },
             success: function(res) {
+                console.log(res);
 
                 var html = ''
                 $.each(res, function(i, v) {
                     html += '<tr>'
-                    html += '<td>' + v.no + '</td><td>' + v.ta + '</td><td>' + v.pembangunan + '</td><td>' + v.kegiatan + '</td><td>' + v.seragam + '</td><td>' + v.komite + '</td><td>' + v.buku_paket + '</td><td>' + v.spp + '</td><td>' + v.total + '</td>'
+                    html += '<td>' + v.no + '</td><td>' + v.ta + '</td><td>' + (v.pembangunan) + '</td><td>' + v.kegiatan + '</td><td>' + v.seragam + '</td><td>' + v.komite + '</td><td>' + v.buku_paket + '</td><td>' + v.spp + '</td><td>' + v.sarpras + '</td><td>' + v.total + '</td>'
                     html += '</tr>'
                 })
                 $('#tunggakan-terbayar').html(html)
+                $('#cetakTunggakan').attr('href', '<?= base_url('cetak/tunggakan/') ?>' + id)
             }
         })
     }
 
     function iuranHutang(id) {
         $.ajax({
-            url: '<?= base_url('tunggakan/hutang') ?>',
+            url: '<?= base_url('tunggakan/hutang/') ?>'+id,
             type: 'post',
             dataType: 'json',
             data: {
                 'id': id
             },
             success: function(res) {
+                console.log(res);
+
                 var html = ''
                 $.each(res, function(i, v) {
                     html += '<tr>'
-                    html += '<td>' + v.no + '</td><td>' + v.ta + '</td><td>' + v.pembangunan + '</td><td>' + v.kegiatan + '</td><td>' + v.seragam + '</td><td>' + v.komite + '</td><td>' + v.buku_paket + '</td><td>' + v.spp + '</td><td>' + v.total + '</td>'
+                    html += '<td>' + v.no + '</td><td>' + v.ta + '</td><td>' + (v.pembangunan) + '</td><td>' + (v.kegiatan) + '</td><td>' + (v.seragam) + '</td><td>' + (v.komite) + '</td><td>' + (v.buku_paket) + '</td><td>' + (v.spp) + '</td><td>' + (v.sarpras) + '</td><td>' + (v.total) + '</td>'
                     html += '</tr>'
                 })
                 $('#tunggakan-hutang').html(html)
@@ -182,6 +183,7 @@
         e.preventDefault()
         inputBaru()
     })
+
     function inputBaru() {
         $('input[name="nama"]').val('')
         $('input[name="name"]').val('')
@@ -249,7 +251,7 @@
     grandTotal()
 
     function numberFormat(num) {
-        return 'Rp ' + num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        return num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     }
 
     function grandTotal() {

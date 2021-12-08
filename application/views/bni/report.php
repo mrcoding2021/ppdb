@@ -137,54 +137,66 @@
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>
-                            <div class="modal-body">
-                                <div class="mb-3 row">
-                                    <div class="col-lg-2 col-sm-4">
-                                        <label for="1" class="col-form-label">Dari Tanggal</label>
-                                        <input type="date" name="start_date" class="start form-control form-control-sm">
-                                    </div>
-                                    <div class="col-lg-2 col-sm-4">
-                                        <label for="1" class="col-form-label">Sampai Tanggal</label>
-                                        <input type="date" name="end_date" class="end form-control form-control-sm">
-                                    </div>
+                            <form action="<?= base_url('bni/setor/') ?>" id="datSetoran">
+                                <div class="modal-body">
+                                    <div class="mb-3 row">
+                                        <div class="col-lg-2 col-sm-4">
+                                            <label for="1" class="col-form-label">Dari Tanggal</label>
+                                            <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
+                                            <input type="hidden" name="cash" class="cash">
+                                            <input type="hidden" name="potong" class="potong">
+                                            <input type="hidden" name="transfer" class="transfer">
+                                            <input type="hidden" name="total" class="total">
+                                        </div>
+                                        <div class="col-lg-2 col-sm-4">
+                                            <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                            <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
+                                        </div>
+                                        <div class="col-lg-1 col-sm-4">
+                                            <label for="1" class="col-form-label">.</label>
+                                            <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <label for="1" class="col-form-label">Keterangan</label>
+                                            <input type="text" class="form-control form-control-sm" name="ket">
+                                        </div>
 
-                                    <div class="col-lg-1 col-sm-4">
-                                        <label for="1" class="col-form-label">.</label>
-                                        <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
                                     </div>
+                                    <table class="table table-bordered table-sm table-hover text-center" width="100%" cellspacing="0">
+                                        <thead class="bg-primary text-white ">
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Tanggal</th>
+                                                <th>Nama Siswa</th>
+                                                <th>Pembayaran Cash</th>
+                                                <th>Potong Setoran</th>
+                                                <th>Pembayaran Transfer</th>
+                                                <th>Jumlah Setoran Cash BSI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dataSetoran">
+                                        </tbody>
+                                        <tfoot class="bg-secondary text-white ">
+                                            <tr>
+                                                <th colspan="3">Total</th>
+                                                <th class="cash">0</th>
+                                                <th class="potong">0</th>
+                                                <th class="transfer">0</th>
+                                                <th class="total">0</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
-                                <table class="table table-bordered table-sm table-hover text-center" width="100%" cellspacing="0">
-                                    <thead class="bg-primary text-white ">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Tanggal</th>
-                                            <th>Pembayaran Cash</th>
-                                            <th>Potong Setoran</th>
-                                            <th>Pembayaran Transfer</th>
-                                            <th>Jumlah Setoran Cash BSI</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="dataSetoran">
-                                    </tbody>
-                                    <tfoot class="bg-secondary text-white ">
-                                        <tr>
-                                            <th colspan="2">Total</th>
-                                            <th class="cash">0</th>
-                                            <th class="potong">0</th>
-                                            <th class="transfer">0</th>
-                                            <th class="total">0</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <div class="modal-footer">
-                                    <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
-                                    <a href="#" class="addSetoran btn btn-success btn-border-circle btn-block">Buat Setoran</a>
-                                </div>
+                            </form>
+                            <div class="modal-footer">
+                                <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Close</button>
+                                <a href="#" class="addSetoran btn btn-success btn-border-circle btn-block">Buat Setoran</a>
                             </div>
-
                         </div>
+
                     </div>
                 </div>
+                <!-- </div> -->
 
                 <script>
                     function getSetoran(start, end) {
@@ -197,22 +209,37 @@
                                 'end': end
                             },
                             success: function(res) {
+                                console.log(res);
+
                                 var html = ''
-                                $.each(res, function(i, v) {
-                                    html += '<tr>'
-                                    html += '<td>' + v.no + '</td>' +
-                                        '<td>' + v.date + '</td>' +
-                                        '<td>' + v.cash + '</td>' +
-                                        '<td>' + v.potong + '</td>' +
-                                        '<td>' + v.transfer + '</td>' +
-                                        '<td>' + v.total + '</td>'
-                                    html += '</tr>'
+                                if (res != []) {
+                                    var kode = res.length
+                                    $.each(res, function(i, v) {
+                                        html += '<tr>'
+                                        html += '<td>' + v.no + '<input type="hidden" class="form-control form-control-sm" value="' + v.id_trx + '" name="inv"></td>' +
+                                            '<td>' + v.date + '</td>' +
+                                            '<td>' + v.siswa + '</td>' +
+                                            '<td>' + v.cash + '</td>' +
+                                            '<td>' + v.potong + '</td>' +
+                                            '<td>' + v.transfer + '</td>' +
+                                            '<td>' + v.total + '</td>'
+                                        html += '</tr>'
+                                    })
+                                    $('#dataSetoran').html(html)
+                                    $('.cash').html(res[kode - 1].totalCash)
+                                    $('.potong').html(res[kode - 1].totalPotong)
+                                    $('.transfer').html(res[kode - 1].totalTransfer)
+                                    $('.total').html(res[kode - 1].totalAll)
+                                    $('.cash').val(res[kode - 1].totalCash)
+                                    $('.potong').val(res[kode - 1].totalPotong)
+                                    $('.transfer').val(res[kode - 1].totalTransfer)
+                                    $('.total').val(res[kode - 1].totalAll)
+                                } else {
+                                    $('.cash').html(0)
+                                    $('.potong').html(0)
+                                    $('.transfer').html(0)
+                                    $('.total').html(0)
                                 }
-                                $('#dataSetoran').html(html)
-                                $('.cash').html(res[0].totalCash)
-                                $('.potong').html(res[0].totalPotong)
-                                $('.transfer').html(res[0].totalTransfer)
-                                $('.total').html(res[0].totalTotal)
 
                             }
                         })
@@ -367,13 +394,6 @@
                     })
 
                     $('.addSetoran').click(function(e) {
-                        var date = $(this).data('date')
-                        var start = $('.start').val()
-                        var end = $('.end').val()
-                        var cash = $('.cash').val()
-                        var transfer = $('.transfer').val()
-                        var potong = $('.potong').val()
-                        var total = $('.total').val()
                         Swal.fire({
                             title: "Yakin ingin ditambahkan?",
                             text: "Pastikan data sudah benar dan sesuai",
@@ -385,10 +405,8 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 $.ajax({
-                                    url: '<?= base_url('bni/setor') ?>',
-                                    data: {
-                                        'date': date
-                                    },
+                                    url: $('#datSetoran').attr('action'),
+                                    data: $('#datSetoran').serialize(),
                                     dataType: 'json',
                                     type: 'POST',
                                     beforeSend: function() {
@@ -398,16 +416,13 @@
                                         })
                                     },
                                     success: function(res) {
+                                        console.log(res);
                                         if (res.sukses) {
                                             Swal.fire({
                                                 icon: 'success',
                                                 title: 'Berhasil',
                                                 html: `${res.sukses}`
                                             })
-                                            $('#cetak').attr('href', '<?= base_url('bnni/invoiceSetoran/') ?>' + date)
-                                            var hari = $('.hari').val()
-                                            var bln = $('.bulan').val()
-                                            var thn = $('.tahun').val()
                                             getBni()
                                         } else {
                                             Swal.fire({

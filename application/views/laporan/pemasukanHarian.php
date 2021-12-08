@@ -7,59 +7,41 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold "> <?= $title ?>
-                                        <a href="#addPemasukan" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Eksport Data</a>
                                     </h3>
                                 </div>
 
                                 <div class="row mt-3">
                                     <div class="col-md-12 col-lg-12 container">
-                                    <div class="mb-3 row">
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Tanggal</label>
-                                                    <select class="form-control form-control-sm hari" name="hari">
-                                                        <option value="0">Semua</option>
-                                                        <?php for ($i = 1; $i <= 31; $i++) { ?>
-                                                            <option value="<?= $i ?>"><?= $i ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Bulan</label>
-                                                    <select class="form-control form-control-sm bulan" name="bulan">
-                                                        <?php for ($i = 1; $i < 12; $i++) { ?>
-                                                            <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">Tahun</label>
-                                                    <select class="form-control form-control-sm tahun" name="tahun">
-                                                        <?php for ($i = 0; $i < 10; $i++) { ?>
-                                                            <option <?= (date('Y') == '202' . $i) ? 'selected' : '' ?> value="<?= '202' . $i ?>"><?= '202' . $i ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
+                                        <div class="mb-3 row">
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Dari Tanggal</label>
+                                                <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                                <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
+                                            </div>
 
-                                                <div class="col-lg-1 col-sm-4">
-                                                    <label for="1" class="col-form-label">.</label>
-                                                    <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
-                                                </div>
-                                                <div class="col-lg-2 col-sm-4">
-                                                    <label for="1" class="col-form-label">.</label>
-                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
-                                                </div>
-                                                <!-- <div class="col-lg-2 col-sm-4">
+                                            <div class="col-lg-1 col-sm-4">
+                                                <label for="1" class="col-form-label">.</label>
+                                                <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                            </div>
+                                            <div class="col-lg-2 col-sm-4">
+                                                <label for="1" class="col-form-label">.</label>
+                                                <a href="<?= base_url('sispem/pemasukan') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                            </div>
+                                            <!-- <div class="col-lg-2 col-sm-4">
                                                     <label for="1" class="col-form-label">.</label>
                                                     <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
                                                 </div> -->
-                                            </div>
+                                        </div>
                                         <table class="table table-striped table-sm text-center" width="100%" id="dataPemasukan">
                                             <thead class="bg-dark text-white ">
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Tanggal</th>
-                                                    <th>Dikeluarkan kepada</th>
-                                                    <th>Dari Kas</th>
+                                                    <th>Diterima Dari</th>
+                                                    <th>Ke Kas</th>
                                                     <th>Metode</th>
                                                     <th>Nilai</th>
                                                     <th>Total</th>
@@ -85,9 +67,11 @@
                 </div>
 
                 <script>
-                    getPemasukan()
+                    var start = $('.start').val()
+                    var end = $('.end').val()
+                    getPemasukan(start, end)
 
-                    function getPemasukan() {
+                    function getPemasukan(start, end) {
                         var getPemasukan = $('#dataPemasukan').DataTable({
                             "processing": true,
                             "language": {
@@ -95,7 +79,7 @@
                             },
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('pemasukan/harian/') ?>',
+                                "url": '<?= base_url('pemasukan/harian/') ?>' + start + '/' + end,
                                 "dataSrc": ""
                             },
                             "pageLength": 100,
@@ -127,6 +111,14 @@
                             ]
                         });
                     }
+
+                    $('.cari').click(function(e) {
+                        e.preventDefault()
+                        var start = $('.start').val()
+                        var end = $('.end').val()
+                        getPemasukan(start, end)
+                        $('.excel').attr('href', '<?= base_url('PEMASUKAN/export/') ?>' + start + '/' + end)
+                    })
 
                     $('.inputBaru').click(function(e) {
                         var inv = $.trim($('#inv').html())
