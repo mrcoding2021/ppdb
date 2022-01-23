@@ -14,18 +14,19 @@
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold ">Tagihan Biaya Penddikan
                                         <a href="#tambahKelas" class="btn addKelas btn-success btn-border-circle float-right" data-toggle="modal">Tambah Kelas</a>
-                                        <a href="#tagihan" class="btn btn-primary btn-border-circle float-right" data-toggle="modal">Upload Tagihan</a>
+                                        <a href="#edit" class="tambah btn btn-primary btn-border-circle float-right" data-toggle="modal">Tambah Tagihan</a>
+                                        <a href="<?= base_url('setting') ?>" class="tambah btn btn-danger btn-border-circle float-right">Kembali</a>
                                     </h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <form action="<?= base_url('pembayaran/inputData') ?>" class="inputData" method="POST">
-                                            <table class="table table-bordered" width="100%" cellspacing="0" id="table-bayar">
-                                                <thead class="text-center">
+                                            <table class="table-sm table table-bordered" width="100%" cellspacing="0">
+                                                <thead class="text-center bg-dark text-white">
                                                     <tr valign="middle">
                                                         <th rowspan="2" valign="middle">No</th>
-                                                        <th rowspan="2" width="25%">NIS / NISN</th>
-                                                        <th rowspan="2" width="25%">Nama</th>
+                                                        <th rowspan="2" width="15%">Tahun Ajaran</th>
+                                                        <th rowspan="2">Kelas</th>
                                                         <th colspan="7">Nilai Tagihan</th>
                                                         <th valign="middle" rowspan="2">Aksi</th>
                                                     </tr>
@@ -41,25 +42,38 @@
                                                 </thead>
                                                 <tbody>
                                                     <?php $no = 1;
-                                                    foreach ($siswa as $key) : ?>
-                                                        <tr>
-                                                            <td><?= $no ?></td>
-                                                            <td><?= $key->nis ?></td>
-                                                            <td><?= $key->nama ?></td>
+                                                    foreach ($ta as $key) :
 
-                                                            <?php
-                                                            $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
-                                                            for ($i = 0; $i < 7; $i++) {
-                                                                $this->db->where('kode', $kode[$i]);
-                                                                $this->db->where('id_murid', $key->id_user);
-                                                                $this->db->select_sum('bayar', 'total');
-                                                                $tagihan = $this->db->get('tb_user_tagihan')->row(); ?>
-                                                                <td><?= rupiah($tagihan->total) ?></td>
-                                                            <?php } ?>
-
-                                                            <td><a href="<?= base_url('setting/detailTagihan/' . $key->id_user) ?>" class="btn btn-sm btn-primary">Detail</a></td>
-                                                        </tr>
-                                                    <?php $no++;
+                                                        $this->db->where('id_murid', $id);
+                                                        $this->db->where('ta', $key->ta);
+                                                        $tagihan = $this->db->get('tb_user_tagihan')->result();
+                                                        if ($tagihan == null) {
+                                                            $kode_kelas = '';
+                                                        } else {
+                                                            $kode_kelas = $tagihan[0]->kelas;
+                                                            $this->db->where('kode_kelas', $kode_kelas);
+                                                            $kelas = $this->db->get('tb_user_kelas')->row(); ?>
+                                                            <tr>
+                                                                <td><?= $no ?></td>
+                                                                <td><?= $key->ta ?></td>
+                                                                <td><?= ($kelas) ? $kelas->kode_kelas . ' - ' . $kelas->nama : '-' ?></td>
+                                                                <?php
+                                                                $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET',  'SPP', 'SARPRAS'];
+                                                                $this->db->where('ta', $key->ta);
+                                                                $this->db->where('id_murid', $id);
+                                                                $tagihan = $this->db->get('tb_user_tagihan')->row();
+                                                                for ($i = 0; $i < 7; $i++) {
+                                                                    $this->db->where('kode', $kode[$i]);
+                                                                    $this->db->where('ta', $key->ta);
+                                                                    $this->db->where('id_murid', $id);
+                                                                    $tagih = $this->db->get('tb_user_tagihan')->row(); ?>
+                                                                    <td><?= ($tagih != null) ? rupiah($tagih->bayar) : 0 ?></td>
+                                                                <?php } ?>
+                                                                <td class="d-flex"><a href="#edit" data-ta="<?= $key->ta ?>" data-id="<?= $id ?>" data-toggle="modal" class="edit badge badge-sm badge-primary mr-1">Edit</a><a href="#" data-ta="<?= $key->ta ?>" data-id="<?= $id ?>" data-toggle="modal" class="hapus badge badge-sm badge-danger mr-1">Hapus</a></td>
+                                                            </tr>
+                                                    <?php
+                                                            $no++;
+                                                        }
                                                     endforeach ?>
                                                 </tbody>
                                             </table>
@@ -77,88 +91,56 @@
                 </div>
                 <!-- End of Main Content -->
 
-                <div class="modal fade" id="tambah" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document">
+                <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Tambah Item</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Setting Tagihan</h5>
                                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="<?= base_url('setting/add') ?>" method="post" class="input-ajaran" data-kode="1">
+                                <form action="<?= base_url('setting/edit') ?>" method="post" class="input-ajaran" data-kode="1">
                                     <div class="form-group row">
-                                        <div class="col-sm-2 add_ta">
-                                            <label for="1">Th. Ajaran</label>
-                                            <select type="text" class="ta_s form-control" name="ta">
-                                                <?php $n = 16;
-                                                $m = 17;
-                                                for ($i = 0; $i < 15; $i++) { ?>
-                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                <?php $n++;
-                                                    $m++;
-                                                } ?>
+                                        <div class="col-sm-4">
+                                            <label>Tahun Ajaran</label>
+                                            <select name="ta" class="ta form-control">
+                                                <?php
+                                                $this->db->select('ta');
+                                                $this->db->group_by('ta');
+                                                $ta = $this->db->get('tb_ta')->result();
+                                                foreach ($ta as $k) : ?>
+                                                    <option value="<?= $k->ta ?>"><?= $k->ta ?></option>
+                                                <?php endforeach ?>
                                             </select>
+                                            <input type="hidden" name="id_murid" class="id_murid form-control" value="<?= $id?>">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <label for="1">Nama Siswa</label>
-                                            <input type="text" readonly name="nama_siswa" class="form-control nama_siswa">
-                                            <input type="hidden" name="id_user" class="form-control id_user">
-                                        </div>
-                                        <div class="col-sm-3">
-                                            <label for="1">Kelas</label>
-                                            <select name="kelas" id="kelas" class="kelas form-control">
+                                        <div class="col-sm-8">
+                                            <label>Kelas</label>
+                                            <select name="kelas" class="kelas form-control">
+                                                <?php
+                                                $this->db->order_by('kode_kelas', 'asc');
+                                                $kelasAll = $this->db->get('tb_user_kelas')->result();
+                                                foreach ($kelasAll as $key) : ?>
+                                                    <option value="<?= $key->kode_kelas ?>"><?= $key->kode_kelas . ' - ' . $key->nama ?></option>
+                                                <?php endforeach ?>
                                             </select>
-                                        </div>
-                                        <div class="col-md-1" id="ubah">
-                                            <label for="1">.</label>
-                                            <a href="#" class="ubahData btn btn-danger">Ubah</a>
                                         </div>
                                     </div>
                                     <table class="table table-striped table-sm">
                                         <thead class="bg-dark text-white text-center">
                                             <tr>
                                                 <th scope="col" rowspan="2" width="15%">Jenis Tagihan</th>
-                                                <th scope="col">Tagihan Tahun ini</th>
-                                                <th scope="col">Tagihan Tahun Lalu</th>
-                                                <th scope="col" rowspan="2">Total Tagihan</th>
-                                                <th scope="col" rowspan="2" width="40%">Keterangan</th>
-                                            </tr>
-                                            <tr id="th_ta">
-                                                <th scope="col">
-                                                    <select type="text" class="ta form-control form-control-sm" name="ta">
-                                                        <?php $n = 16;
-                                                        $m = 17;
-                                                        for ($i = 0; $i < 15; $i++) { ?>
-                                                            <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                        <?php $n++;
-                                                            $m++;
-                                                        } ?>
-                                                    </select>
-                                                </th>
-                                                <th scope="col">
-                                                    <select type="text" class="ta_lalu form-control form-control-sm" name="ta_lalu">
-                                                        <?php $n = 15;
-                                                        $m = 16;
-                                                        for ($i = 0; $i < 15; $i++) { ?>
-                                                            <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
-                                                        <?php $n++;
-                                                            $m++;
-                                                        } ?>
-                                                    </select>
-                                                </th>
+                                                <th scope="col">Nilai Tagihan</th>
                                             </tr>
                                         </thead>
                                         <tbody id="hilang">
-                                            <?php $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+                                            <?php $kode = ['SPP', 'PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SARPRAS'];
                                             for ($i = 0; $i < 7; $i++) { ?>
                                                 <tr>
-                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm id_siswa" name="id_siswa[]"><input type="hidden" class="form-control form-control-sm num" name="id[]"></td>
-                                                    <td><input type="text" class="form-control  form-control-sm bayar" name="bayar[]"></td>
-                                                    <td><input type="text" class="form-control form-control-sm bayar_lalu" name="bayar_lalu[]"></td>
-                                                    <td><input readonly type="text" class="form-control  form-control-sm total" name="total[]"></td>
-                                                    <td><input type="text" class="form-control form-control-sm" name="ket[]"></td>
+                                                    <td scope="row" class="kode"><?= $kode[$i] ?><input type="hidden" class="form-control form-control-sm num" name="id[]"></td>
+                                                    <td><input type="text" class="form-control form-control-sm bayar" name="bayar[]"></td>
                                                 </tr>
                                             <?php } ?>
                                         </tbody>
@@ -246,43 +228,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="tagihan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Upload Tagihan</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="<?= base_url('import/tagihan') ?>" method="post" enctype="multipart/form-data">
-                                    <div class="form-group row">
-                                        <label for="2" class="col-sm-2 col-form-label">File</label>
-                                        <div class="col-sm-10">
-                                            <div class="input-group mb-0">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Upload</span>
-                                                </div>
-                                                <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" name="file" id="customFile">
-                                                    <label class="custom-file-label" for="customFile">Choose file</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Input</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <script>
                     $(document).ready(function() {
-                        $('#table-bayar').DataTable()
+                        $('.tambah').click(function() {
+                            $('input').val('')
+                            $('.input-ajaran').attr('action', '<?= base_url('setting/add') ?>')
+                            $('.id_murid').val('<?= $id?>')
+                        })
                         getKelas()
 
                         function getKelas() {
@@ -394,81 +346,76 @@
                             $('.input').val('')
                         })
 
-                        $('.bayar').keyup(function() {
-                            var bayar = $(this).val()
-                            console.log(bayar)
-                            var diskon = $(this).parent('td').next().find('.bayar_lalu').val()
-                            var total = $(this).parents('td').next().next().find('.total')
-                            total.val(parseInt(bayar) + parseInt(diskon))
-                        })
-
-                        $('.bayar_lalu').keyup(function() {
-                            var bayar = $(this).val()
-                            console.log(bayar)
-                            var diskon = $(this).parent('td').prev().find('.bayar').val()
-                            var total = $(this).parents('td').next().find('.total')
-                            total.val(parseInt(bayar) + parseInt(diskon))
-                        })
-
-
-
-                        $('.ta_s').change(function() {
-                            var id_u = $('.id_user').val()
-                            var ta = $(this).val()
-                            $.ajax({
-                                url: '<?= base_url('setting/getAll/') ?>' + id_u + '/' + ta,
-                                type: 'POST',
-                                dataType: 'JSON',
-                                success: function(data) {
-                                    console.log(data)
-                                    if (data.error) {
-                                        $('#hilang').find('input').val('')
-                                    } else {
-                                        $('.kelas option[value="' + data[0].kelas + '"]').attr('selected', true)
-                                        $('.kelas option[value="' + data[0].kelas + '"]').siblings().attr('selected', false)
-                                        for (let i = 0; i < data.length; i++) {
-                                            $('.num:eq(' + [i] + ')').val(data[i].id)
-                                            $('.id_siswa:eq(' + [i] + ')').val(data[i].id_user)
-                                            $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
-                                            $('.bayar_lalu:eq(' + [i] + ')').val(data[i].bayar_lalu)
-                                            $('.ket:eq(' + [i] + ')').val(data[i].ket)
-                                            $('.total:eq(' + [i] + ')').val(data[i].total)
+                        $('.hapus').on('click', function(e) {
+                            Swal.fire({
+                                title: "Yakin ingin dihapus?",
+                                text: "Data akan terhapus secara permanen",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Yes, hapus sekarang!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: '<?= base_url('setting/hapus') ?>',
+                                        data: {
+                                            'id': $(this).data('id'),
+                                            'ta': $(this).data('ta')
+                                        },
+                                        dataType: 'json',
+                                        type: 'POST',
+                                        beforeSend: function() {
+                                            Swal.fire({
+                                                html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                                showConfirmButton: false
+                                            })
+                                        },
+                                        success: function(data) {
+                                            if (data.sukses) {
+                                                Swal.fire(
+                                                    'Berhasil',
+                                                    `${data.sukses}`,
+                                                    'success'
+                                                )
+                                                window.location.href = "<?= base_url('setting/detailTagihan/' . $id) ?>"
+                                            } else {
+                                                Swal.fire(
+                                                    'Error',
+                                                    `${data.error}`,
+                                                    'error'
+                                                )
+                                            }
                                         }
+                                    })
+                                }
+                            });
+                        })
+
+                        $('.edit').on('click', function(e) {
+                            $.ajax({
+                                url: '<?= base_url('setting/getTagihan') ?>',
+                                data: {
+                                    'id': $(this).data('id'),
+                                    'ta': $(this).data('ta'),
+                                },
+                                type: 'post',
+                                dataType: 'json',
+                                success: function(data) {
+                                    console.log(data);
+                                    
+                                    $('.kelas option[value="' + data[0].kelas + '"]').attr('selected', true)
+                                    $('.kelas option[value="' + data[0].kelas + '"]').siblings().attr('selected', false)
+                                    $('.ta option[value="' + data[0].ta + '"]').attr('selected', true)
+                                    $('.ta option[value="' + data[0].ta + '"]').siblings().attr('selected', false) 
+                                    $('.id_murid').val(data[0].id_murid)
+                                    for (let i = 0; i < data.length; i++) {
+                                        $('.num:eq(' + [i] + ')').val(data[i].id)
+                                        $('.bayar:eq(' + [i] + ')').val(data[i].bayar)
                                     }
+                                    $('.input-ajaran').attr('action', '<?= base_url('setting/edit') ?>')
                                 }
                             })
-                        })
-                        $('.ubahData').click(function(e) {
-                            e.preventDefault()
-                            $('#tambah input').attr('readonly', false)
-                            $('.btnSimpan').show()
-                        })
-
-                        $(document).on('click', '.edit', function(e) {
-                            var id = $(this).data('id')
-                            var kode = $(this).data('kode')
-                            var siswa = $(this).data('siswa')
-                            var num = $(this).data('num')
-                            $('#tambah input').val('')
-                            $('#tambah input').attr('value', '0')
-                            $('.btnSimpan').show()
-                            $('.modal-title').text('Setting Biaya Pendidikan')
-
-                            $('#tambah').modal('show')
-                            $('#tambah input').attr('readonly', false)
-                            $('.nama_siswa').val(siswa)
-                            $('#ubah').hide()
-                            $('.id_siswa').val(id)
-                            $('#th_ta').show()
-                            $('.add_ta').hide()
-                            $('.nama_siswa').val(siswa)
-                            $('.input-ajaran').attr('action', '<?= base_url('setting/add') ?>')
-                            $('.input-ajaran').attr('data-kode', 0)
-                        })
-
-                        $('.input-ajaran-baru').on('click', function(e) {
-                            $('.modal-title').text('Tambah Ajaran Baru')
-                            $('.form-control').val('')
                         })
 
                         // input ajaran 
@@ -504,10 +451,8 @@
                                                     'success'
                                                 )
 
-                                                $('#tambah').modal('hide')
-                                                dataTHAjaran('mantap')
-                                                getKelas()
-
+                                                $('#edit').modal('hide')
+                                                window.location.href = "<?= base_url('setting/detailTagihan/' . $id) ?>"
                                             } else {
                                                 Swal.fire(
                                                     'Error',

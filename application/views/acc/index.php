@@ -18,7 +18,7 @@
                                         <div class="col-lg-2 col-sm-4">
                                             <label for="1" class="col-form-label">Bulan</label>
                                             <select class="form-control form-control-sm bulan" name="bulan">
-                                                <?php for ($i = 1; $i < 12; $i++) { ?>
+                                                <?php for ($i = 1; $i < 13; $i++) { ?>
                                                     <option <?= (date('m') == $i) ? 'selected' : '' ?> value="<?= $i ?>"><?= bulan($i) ?></option>
                                                 <?php } ?>
                                             </select>
@@ -26,9 +26,11 @@
                                         <div class="col-lg-2 col-sm-4">
                                             <label for="1" class="col-form-label">Tahun</label>
                                             <select class="form-control form-control-sm tahun" name="tahun">
-                                                <?php $a = 16; for ($i = 0; $i < 10; $i++) { ?>
+                                                <?php $a = 16;
+                                                for ($i = 0; $i < 10; $i++) { ?>
                                                     <option <?= (date('Y') == '20' . $a) ? 'selected' : '' ?> value="<?= '20' . $a ?>"><?= '20' . $a ?></option>
-                                                <?php $a++;} ?>
+                                                <?php $a++;
+                                                } ?>
                                             </select>
                                         </div>
 
@@ -249,7 +251,7 @@
                                 {
                                     "data": "jumlah",
                                     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a><a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a>");
+                                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a><a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a><a data-id=" + oData.inv + " class='delete mr-1 btn btn-danger btn-sm' href='#'><i class='fa fa-times'></i></a>");
                                     },
                                     "className": 'details-control',
                                     "orderable": false,
@@ -374,4 +376,57 @@
                             }
                         });
                     }
+
+                    $(document).on('click', '.delete', function(e) {
+                        var id = $(this).data('id')
+                        var id_trx = $('#inv').text()
+                        var id_murid = $('.id_murid').val()
+                        e.preventDefault()
+                        Swal.fire({
+                            title: "Yakin ingin dihapus?",
+                            text: "Data transaksi ini akan terhapus permanen",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, hapus!",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '<?= base_url('acc/delete') ?>',
+                                    data: {
+                                        'id': id
+                                    },
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    beforeSend: function() {
+                                        Swal.fire({
+                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
+                                            showConfirmButton: false
+                                        })
+                                    },
+                                    success: function(res) {
+                                        if (res.sukses) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil',
+                                                html: `${res.sukses}`
+                                            })
+                                            var bln = $('.bulan').val()
+                                            var thn = $('.tahun').val()
+                                            getAcc(bln, thn)
+
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal !',
+                                                html: `${res.error}`
+                                            })
+                                        }
+
+                                    }
+                                })
+                            }
+                        });
+                    })
                 </script>

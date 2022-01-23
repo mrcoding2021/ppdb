@@ -171,7 +171,7 @@ class Pembayaran extends CI_Controller
           'error' => 'No. invoice sudah ada, silahkan tambah transaksi baru !'
         );
       } else {
-        $kode = ['SPP', 'INFAQ GEDUNG', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU', 'SARPRAS'];
+        $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
         $akun =  $this->input->post('akun_trx');
         for ($i = 0; $i < count($kode); $i++) {
           if ($akun[$i] == 0) {
@@ -197,7 +197,7 @@ class Pembayaran extends CI_Controller
                 'jumlah'        => $this->input->post('jml')[$i],
                 'ket'          => $this->input->post('ket')[$i],
                 'kelas'       => $this->input->post('kelas'),
-                'approve'      => 0
+                'approve'      => 1
               ];
               $this->db->insert('tb_transaksi', $data);
             } else {
@@ -254,23 +254,14 @@ class Pembayaran extends CI_Controller
   public function getPembayaran($start, $end)
   {
     if ($this->scm->cekSecurity() == true) {
-      // $this->db->order_by('date_created', 'asc');
-      $start = explode('-', $start);
-      $end = explode('-', $end);
 
-      $this->db->where('day(date_created) >=', $start[2]);
-      $this->db->where('month(date_created) >=', $start[1]);
-      $this->db->where('year(date_created) >=', $start[0]);
-      $this->db->where('day(date_created) <=', $end[2]);
-      $this->db->where('month(date_created) <=', $end[1]);
-      $this->db->where('year(date_created) <=', $end[0]);
-      $this->db->where('approve', 1);
+      $this->db->select('id_trx');
+      $this->db->group_by('id_trx');
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
       $this->db->where_not_in('kode', 'TABUNGAN');
       $this->db->where_not_in('kode', 'PEMASUKAN KAS');
       $this->db->where_not_in('kode', 'PENGELUARAN KAS');
-      $this->db->select('id_trx');
-      $this->db->where('kategori', 1);
-      $this->db->group_by('tb_transaksi.id_trx');
       $data = $this->db->get('tb_transaksi')->result();
 
       $result = [];
@@ -278,7 +269,7 @@ class Pembayaran extends CI_Controller
 
       foreach ($data as $key) {
 
-        $this->db->select_sum('jumlah', 'total');
+        $this->db->select_sum('kredit', 'total');
         $this->db->where('id_trx', $key->id_trx);
         $jumlah = $this->db->get('tb_transaksi')->row();
 
@@ -304,8 +295,146 @@ class Pembayaran extends CI_Controller
     }
   }
 
+  public function getPerSiswa($id = 1945, $ta = '2016-2017')
+  {
+    if ($this->scm->cekSecurity() == true) {
+
+      $this->db->select('id_trx');
+      $this->db->group_by('id_trx');
+      $this->db->where('id_murid', $id);
+      $this->db->where('ta', $ta);
+      $this->db->where_not_in('kode', 'TABUNGAN');
+      $this->db->where('approve', 1);
+      $data = $this->db->get('tb_transaksi')->result();
+
+      $result = [];
+      $no = 1;
+      foreach ($data as $key) {
+        $jumlah = 0;
+
+        $this->db->where('id_trx', $key->id_trx);
+        $trx = $this->db->get('tb_transaksi')->result();
+
+        for ($i = 0; $i < count($trx); $i++) {
+          if ($trx[$i]->kredit > 0) {
+            $jumlah = $jumlah + $trx[$i]->kredit;
+          } else {
+            $jumlah = $jumlah + $trx[$i]->kredit - $trx[$i]->debit;
+          }
+        }
+
+        $result[] = [
+          'no'          => $no,
+          'tgl'         => $trx[0]->date_created,
+          'inv'         => $key->id_trx,
+          'pembangunan' => rupiah($trx[0]->jumlah),
+          'kegiatan'    => rupiah($trx[1]->jumlah),
+          'seragam'     => rupiah($trx[2]->jumlah),
+          'komite'      => rupiah($trx[3]->jumlah),
+          'buku_paket'  => rupiah($trx[4]->jumlah),
+          'spp'         => rupiah($trx[5]->jumlah),
+          'sarpras'     => rupiah($trx[6]->jumlah),
+          'jumlah'      => rupiah($jumlah)
+        ];
+        $no++;
+      }
+
+      $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+      $total = [];
+      $grandTotal = 0;
+      $tagihan = [];
+      for ($i = 0; $i < 7; $i++) {
+        $this->db->where('ta', $ta);
+        $this->db->where('id_murid', $id);
+        $this->db->where('kode', $kode[$i]);
+        $this->db->select_sum('jumlah', 'total');
+        $total[] = $this->db->get('tb_transaksi')->row();
+
+        if ($total[$i]->total > 0) {
+          $grandTotal = $grandTotal + $total[$i]->total;
+        }
+
+        $this->db->where('ta', $ta);
+        $this->db->where('id_murid', $id);
+        $this->db->where('kode', $kode[$i]);
+        $tag = $this->db->get('tb_user_tagihan')->row();
+
+        if ($tag == null) {
+          $tagihan[] = (object)[
+            'bayar' => 0,
+          ];
+        } else {
+          $tagihan[] = $tag;
+        }
+      }
+
+
+      $result[] = [
+        'no'          => '-',
+        'tgl'         => 'GRAND TOTAL',
+        'inv'         => '',
+        'pembangunan' => rupiah($total[0]->total) . ' / ' . rupiah($tagihan[0]->bayar),
+        'kegiatan'    => rupiah($total[1]->total) . ' / ' . rupiah($tagihan[1]->bayar),
+        'seragam'     => rupiah($total[2]->total) . ' / ' . rupiah($tagihan[2]->bayar),
+        'komite'      => rupiah($total[3]->total) . ' / ' . rupiah($tagihan[3]->bayar),
+        'buku_paket'  => rupiah($total[4]->total) . ' / ' . rupiah($tagihan[4]->bayar),
+        'spp'         => rupiah($total[5]->total) . ' / ' . rupiah($tagihan[5]->bayar),
+        'sarpras'     => rupiah($total[6]->total) . ' / ' . rupiah($tagihan[6]->bayar),
+        'jumlah'      => rupiah($grandTotal)
+      ];
+
+      echo json_encode($result);
+    }
+  }
+
+  public function allPerSiswa($ta = '2016-2017')
+  {
+    if ($this->scm->cekSecurity() == true) {
+
+      $this->db->where('is_active', 1);
+      $this->db->where('level', 4);
+      $data = $this->db->get('tb_user')->result();
+
+      $result = [];
+      $no = 1;
+      foreach ($data as $key) {
+        $jumlah = 0;
+
+        $this->db->where('id_trx', $key->id_murid);
+        $trx = $this->db->get('tb_transaksi')->result();
+
+        for ($i = 0; $i < count($trx); $i++) {
+          if ($trx[$i]->kredit > 0) {
+            $jumlah = $jumlah + $trx[$i]->kredit;
+          } else {
+            $jumlah = $jumlah + $trx[$i]->kredit - $trx[$i]->debit;
+          }
+        }
+
+        $result[] = [
+          'no'          => $no,
+          'tgl'         => $trx[0]->date_created,
+          'inv'         => $key->id_trx,
+          'pembangunan' => rupiah($trx[0]->jumlah),
+          'kegiatan'    => rupiah($trx[1]->jumlah),
+          'seragam'     => rupiah($trx[2]->jumlah),
+          'komite'      => rupiah($trx[3]->jumlah),
+          'buku_paket'  => rupiah($trx[4]->jumlah),
+          'spp'         => rupiah($trx[5]->jumlah),
+          'sarpras'     => rupiah($trx[6]->jumlah),
+          'jumlah'      => rupiah($jumlah)
+        ];
+        $no++;
+      }
+
+      $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+
+      echo json_encode($result);
+    }
+  }
+
   public function export($start, $end, $id = 'excel')
-  {   
+  {
     $spreadsheet = new Spreadsheet();
     $excel = $spreadsheet->getActiveSheet();
     $nama_bln = strtoupper(($start) . ' - ' . ($end));
@@ -406,15 +535,9 @@ class Pembayaran extends CI_Controller
     $border = \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN;
 
     if ($this->scm->cekSecurity() == true) {
-
-      $start = explode('-', $start);
-      $end = explode('-', $end);
-      $this->db->where('day(date_created) >=', $start[2]);
-      $this->db->where('month(date_created) >=', $start[1]);
-      $this->db->where('year(date_created) >=', $start[0]);
-      $this->db->where('day(date_created) <=', $end[2]);
-      $this->db->where('month(date_created) <=', $end[1]);
-      $this->db->where('year(date_created) <=', $end[0]);
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
+      $this->db->where('approve', 1);
       $this->db->where('approve', 1);
       $this->db->where_not_in('kode', 'TABUNGAN');
       $this->db->where_not_in('kode', 'PEMASUKAN KAS');

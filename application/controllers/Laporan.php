@@ -58,7 +58,17 @@ class Laporan extends CI_Controller
     $this->index($data);
   }
 
-  public function getBukuKas($kas = '0-10000',$ta = '2020-2021', $bln = 0, $thn = '2021')
+  public function closingGlobal()
+  {
+    $data = array(
+      'title'   => 'Laporan Closing Global',
+      'view'    => 'closingGlobal',
+      'parent'  => 'Laporan'
+    );
+    $this->index($data);
+  }
+
+  public function getBukuKas($kas = '0-10000', $ta = '2020-2021', $bln = 0, $thn = '2021')
   {
 
     if ($bln != 0) {
@@ -96,7 +106,7 @@ class Laporan extends CI_Controller
           'created_at' => shortdate_indo(substr($key->date_created, 0, 10)),
           'kode_akun' => $key->akun_trx,
           'nama'      => '',
-          'keterangan'  =>'',
+          'keterangan'  => '',
           'debit'   => rupiah($key->jumlah),
           'kredit'  => rupiah($key->diskon),
           'saldo'   => rupiah($sum)
@@ -145,6 +155,86 @@ class Laporan extends CI_Controller
       'parent'  => 'Laporan'
     );
     $this->index($data);
+  }
+
+  public function getGlobal($ta)
+  {
+    $this->db->where('level', 4);
+    $this->db->where('is_active', 1);
+    $siswa = $this->db->get('tb_user')->result();
+
+    $result = [];
+    $no = 1;
+    $tagihan = [];
+    $bayar = [];
+
+    for ($x = 0; $x < count($siswa); $x++) {
+      // $id_user = 2198;
+      $id_user =  $siswa[$x]->id_user;
+      $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+      for ($i = 0; $i < 7; $i++) {
+        $this->db->where('kode', $kode[$i]);
+        $this->db->where('id_murid', $id_user);
+        $this->db->where('ta', $ta);
+        $tag = $this->db->get('tb_user_tagihan')->row();
+
+        if ($tag == null) {
+          $tagihan[] = (object)['bayar' => 0];
+        } else {
+          $tagihan[] = [
+            'bayar'   => $tag->bayar
+          ];
+        }
+        $tag = null;
+        $this->db->where('kode', $kode[$i]);
+        $this->db->where('id_murid', $id_user);
+        $this->db->where('ta', $ta);
+        $this->db->select_sum('jumlah', 'total');
+        $bay = $this->db->get('tb_transaksi')->row();
+
+        if ($bay == null) {
+          $bayar[] = (object)['total' => 0];
+        } else {
+          $bayar[] = $bay;
+        }
+        $bay = null;
+      }
+      $i = 0;
+      $result[] = [
+        'no'            => $no,
+        'nama'          => $siswa[$x]->nama,
+
+        'tagihan_p'     => rupiah($tagihan[0]->bayar),
+        'bayar_p'       => rupiah($bayar[0]->total),
+        'sisa_p'        => rupiah($tagihan[0]->bayar - $bayar[0]->total),
+
+        'tagihan_k'     => rupiah($tagihan[1]->bayar),
+        'bayar_k'       => rupiah($bayar[1]->total),
+        'sisa_k'        => rupiah($tagihan[1]->bayar - $bayar[1]->total),
+
+        'tagihan_s'     => rupiah($tagihan[2]->bayar),
+        'bayar_s'       => rupiah($bayar[2]->total),
+        'sisa_s'        => rupiah($tagihan[2]->bayar - $bayar[2]->total),
+
+        'tagihan_kom'   => rupiah($tagihan[3]->bayar),
+        'bayar_kom'     => rupiah($bayar[3]->total),
+        'sisa_kom'      => rupiah($tagihan[3]->bayar - $bayar[3]->total),
+
+        'tagihan_b'     => rupiah($tagihan[4]->bayar),
+        'bayar_b'       => rupiah($bayar[4]->total),
+        'sisa_b'        => rupiah($tagihan[4]->bayar - $bayar[4]->total),
+
+        'tagihan_spp'   => rupiah($tagihan[5]->bayar),
+        'bayar_spp'     => rupiah($bayar[5]->total),
+        'sisa_spp'      => rupiah($tagihan[5]->bayar - $bayar[5]->total),
+
+        'tagihan_sar'   => rupiah($tagihan[6]->bayar),
+        'bayar_sar'     => rupiah($bayar[6]->total),
+        'sisa_sar'      => rupiah($tagihan[6]->bayar - $bayar[6]->total),
+      ];
+      $no++;
+    }
+    echo json_encode($result);
   }
 }
 

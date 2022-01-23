@@ -94,7 +94,7 @@
                     if (title == 'Input Tabungan') {
                         getTabungan(res.id_user)
                         $('#exportData').attr('href', '<?= base_url('tabungan/exportData/') ?>' + res.id_user)
-                    }
+                    } 
                     // getTa(res.id_user, '2016-2017')
                     console.log(res)
                     var inv = $('#inv').html()
@@ -120,6 +120,7 @@
 
     })
 
+    
 
     $('select[name="ta"]').change(function() {
         var isi = $(this).val()
@@ -128,7 +129,7 @@
 
     function iuranLunas(id) {
         $.ajax({
-            url: '<?= base_url('tunggakan/lunas/') ?>'+id,
+            url: '<?= base_url('tunggakan/lunas/') ?>' + id,
             type: 'post',
             dataType: 'json',
             success: function(res) {
@@ -148,7 +149,7 @@
 
     function iuranHutang(id) {
         $.ajax({
-            url: '<?= base_url('tunggakan/hutang/') ?>'+id,
+            url: '<?= base_url('tunggakan/hutang/') ?>' + id,
             type: 'post',
             dataType: 'json',
             data: {

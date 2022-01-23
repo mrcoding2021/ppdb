@@ -108,8 +108,3 @@
                 <!-- /.container-fluid -->
 
                 </div>
-
-
-                <script>
-                    
-                </script>

@@ -10,7 +10,7 @@
                                         <a href="#addPemasukan" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Input Baru</a>
                                     </h3>
                                 </div>
-                               
+
                                 <div class="row mt-3">
                                     <div class="col-md-12 col-lg-12 container">
                                         <table class="table table-striped table-sm text-center" width="100%" id="dataPemasukan">
@@ -49,7 +49,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="exampleModalLabel">Input <?= $title?></h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Input <?= $title ?></h5>
                                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
                                 </button>
@@ -86,10 +86,9 @@
                                             <label>Metode</label>
                                             <select name="metode" class="form-control metode">
                                                 <option>Pilih Metode</option>
-                                                <option value="1">CASH</option>
-                                                <option value="2">TRANSFER</option>
-                                                <option value="3">TABUNGAN</option>
-                                                <option value="4">POTONG KEGIATAN</option>
+                                                <?php foreach ($metode as $key) { ?>
+                                                    <option value="<?= $key->id_sumber ?>"><?= $key->nama ?></option>
+                                                <?php  } ?>
                                             </select>
                                         </div>
                                         <div class="col-sm-6">

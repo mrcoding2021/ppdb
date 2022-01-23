@@ -134,6 +134,7 @@ class Acc extends CI_Controller
   {
     if ($this->scm->cekSecurity() == true) {
       $id_trx = $this->input->post('inv');
+      // $id_trx = '510.20211231';
       $this->db->where('id_trx', $id_trx);
       $data = $this->db->get('tb_transaksi')->result();
       $result = [];
@@ -154,7 +155,7 @@ class Acc extends CI_Controller
           'diskon'  => rupiah($key->diskon),
           'jml'   => rupiah($key->jumlah),
           'total' => rupiah($total->total),
-          'terbilang' => to_word($total->total)
+          'terbilang' => ($total->total >=0) ? to_word($total->total) : to_word(str_replace('-','',$total->total))
         ];
       }
       echo json_encode($result);
@@ -183,6 +184,23 @@ class Acc extends CI_Controller
       ];
       echo json_encode($result);
     }
+  }
+
+  public function delete()
+  {
+    $id = $this->input->post('id');
+    $this->db->where('id_trx', $id);
+    $this->db->delete('tb_transaksi');
+    if ($this->db->affected_rows()) {
+      $result = [
+        'sukses' => 'Data berhasil terhapus permanen'
+      ];
+    } else {
+      $result = [
+        'error' => 'Proses gagal'
+      ];
+    }
+    echo json_encode($result);
   }
 }
 

@@ -96,7 +96,7 @@ class Sispem extends CI_Controller
       } elseif (date('m') < 7) {
         $this->db->where('ta', (date('Y') - 1) . '-' . date('Y'));
       }
-      $this->db->where('id_siswa', $key->id_user);
+      $this->db->where('id_murid', $key->id_user);
       $ajaran = $this->db->get('tb_user_tagihan')->result();
       
       if ($ajaran) {
@@ -142,6 +142,7 @@ class Sispem extends CI_Controller
 
   public function siswa()
   {
+    // $this->menu('laporan/pembayaranSiswa', 'Laporan Pembayaran Siswa');
     $this->menu('pembayaran/report', 'Laporan Pembayaran Siswa');
   }
 
@@ -240,72 +241,6 @@ class Sispem extends CI_Controller
     echo json_encode($msg);
   }
 
-  public function pembayaranSiswa()
-  {
-    $this->db->group_by('no_invoice');
-    $data = $this->db->get('tb_pembayaran')->result();
-    $no = 1;
-    $result = array();
-    foreach ($data as $da) {
-      $this->db->where('id_user', $da->id_murid);
-      $siswa = $this->db->get('tb_user')->row();
-
-      // Pembayaran spp
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array(
-        'byr_utk' => 1,
-        'no_invoice' => $da->no_invoice
-      ));
-      $spp = $this->db->get('tb_pembayaran')->row();
-
-      // pembayaran uang infaq_gedung
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array('byr_utk' => 2, 'no_invoice' => $da->no_invoice));
-      $idung = $this->db->get('tb_pembayaran')->row();
-
-      // Pembayaran kegaita 
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array('byr_utk' => 3, 'no_invoice' => $da->no_invoice));
-      $keg = $this->db->get('tb_pembayaran')->row();
-
-      // pembayran seragam 
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array('byr_utk' => 4, 'no_invoice' => $da->no_invoice));
-      $segam = $this->db->get('tb_pembayaran')->row();
-
-      // Pembayaran komite 
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array('byr_utk' => 5, 'no_invoice' => $da->no_invoice));
-      $kom = $this->db->get('tb_pembayaran')->row();
-
-      // pembayran buku
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array('byr_utk' => 6, 'no_invoice' => $da->no_invoice));
-      $buku = $this->db->get('tb_pembayaran')->row();
-
-      // pembayaran ekskul 
-      $this->db->select_sum('kredit', 'spp');
-      $this->db->where(array('byr_utk' => 7, 'no_invoice' => $da->no_invoice));
-      $ekskul = $this->db->get('tb_pembayaran')->row();
-
-
-      $total = $spp->spp + $idung->spp + $keg->spp + $kom->spp + $buku->spp + $ekskul->spp;
-      $result[] = array(
-        'no' => $no++,
-        'created_at' => longdate_indo($da->created_at),
-        'nama' => $siswa->nama,
-        'spp'  => rupiah($spp->spp),
-        'infaq_gedung'  => rupiah($idung->spp),
-        'kegiatan'  => rupiah($keg->spp),
-        'seragam'  => rupiah($segam->spp),
-        'komite'  => rupiah($kom->spp),
-        'buku'  => rupiah($buku->spp),
-        'ekskul'  => rupiah($ekskul->spp),
-        'total'   => rupiah($total)
-      );
-    }
-    echo json_encode($result);
-  }
 }
 
 

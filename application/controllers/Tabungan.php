@@ -258,15 +258,9 @@ class Tabungan extends CI_Controller
         ];
       } else {
         $this->db->order_by('date_created', 'asc');
-        $start = explode('-', $start);
-        $end = explode('-', $end);
         if ($start != 0) {
-          $this->db->where('day(date_created) >=', $start[2]);
-          $this->db->where('month(date_created) >=', $start[1]);
-          $this->db->where('year(date_created) >=', $start[0]);
-          $this->db->where('day(date_created) <=', $end[2]);
-          $this->db->where('month(date_created) <=', $end[1]);
-          $this->db->where('year(date_created) <=', $end[0]);
+          $this->db->where('date >=', $start);
+          $this->db->where('date <=', $end);
         }
         $this->db->where('approve', 1);
         $this->db->where('kode', 'TABUNGAN');
@@ -431,15 +425,9 @@ class Tabungan extends CI_Controller
 
     if ($this->scm->cekSecurity() == true) {
       $this->db->order_by('date_created', 'asc');
-      $start = explode('-', $start);
-      $end = explode('-', $end);
       if ($start != 0) {
-        $this->db->where('day(date_created) >=', $start[2]);
-        $this->db->where('month(date_created) >=', $start[1]);
-        $this->db->where('year(date_created) >=', $start[0]);
-        $this->db->where('day(date_created) <=', $end[2]);
-        $this->db->where('month(date_created) <=', $end[1]);
-        $this->db->where('year(date_created) <=', $end[0]);
+        $this->db->where('date >=', $start);
+        $this->db->where('date <=', $end);
       }
       $this->db->where('approve', 1);
       $this->db->where('kode', 'TABUNGAN');
@@ -736,6 +724,23 @@ class Tabungan extends CI_Controller
       ];
     }
     echo json_encode($result);
+  }
+
+  public function ubahTanggal()
+  {
+    // $this->db->where('kode', 'TABUNGAN');
+    $date = $this->db->get('tb_transaksi')->result();
+    
+    foreach ($date as $key) {
+      if ($key->date == '0000-00-00') {
+        $this->db->where('id', $key->id);
+        $this->db->set('date', substr($key->date_created,0,10));
+        $this->db->update('tb_transaksi');
+        
+      }
+      
+    }
+    echo 'Sukses';
   }
 }
 

@@ -213,14 +213,18 @@
                 <script>
                     function getTa(id, ta) {
                         $.ajax({
-                            url: '<?= base_url('setting/getTagihan/') ?>' + id + '/' + ta,
+                            url: '<?= base_url('setting/getTagihan/') ?>',
+                            data: {
+                                'id': id,
+                                'ta'  : ta
+                            },
                             dataType: 'json',
                             type: 'POST',
                             success: function(res) {
                                 console.log(res)
                                 if (res.length != 0) {
                                     for (let i = 0; i < res.length; i++) {
-                                        $('.tagihan').eq(i).val(res[i].totalX)
+                                        $('.tagihan').eq(i).val(res[i].bayar)
                                     }
                                 } else {
                                     $('.tagihan').val(0)

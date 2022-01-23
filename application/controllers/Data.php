@@ -160,7 +160,7 @@ class Data extends CI_Controller
             } elseif (date('m') < 7) {
                 $this->db->where('ta', (date('Y') - 1) . '-' . date('Y'));
             }
-            $this->db->where('id_siswa', $data->id_user);
+            $this->db->where('id_murid', $data->id_user);
             $ajaran = $this->db->get('tb_user_tagihan')->result();
 
             if ($ajaran) {

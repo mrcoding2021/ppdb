@@ -12,41 +12,110 @@
                                     </h3>
                                 </div>
                                 <div class="card-body">
-                                    <div class="mb-3 row">
-                                        <div class="col-lg-2 col-sm-4">
-                                            <label for="1" class="col-form-label">Dari Tanggal</label>
-                                            <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
-                                        </div>
-                                        <div class="col-lg-2 col-sm-4">
-                                            <label for="1" class="col-form-label">Sampai Tanggal</label>
-                                            <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
-                                        </div>
+                                    <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Persiswa</a>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Semua Siswa</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="pills-tabContent">
+                                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                            <div class="col">
+                                                <div class="form-group row">
+                                                    <div class="col-sm-8">
+                                                        <label for="1" class=" col-form-label">Nama Murid</label>
+                                                        <input type="text" autofocus class="form-control" name="nama" id="nama_siswa">
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <?php
+                                                        $ta = '2016-2017'; ?>
+                                                        <label for="1" class="col-form-label">Tahun Ajaran</label>
+                                                        <select type="text" class="form-control ta" name="ta">
+                                                            <?php $n = 16;
+                                                            $m = 17;
+                                                            for ($i = 0; $i < 15; $i++) { ?>
+                                                                <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                            <?php $n++;
+                                                                $m++;
+                                                            } ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <label for="1" class="col-form-label">NIS</label>
+                                                        <input type="text" readonly class="form-control nis" name="nis">
+                                                        <input type="hidden" readonly class="form-control id_murid" name="id_murid">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered text-center" id="persiswa" width="100%" cellspacing="0">
+                                                        <thead class="bg-dark text-white ">
+                                                            <tr>
+                                                                <th rowspan="2">No</th>
+                                                                <th rowspan="2">Tanggal</th>
+                                                                <th rowspan="2">No. Invoice</th>
+                                                                <th colspan="7">Jumlah Pembayaran</th>
+                                                                <th rowspan="2">Jumlah</th>
+                                                                <th rowspan="2">Aksi</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>PEMBANGNAN</th>
+                                                                <th>KEGIATAN</th>
+                                                                <th>SERAGAM</th>
+                                                                <th>KOMITE</th>
+                                                                <th>BUKU PAKET</th>
+                                                                <th>SPP</th>
+                                                                <th>SARPARAS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
 
-                                        <div class="col-lg-1 col-sm-4">
-                                            <label for="1" class="col-form-label">.</label>
-                                            <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
-                                        </div>
-                                        <div class="col-lg-2 col-sm-4">
-                                            <label for="1" class="col-form-label">.</label>
-                                            <a href="<?= base_url('pembayaran/export/') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
-                                        </div>
+                                                    </table>
+                                                </div>
 
-                                    </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataAcc" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th>Tanggal</th>
-                                                    <th>No. Invoice</th>
-                                                    <th>Nama</th>
-                                                    <th>Jumlah</th>
-                                                    <th>Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            <div class="mb-3 row">
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">Dari Tanggal</label>
+                                                    <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                                    <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
+                                                </div>
 
-                                        </table>
+                                                <div class="col-lg-1 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                                </div>
+                                                <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('pembayaran/export/') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                                </div>
+
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="dataAcc" width="100%" cellspacing="0">
+                                                    <thead class="bg-dark text-white">
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Tanggal</th>
+                                                            <th>No. Invoice</th>
+                                                            <th>Nama</th>
+                                                            <th>Jumlah</th>
+                                                            <th>Aksi</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -100,6 +169,7 @@
                         getPembayaranSiswa(start, end)
                     })
 
+
                     var start = $('.start').val()
                     var end = $('.end').val()
                     getPembayaranSiswa(start, end)
@@ -139,9 +209,10 @@
                                 },
                             ]
                         });
-
-
                     }
+
+
+
 
                     $(document).on('click', '.detail', function() {
                         var inv = $(this).data('id')

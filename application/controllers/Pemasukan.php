@@ -38,7 +38,8 @@ class Pemasukan extends CI_Controller
       $data['akunPemasukan'] = $this->db->get_where('tb_rab')->result();
       // var_dump($data['akunPemasukan']);die;
       $data['user'] = $this->db->get_where($table, array('id_user' => $id))->row_array();
-      $data['pembayaran'] = $this->db->get('tb_pembayaran')->result();
+      
+      $data['metode'] = $this->db->get('tb_metode')->result();
       $this->load->view('admin/header', $data);
       $this->load->view($data['view'], $data);
       $this->load->view('admin/footer', $data);
@@ -71,19 +72,20 @@ class Pemasukan extends CI_Controller
     $nilai = str_replace('.', '', $this->input->post('nilai'));
 
     $data = array(
-      'inputer'   => $this->session->userdata('id'),
-      'nama' => htmlspecialchars(strtoupper($this->input->post('nama'))),
-      'id_trx' => htmlspecialchars($this->input->post('id_trx')),
-      'kode' => 'PEMASUKAN KAS',
-      'akun_kas' => $this->input->post('akun_kas'),
-      'akun_trx' => $this->input->post('akun_kas'),
-      'ta' => ($this->input->post('ta')),
-      'kategori' => 1,
-      'metode' => ($this->input->post('metode')),
-      'debit' => ($kategori == 0) ? $nilai : 0,
-      'kredit' => ($kategori == 1) ? $nilai : 0,
-      'jumlah' => $nilai,
-      'ket' => $this->input->post('ket'),
+      'inputer'         => $this->session->userdata('id'),
+      'nama'            => htmlspecialchars(strtoupper($this->input->post('nama'))),
+      'id_trx'          => htmlspecialchars($this->input->post('id_trx')),
+      'kode'            => 'PEMASUKAN KAS',
+      'akun_kas'        => $this->input->post('akun_kas'),
+      'akun_trx'        => $this->input->post('akun_kas'),
+      'ta'              => ($this->input->post('ta')),
+      'kategori'        => 1,
+      'metode'          => ($this->input->post('metode')),
+      'debit'           => ($kategori == 0) ? $nilai : 0,
+      'kredit'          => ($kategori == 1) ? $nilai : 0,
+      'jumlah'          => $nilai,
+      'ket'             => $this->input->post('ket'),
+      'approve'         => 1,
     );
 
     if ($this->form_validation->run() == TRUE) {
@@ -94,6 +96,8 @@ class Pemasukan extends CI_Controller
         $msg = 'Dada berhasil dirubah';
       } else {
         $this->db->set('date_created', $this->input->post('date') . ' ' . date('H:i:s'));
+        $this->db->set('date', $this->input->post('date'));
+        $this->db->set('time', date('H:i:s'));
         $this->db->insert('tb_transaksi', $data);
         $msg = 'Dada berhasil ditambahkan';
       }

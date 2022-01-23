@@ -23,12 +23,14 @@
                                         $ta = '2016-2017'; ?>
                                         <div class="col-sm-4">
                                             <label>Tahun Ajaran</label>
-                                            <select name="ta" class="ta form-control">
-                                                <?php $query = 'SELECT ta FROM tb_user_tagihan GROUP BY ta';
-                                                $tas = $this->db->query($query)->result();
-                                                foreach ($tas as $key) : ?>
-                                                    <option <?= (substr($key->ta, 5) == date('Y')) ? 'selected' : '' ?> value="<?= $key->ta ?>"><?= $key->ta ?></option>
-                                                <?php endforeach; ?>
+                                            <select type="text" class="form-control ta" name="ta">
+                                                <?php $n = 16;
+                                                $m = 17;
+                                                for ($i = 0; $i < 15; $i++) { ?>
+                                                    <option value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                                <?php $n++;
+                                                    $m++;
+                                                } ?>
                                             </select>
                                         </div>
                                     <?php  }

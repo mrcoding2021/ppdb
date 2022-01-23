@@ -155,6 +155,73 @@ class Tunggakan extends CI_Controller
       );
     }
 
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'SPP');
+      $this->db->select_sum('kredit', 'total');
+      $spp = $this->db->get('tb_transaksi')->row();
+
+      // PEMBANGUNAN 
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'PEMBANGUNAN');
+      $this->db->select_sum('kredit', 'total');
+      $pembangunan = $this->db->get('tb_transaksi')->row();
+
+      // KEGIATAN 
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'KEGIATAN');
+      $this->db->select_sum('kredit', 'total');
+      $kegiatan = $this->db->get('tb_transaksi')->row();
+
+      // SERAGAM 
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'SERAGAM');
+      $this->db->select_sum('kredit', 'total');
+      $seragam = $this->db->get('tb_transaksi')->row();
+
+      // KOMITE
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'KOMITE');
+      $this->db->select_sum('kredit', 'total');
+      $komite = $this->db->get('tb_transaksi')->row();
+
+      // BUKU 
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'BUKU PAKET');
+      $this->db->select_sum('kredit', 'total');
+      $buku = $this->db->get('tb_transaksi')->row();
+
+      if ($id) {
+        $this->db->where('id_murid', $id);
+      }
+      $this->db->where('kode', 'SARPRAS');
+      $this->db->select_sum('kredit', 'total');
+      $sarpras = $this->db->get('tb_transaksi')->row();
+
+    $data[] = array(
+      'no' => '-',
+      'ta'  => 'GRAND TOTAL',
+      'pembangunan' => rupiah($pembangunan->total),
+      'kegiatan' => rupiah($kegiatan->total),
+      'seragam' => rupiah($seragam->total),
+      'komite'  => rupiah($komite->total),
+      'buku_paket' => rupiah($buku->total),
+      'spp' => rupiah($spp->total),
+      'sarpras' => rupiah($sarpras->total),
+      'total'   => rupiah($pembangunan->total + $kegiatan->total + $seragam->total + $komite->total + $buku->total + $spp->total + $sarpras->total)
+    );
+
     echo json_encode($data);
   }
 
@@ -235,94 +302,101 @@ class Tunggakan extends CI_Controller
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
-      }
+      } 
       $this->db->where('kode', 'SARPRAS');
       $this->db->select_sum('kredit', 'total');
       $sarpras = $this->db->get('tb_transaksi')->row();
 
       $this->db->where('ta', $key->ta);
+      $this->db->where('kode', 'SPP');
       if ($id) {
         $this->db->where('id_murid', $id);
-      }
-      $this->db->where('kode', 'SPP');
-      $tagSPP = $this->db->get('tb_transaksi')->row();
+      } 
+      $this->db->select_sum('bayar','total');
+      $tagSPP = $this->db->get('tb_user_tagihan')->row();
 
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
       }
       $this->db->where('kode', 'PEMBANGUNAN');
-      $tagPembangunan = $this->db->get('tb_transaksi')->row();
+      $this->db->select_sum('bayar','total');     
+      $tagPembangunan = $this->db->get('tb_user_tagihan')->row();
 
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
       }
       $this->db->where('kode', 'KEGIATAN');
-      $tagKegiatan = $this->db->get('tb_transaksi')->row();
+      $this->db->select_sum('bayar','total');     
+      $tagKegiatan = $this->db->get('tb_user_tagihan')->row();
 
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
       }
       $this->db->where('kode', 'SERAGAM');
-      $tagSeragam = $this->db->get('tb_transaksi')->row();
+      $this->db->select_sum('bayar','total');     
+      $tagSeragam = $this->db->get('tb_user_tagihan')->row();
 
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
       }
       $this->db->where('kode', 'KOMITE');
-      $tagKomite = $this->db->get('tb_transaksi')->row();
+      $this->db->select_sum('bayar','total');     
+      $tagKomite = $this->db->get('tb_user_tagihan')->row();
 
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
       }
       $this->db->where('kode', 'BUKU PAKET');
-      $tagBuku = $this->db->get('tb_transaksi')->row();
+      $this->db->select_sum('bayar','total');     
+      $tagBuku = $this->db->get('tb_user_tagihan')->row();
       
       $this->db->where('ta', $key->ta);
       if ($id) {
         $this->db->where('id_murid', $id);
       }
       $this->db->where('kode', 'SARPRAS');
-      $tagSarpras = $this->db->get('tb_transaksi')->row();
+      $this->db->select_sum('bayar','total');     
+      $tagSarpras = $this->db->get('tb_user_tagihan')->row();
 
-      if ($tagPembangunan->tagihan == 0) {
+      if ($tagPembangunan == null) {
         $a = 0;
       } else {
-        $a = $tagPembangunan->tagihan - $pembangunan->total;
+        $a = $tagPembangunan->total - $pembangunan->total;
       }
-      if ($tagKegiatan->tagihan == 0) {
+      if ($tagKegiatan == null) {
         $b = 0;
       } else {
-        $b = $tagKegiatan->tagihan - $kegiatan->total;
+        $b = $tagKegiatan->total - $kegiatan->total;
       }
-      if ($tagSeragam->tagihan == 0) {
+      if ($tagSeragam == null) {
         $c = 0;
       } else {
-        $c = $tagSeragam->tagihan - $seragam->total;
+        $c = $tagSeragam->total - $seragam->total;
       }
-      if ($tagKomite->tagihan == 0) {
+      if ($tagKomite == null) {
         $d = 0;
       } else {
-        $d = $tagKomite->tagihan - $komite->total;
+        $d = $tagKomite->total - $komite->total;
       }
-      if ($tagBuku->tagihan == 0) {
+      if ($tagBuku == null) {
         $e = 0;
       } else {
-        $e = $tagBuku->tagihan - $buku->total;
+        $e = $tagBuku->total - $buku->total;
       }
-      if ($tagSPP->tagihan == 0) {
+      if ($tagSPP == null) {
         $f = 0;
       } else {
-        $f = $tagSPP->tagihan - $spp->total;
+        $f = $tagSPP->total - $spp->total;
       }
-      if ($tagSarpras->tagihan == 0) {
+      if ($tagSarpras == null) {
         $g = 0;
       } else {
-        $g = $tagSarpras->tagihan - $sarpras->total;
+        $g = $tagSarpras->total - $sarpras->total;
       }
       $h = $a + $b + $c + $d + $e + $f + $g;
 
@@ -339,6 +413,160 @@ class Tunggakan extends CI_Controller
         'total'   => ($h == 0) ? 0 : str_replace('-', '+', rupiah($h))
       );
     }
+
+     // SPP 
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'SPP');
+     $this->db->select_sum('kredit', 'total');
+     $spp = $this->db->get('tb_transaksi')->row();
+
+     // PEMBANGUNAN 
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'PEMBANGUNAN');
+     $this->db->select_sum('kredit', 'total');
+     $pembangunan = $this->db->get('tb_transaksi')->row();
+
+     // KEGIATAN 
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'KEGIATAN');
+     $this->db->select_sum('kredit', 'total');
+     $kegiatan = $this->db->get('tb_transaksi')->row();
+
+     // SERAGAM 
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'SERAGAM');
+     $this->db->select_sum('kredit', 'total');
+     $seragam = $this->db->get('tb_transaksi')->row();
+
+     // KOMITE
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'KOMITE');
+     $this->db->select_sum('kredit', 'total');
+     $komite = $this->db->get('tb_transaksi')->row();
+
+     // BUKU 
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'BUKU PAKET');
+     $this->db->select_sum('kredit', 'total');
+     $buku = $this->db->get('tb_transaksi')->row();
+
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     } 
+     $this->db->where('kode', 'SARPRAS');
+     $this->db->select_sum('kredit', 'total');
+     $sarpras = $this->db->get('tb_transaksi')->row();
+
+     $this->db->where('kode', 'SPP');
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     } 
+     $this->db->select_sum('bayar','total');
+     $tagSPP = $this->db->get('tb_user_tagihan')->row();
+
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'PEMBANGUNAN');
+     $this->db->select_sum('bayar','total');     
+     $tagPembangunan = $this->db->get('tb_user_tagihan')->row();
+
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'KEGIATAN');
+     $this->db->select_sum('bayar','total');     
+     $tagKegiatan = $this->db->get('tb_user_tagihan')->row();
+
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'SERAGAM');
+     $this->db->select_sum('bayar','total');     
+     $tagSeragam = $this->db->get('tb_user_tagihan')->row();
+
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'KOMITE');
+     $this->db->select_sum('bayar','total');     
+     $tagKomite = $this->db->get('tb_user_tagihan')->row();
+
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'BUKU PAKET');
+     $this->db->select_sum('bayar','total');     
+     $tagBuku = $this->db->get('tb_user_tagihan')->row();
+     
+     if ($id) {
+       $this->db->where('id_murid', $id);
+     }
+     $this->db->where('kode', 'SARPRAS');
+     $this->db->select_sum('bayar','total');     
+     $tagSarpras = $this->db->get('tb_user_tagihan')->row();
+
+     if ($tagPembangunan == null) {
+       $a = 0;
+     } else {
+       $a = $tagPembangunan->total - $pembangunan->total;
+     }
+     if ($tagKegiatan == null) {
+       $b = 0;
+     } else {
+       $b = $tagKegiatan->total - $kegiatan->total;
+     }
+     if ($tagSeragam == null) {
+       $c = 0;
+     } else {
+       $c = $tagSeragam->total - $seragam->total;
+     }
+     if ($tagKomite == null) {
+       $d = 0;
+     } else {
+       $d = $tagKomite->total - $komite->total;
+     }
+     if ($tagBuku == null) {
+       $e = 0;
+     } else {
+       $e = $tagBuku->total - $buku->total;
+     }
+     if ($tagSPP == null) {
+       $f = 0;
+     } else {
+       $f = $tagSPP->total - $spp->total;
+     }
+     if ($tagSarpras == null) {
+       $g = 0;
+     } else {
+       $g = $tagSarpras->total - $sarpras->total;
+     }
+     $h = $a + $b + $c + $d + $e + $f + $g;
+
+    $data[] = array(
+      'no' => '-',
+      'ta'  => 'GRAND TOTAL',
+      'pembangunan' => ($a == 0) ? 0 : str_replace('-', '+', rupiah($a)),
+      'kegiatan' => ($b == 0) ? 0 : str_replace('-', '+', rupiah($b)),
+      'seragam' => ($c == 0) ? 0 : str_replace('-', '+', rupiah($c)),
+      'komite'  => ($d == 0) ? 0 : str_replace('-', '+', rupiah($d)),
+      'buku_paket' => ($e == 0) ? 0 : str_replace('-', '+', rupiah($e)),
+      'spp' => ($f == 0) ? 0 : str_replace('-', '+', rupiah($f)),
+      'sarpras' => ($g == 0) ? 0 : str_replace('-', '+', rupiah($g)),
+      'total'   => ($h == 0) ? 0 : str_replace('-', '+', rupiah($h))
+    );
 
     echo json_encode($data);
   }

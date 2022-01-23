@@ -419,6 +419,61 @@ class Import extends CI_Controller
 		}
 	}
 
+    public function tagihan()
+
+    {
+        $fileName = $this->input->post('file');
+
+        $config['upload_path'] = './asset/upload/';
+        $config['file_name'] = $fileName;
+        $config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
+        $config['max_size'] = 10000;
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        if (!$this->upload->do_upload('file')) {
+            $error = array('error' => $this->upload->display_errors());
+			$this->session->set_flashdata('alert', '<div class="alert alert-danger">' . $error['error'] . '</div>');
+			redirect('setting');
+        } else {
+            $media = $this->upload->data();
+            $inputFileName = 'asset/upload/' . $media['file_name'];
+
+            try {
+                $inputFileType = IOFactory::identify($inputFileName);
+                $objReader = IOFactory::createReader($inputFileType);
+                $objPHPExcel = $objReader->load($inputFileName);
+            } catch (Exception $e) {
+                die('Error loading file "' . pathinfo($inputFileName, PATHINFO_BASENAME) . '": ' . $e->getMessage());
+            }
+
+            $sheet = $objPHPExcel->getSheet(0);
+            $highestRow = $sheet->getHighestRow();
+            $highestColumn = $sheet->getHighestColumn();
+
+            for ($row = 2; $row <= $highestRow; $row++) {
+                $rowData = $sheet->rangeToArray(
+                    'A' . $row . ':' . $highestColumn . $row,
+                    NULL,
+                    TRUE,
+                    FALSE
+                );
+                $data = array(
+                    "created_at" => $rowData[0][0],
+                    "id_murid" => $rowData[0][1],
+                    "kelas" => $rowData[0][2],
+                    "ta" => $rowData[0][3],
+                    "bayar" => $rowData[0][4],
+                    "kode" => $rowData[0][5]
+                );
+                $this->db->insert('tb_user_tagihan', $data);
+            }
+            $this->session->set_flashdata('alert', '<div class="alert alert-info">Upload Data produk berhasiil ditambahan</div>');
+            redirect('setting');
+        }
+    }
+
 }
 
 
