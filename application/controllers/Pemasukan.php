@@ -118,7 +118,7 @@ class Pemasukan extends CI_Controller
     echo json_encode($result);
   }
 
-  public function get()
+  public function get($start = '', $end = '')
   {
     $id = $this->input->post('id');
     $no = 1;
@@ -140,7 +140,8 @@ class Pemasukan extends CI_Controller
         'id_murid'    => $data->id_murid,
       ];
     } else {
-      $this->db->where('approve', 0);
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
       $this->db->where('kode', 'PEMASUKAN KAS');
       $data = $this->db->get('tb_transaksi')->result();
       foreach ($data as $key) {

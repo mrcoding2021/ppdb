@@ -15,17 +15,15 @@
                                             <a class="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Pembayaran Siswa</a>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <a class="nav-link" id="pills-all-tab" data-toggle="pill" href="#all" role="tab" aria-controls="pills-all" aria-selected="true">Semua Siswa</a>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <a class="nav-link" id="pills-persiswa-tab" data-toggle="pill" href="#persiswax" role="tab" aria-controls="pills-persiswa" aria-selected="true">Per-Siswa</a>
+                                            <a class="nav-link" id="pills-all-tab" data-toggle="pill" href="#all" role="tab" aria-controls="pills-all" aria-selected="true">All Tagihan</a>
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <a class="nav-link" id="pills-spp-tab" data-toggle="pill" href="#spp" role="tab" aria-controls="pills-spp" aria-selected="true">Pembayaran SPP</a>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <a class="nav-link" id="pills-sppx-tab" data-toggle="pill" href="#sppx" role="tab" aria-controls="pills-sppx" aria-selected="true">Pembayaran Selain SPP</a>
+                                            <a class="nav-link" id="pills-spp-tab" data-toggle="pill" href="#prosentase" role="tab" aria-controls="pills-spp" aria-selected="true">Prosentase (%) SPP</a>
                                         </li>
+                                      
                                     </ul>
                                     <div class="tab-content" id="pills-tabContent">
                                         <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="pills-all-tab">
@@ -34,14 +32,11 @@
                                         <div class="tab-pane fade" id="spp" role="tabpanel" aria-labelledby="pills-spp-tab">
                                             <?php $this->load->view('pembayaran/spp'); ?>
                                         </div>
-                                        <div class="tab-pane fade" id="sppx" role="tabpanel" aria-labelledby="pills-sppz-tab">
-                                            <?php $this->load->view('pembayaran/sppx'); ?>
-                                        </div>
-                                        <div class="tab-pane fade" id="persiswax" role="tabpanel" aria-labelledby="pills-home-tab">
-                                            <?php $this->load->view('pembayaran/perSiswa'); ?>
-                                        </div>
                                         <div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                             <?php $this->load->view('pembayaran/bayar'); ?>
+                                        </div>
+                                        <div class="tab-pane fade" id="prosentase" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                            <?php $this->load->view('pembayaran/prosentase'); ?>
                                         </div>
                                     </div>
                                 </div>

@@ -7,11 +7,30 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold "> <?= $title ?>
-                                        <a href="#addPemasukan" data-toggle="modal" class="btn btn-success inputBaru btn-border-circle float-right">Input Baru</a>
+                                        <a href="#addPemasukan" data-toggle="modal" id="inputBaru" class="btn btn-success btn-border-circle float-right">Input Baru</a>
                                     </h3>
                                 </div>
+                                <div class="ml-2 mb-3 row">
+                                    <div class="col-lg-2 col-sm-4">
+                                        <label for="1" class="col-form-label">Dari Tanggal</label>
+                                        <input type="date" id="start" class=" form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
+                                    </div>
+                                    <div class="col-lg-2 col-sm-4">
+                                        <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                        <input type="date" id="end" class=" form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
+                                    </div>
 
-                                <div class="row mt-3">
+                                    <div class="col-lg-1 col-sm-4">
+                                        <label for="1" class="col-form-label">.</label>
+                                        <a href="#" id="cari" class=" btn btn-success btn-block btn-sm">Cari</a>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-4">
+                                        <label for="1" class="col-form-label">.</label>
+                                        <a href="<?= base_url('sispem/pemasukan') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                    </div>
+                                </div>
+                                <div class="row">
+
                                     <div class="col-md-12 col-lg-12 container">
                                         <table class="table table-striped table-sm text-center" width="100%" id="dataPemasukan">
                                             <thead class="bg-dark text-white ">
@@ -135,9 +154,19 @@
                     </div>
                 </div>
                 <script>
-                    getPemasukan()
+                    var start = $('#start').val()
+                    var end = $('#end').val()
+                    getPemasukan(start, end)
 
-                    function getPemasukan() {
+                    $('#cari').click(function(e) {
+                        e.preventDefault()
+                        var start = $('#start').val()
+                        var end = $('#end').val()
+                        getPemasukan(start, end)
+                        // $('.excel').attr('href', '<?= base_url('pemasukan/export/') ?>' + start + '/' + end)
+                    })
+
+                    function getPemasukan(start, end) {
                         var getPemasukan = $('#dataPemasukan').DataTable({
                             "processing": true,
                             "language": {
@@ -145,7 +174,7 @@
                             },
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('pemasukan/get/') ?>',
+                                "url": '<?= base_url('pemasukan/get/') ?>' + start + '/' + end,
                                 "dataSrc": ""
                             },
                             "pageLength": 100,
@@ -181,8 +210,11 @@
                         });
                     }
 
-                    $('.inputBaru').click(function(e) {
+                    $('#inputBaru').click(function(e) {
                         var inv = $.trim($('#inv').html())
+                        $('.nama').val('')
+                        $('.nilai').val('')
+                        // $('.ket').val('')
                         $('.id_trx').val(inv)
                         $.ajax({
                             url: '<?= base_url('pemasukan/getKode/') ?>',
@@ -261,9 +293,9 @@
                                                 html: `${res.sukses}`
                                             })
                                             $('.modal').modal('hide')
-                                            getPemasukan()
-                                            $('#cetak').attr('href', '<?= base_url('cetak/invoice/') ?>' + id_trx)
-                                            var cetak = $('#cetak').attr('href')
+                                            var start = $('#start').val()
+                                            var end = $('#end').val()
+                                            getPemasukan(start, end)
                                         } else {
                                             Swal.fire({
                                                 icon: 'error',

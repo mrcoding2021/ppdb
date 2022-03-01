@@ -480,6 +480,106 @@ class Cetak extends CI_Controller
       $this->load->view('print/tunggakanAll', $db);
     }
   }
+
+  public function setoranBSI($start, $end)
+  {
+    // $start = $this->input->post('start');
+    // $end = $this->input->post('end');
+    // $start = '2022-01-21';
+    // $end = '2022-02-01';
+    $tcs = 0;
+    $ttf = 0;
+    $tpot = 0;
+    $ttotal = 0;
+    $tsetoran = 0;
+    $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+    for ($i = 0; $i < 7; $i++) {
+
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->where('metode', 1);
+      $this->db->select_sum('kredit', 'total');
+      $cash = $this->db->get('tb_transaksi')->row();
+
+      if ($cash == []) {
+        $cs = 0;
+      } else {
+        $cs = $cash->total;
+      }
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->where('metode', 1);
+      $this->db->where('kode', 'TABUNGAN');
+      $this->db->select_sum('kredit', 'total');
+      $tabungan = $this->db->get('tb_transaksi')->row();
+      if ($tabungan == []) {
+        $tab = 0;
+      } else {
+        $tab = $tabungan->total;
+      }
+
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->select_sum('kredit', 'total');
+      $transfer = $this->db->get('tb_transaksi')->row();
+
+      if ($transfer == []) {
+        $tf = 0;
+      } else {
+        $tf = $transfer->total;
+      }
+
+      $this->db->where('date >=', $start);
+      $this->db->where('date <=', $end);
+      $this->db->where('kode', $kode[$i]);
+      $this->db->where('metode', 5);
+      $this->db->select_sum('kredit', 'total');
+      $potong = $this->db->get('tb_transaksi')->row();
+
+      if ($potong == []) {
+        $pot = 0;
+      } else {
+        $pot = $potong->total;
+      }
+
+      if ($cs > 0) {
+        $tcs = $tcs + $cs;
+        $tpot = $tpot + $pot;
+        $ttf = $ttf + $tf;
+        $ttotal = $ttotal + $cs + $tf;
+        $tsetoran = $tsetoran + $cs - $tpot;
+      }
+
+      if ($start == $end) {
+        $tgl = longdate_indo($start);
+      } else {
+        $tgl = longdate_indo($start) . ' s/d ' . longdate_indo($end);
+      }
+
+      $res[] = [
+        'hari'      => $tgl,
+        'jns'       => $kode[$i],
+        'cash'      => ($cs == null) ? 0 : rupiah($cs),
+        'tabungan'  => ($tab == null) ? 0 : rupiah($tab),
+        'tcash'      => rupiah($tcs),
+        'transfer'  => ($tf == null) ? 0 : rupiah($tf),
+        'ttransfer'  => rupiah($ttf),
+        'total'     => ($cs + $tf == 0) ? 0 : rupiah($cs + $tf),
+        'ttotal'     => rupiah($ttotal),
+        'potong'    => ($pot == null) ? 0 : rupiah($pot),
+        'tpotong'    => rupiah($tpot),
+        'setoran'   => ($cs - $pot == 0) ? 0 : rupiah($cs - $pot),
+        'tsetoran'   => rupiah($tsetoran)
+      ];
+    }
+
+    $db['key'] = $res;
+
+    $this->load->view('print/setoranBSI', $db);
+  }
 }
 
 

@@ -7,7 +7,8 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 bg-dark ">
                                     <h3 class="m-0 text-white font-weight-bold ">
-                                        <?= $title;?> <a href="<?= base_url('data/exportSiswa')?>" class="btn btn-info mr-1 btn-border-circle float-right">Export Data</a><a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><a href="#detail" data-toggle="modal" class="btn btn-success tambah btn-border-circle float-right">Tambah Data</a></h3>
+                                        <?= $title;
+                                        if ($user['level'] == 1) : ?> <a href="#uploadMutasi" class="btn btn-primary  btn-border-circle float-right" data-toggle="modal">Upload Data</a><?php endif ?><a href="#detail" data-toggle="modal" class="btn btn-success tambah btn-border-circle float-right">Tambah Data</a></h3>
 
                                 </div>
                                 <div class="card-body">
@@ -16,10 +17,9 @@
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
-                                                    <th>NIS</th>
-                                                    <th>NISN</th>
-                                                    <th>Nama Siswa</th>
-                                                    <th>Kelas</th>
+                                                    <th>Nama Lengkap</th>
+                                                    <th>No. HP</th>
+                                                    <th>Alamat</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
@@ -84,43 +84,19 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="<?= base_url('data/addSiswa') ?>" method="post" class="addSiswa" data-id="0">
-                                    <div class="form-group row">
-                                        <div class="col-sm-4">
-                                            <label for="1">NIS</label>
-                                            <input type="text" class="form-control" name="nis">
-                                            <input type="hidden" class="form-control" name="id_user">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label for="1">NISN</label>
-                                            <input type="text" class="form-control" name="nisn">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <label for="1">Tgl.Daftar</label>
-                                            <input type="date" class="form-control" name="date">
-                                        </div>
-                                    </div>
+                                <form action="<?= base_url('data/editGuru') ?>" method="post" class="addSiswa" data-id="0">
+                                   
                                     <div class="form-group row">
                                         <div class="col-sm-12">
                                             <label for="1">Nama</label>
+                                            <input type="hidden" class="form-control" name="id_user">
                                             <input type="text" class="form-control" name="nama">
                                         </div>
-
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12">
                                             <label for="1">Alamat</label>
                                             <input type="text" class="form-control" name="alamat">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6">
-                                            <label for="1">No. HP</label>
-                                            <input type="text" class="form-control" name="hp">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label for="1">Orangtua/Wali</label>
-                                            <input type="text" class="form-control" name="wali">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -134,11 +110,17 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <div class="col-sm-12">
+                                        <div class="col-sm-4">
+                                            <label for="1">No. HP</label>
+                                            <input type="text" class="form-control" name="hp">
+                                        </div>
+                                        <div class="col-sm-8">
                                             <label for="1">Email</label>
                                             <input type="text" class="form-control" name="email">
                                         </div>
                                     </div>
+                                  
+                                  
                                     <div class="modal-footer">
                                         <button class="pt-1 btn btn-block btn-border-circle btn-secondary" type="button" style="position: relative; top: 4px; height:38px" data-dismiss="modal">Cancel</button>
                                         <button type="submit" class="btn btn-success btn-border-circle btn-block">Input</button>
@@ -187,28 +169,24 @@
                                 },
                                 'ajax': {
                                     "type": "POST",
-                                    "url": '<?= base_url('sispem/getAll/tb_user') ?>',
+                                    "url": '<?= base_url('data/getGuru') ?>',
                                     "dataSrc": ""
                                 },
                                 "destroy": true,
-                                "pageLength"  : 50,
                                 'columns': [{
                                         "data": "no"
-                                    },
-                                    {
-                                        "data": "nis"
-                                    },
-                                    {
-                                        "data": "nisn"
                                     },
                                     {
                                         "data": "nama"
                                     },
                                     {
-                                        "data": "kelas"
+                                        "data": "hp"
                                     },
                                     {
-                                        "data": "spp",
+                                        "data": "alamat"
+                                    },
+                                    {
+                                        "data": "hp",
                                         "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
                                             $(nTd).html("<a data-toggle='modal' class='mr-1 detail badge badge-info' href='#detail' data-id=" + oData.id_user + " >Detail</a><a href='#' class='blokir mr-1 badge badge-danger' data-id=" + oData.id_user + ">Blokir</a>");
                                         }

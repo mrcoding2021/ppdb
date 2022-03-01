@@ -274,20 +274,27 @@ class Pembayaran extends CI_Controller
         $jumlah = $this->db->get('tb_transaksi')->row();
 
         $this->db->where('id_trx', $key->id_trx);
-        $trx = $this->db->get('tb_transaksi')->row();
+        $trx = $this->db->get('tb_transaksi')->result();
 
-        $this->db->where('id_user', $trx->id_murid);
+        $this->db->where('id_user', $trx[0]->id_murid);
         $siswa = $this->db->get('tb_user')->row();
 
         $result[] = [
-          'no'      => $no,
-          'tgl'     => $trx->date_created,
-          'id'     => $trx->id,
-          'inv'     => $trx->id_trx,
-          'kelas'     => $trx->kelas,
-          'siswa'   => ($siswa != null) ? $siswa->nama : '0',
-          'ta'      => $trx->ta,
-          'jumlah'  => rupiah($jumlah->total),
+          'no'            => $no,
+          'tgl'           => $trx[0]->date_created,
+          'id'            => $trx[0]->id,
+          'inv'           => $trx[0]->id_trx,
+          'kelas'         => $trx[0]->kelas,
+          'pembangunan'   => rupiah($trx[0]->jumlah),
+          'kegiatan'      => rupiah($trx[1]->jumlah),
+          'seragam'       => rupiah($trx[2]->jumlah),
+          'komite'        => rupiah($trx[3]->jumlah),
+          'buku'          => rupiah($trx[4]->jumlah),
+          'spp'           => rupiah($trx[5]->jumlah),
+          'sarpras'       => rupiah($trx[6]->jumlah),
+          'siswa'         => ($siswa != null) ? $siswa->nama : '0',
+          'ta'            => $trx[0]->ta,
+          'jumlah'        => rupiah($jumlah->total),
         ];
         $no++;
       }
@@ -387,7 +394,7 @@ class Pembayaran extends CI_Controller
     }
   }
 
-  public function allPerSiswa($ta = '2016-2017')
+  public function allPerSiswa($ta = '2021-2022')
   {
     if ($this->scm->cekSecurity() == true) {
 
@@ -397,38 +404,165 @@ class Pembayaran extends CI_Controller
 
       $result = [];
       $no = 1;
+      $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+      $tagihan = [];
+      $pembayaran = [];
+      $sisa = [];
       foreach ($data as $key) {
         $jumlah = 0;
+        for ($i = 0; $i < 7; $i++) {
+          $this->db->where('id_murid', $key->id_user);
+          $this->db->where('ta', $ta);
+          $this->db->where('kode', $kode[$i]);
+          $this->db->select_sum('kredit', 'total');
+          $terbayar = $this->db->get('tb_transaksi')->row();
 
-        $this->db->where('id_trx', $key->id_murid);
-        $trx = $this->db->get('tb_transaksi')->result();
+          $pembayaran[] = [
+            'total'  => ($terbayar != null) ? $terbayar->total : 0
+          ];
 
-        for ($i = 0; $i < count($trx); $i++) {
-          if ($trx[$i]->kredit > 0) {
-            $jumlah = $jumlah + $trx[$i]->kredit;
-          } else {
-            $jumlah = $jumlah + $trx[$i]->kredit - $trx[$i]->debit;
-          }
+          $this->db->where('id_murid', $key->id_user);
+          $this->db->where('kode', $kode[$i]);
+          $this->db->where('ta', $ta);
+          $tagih = $this->db->get('tb_user_tagihan')->row();
+
+          $tagihan[] = [
+            'bayar'  => ($tagih != null) ? $tagih->bayar : 0
+          ];
+
+          $sisa[] = [
+            'sisa' => ((($tagih != null) ? $tagih->bayar : 0) - (($terbayar != null) ? $terbayar->total : 0))
+          ];
         }
 
         $result[] = [
-          'no'          => $no,
-          'tgl'         => $trx[0]->date_created,
-          'inv'         => $key->id_trx,
-          'pembangunan' => rupiah($trx[0]->jumlah),
-          'kegiatan'    => rupiah($trx[1]->jumlah),
-          'seragam'     => rupiah($trx[2]->jumlah),
-          'komite'      => rupiah($trx[3]->jumlah),
-          'buku_paket'  => rupiah($trx[4]->jumlah),
-          'spp'         => rupiah($trx[5]->jumlah),
-          'sarpras'     => rupiah($trx[6]->jumlah),
-          'jumlah'      => rupiah($jumlah)
+          'no'                => $no,
+          'nama'              => $key->nama,
+          // pembangunan
+          'tag_pembangunan'   => rupiah($tagihan[0]['bayar']),
+          'pem_pembangunan'   => rupiah($pembayaran[0]['total']),
+          'sisa_pembangunan'  => ($sisa[0]['sisa'] != 0) ? rupiah($sisa[0]['sisa']) : 0,
+          // kegaitan
+          'tag_kegiatan'      => rupiah($tagihan[1]['bayar']),
+          'pem_kegiatan'      => rupiah($pembayaran[1]['total']),
+          'sisa_kegiatan'     => ($sisa[1]['sisa'] != 0) ? rupiah($sisa[1]['sisa']) : 0,
+          // seragam
+          'tag_seragam'   => rupiah($tagihan[2]['bayar']),
+          'pem_seragam'   => rupiah($pembayaran[2]['total']),
+          'sisa_seragam'  => ($sisa[2]['sisa'] != 0) ? rupiah($sisa[2]['sisa']) : 0,
+          // komite
+          'tag_komite'    => rupiah($tagihan[3]['bayar']),
+          'pem_komite'    => rupiah($pembayaran[3]['total']),
+          'sisa_komite'   => ($sisa[3]['sisa'] != 0) ? rupiah($sisa[3]['sisa']) : 0,
+          // buku paket
+          'tag_buku'      => rupiah($tagihan[4]['bayar']),
+          'pem_buku'      => rupiah($pembayaran[4]['total']),
+          'sisa_buku'     => ($sisa[4]['sisa'] != 0) ? rupiah($sisa[4]['sisa']) : 0,
+          // spp
+          'tag_spp'       => rupiah($tagihan[5]['bayar']),
+          'pem_spp'       => rupiah($pembayaran[5]['total']),
+          'sisa_spp'      => ($sisa[5]['sisa'] != 0) ? rupiah($sisa[5]['sisa']) : 0,
+          // sarpras
+          'tag_sarpras'   => rupiah($tagihan[6]['bayar']),
+          'pem_sarpras'   => rupiah($pembayaran[6]['total']),
+          'sisa_sarpras'  => ($sisa[6]['sisa'] != 0) ? rupiah($sisa[6]['sisa']) : 0,
+
+          'jumlah'        => ''
+
         ];
         $no++;
       }
+      echo json_encode($result);
+    }
+  }
 
-      $kode = ['PEMBANGUNAN', 'KEGIATAN', 'SERAGAM', 'KOMITE', 'BUKU PAKET', 'SPP',  'SARPRAS'];
+  public function bayarSPP($ta = '2021-2022')
+  {
+    if ($this->scm->cekSecurity() == true) {
 
+      $this->db->where('is_active', 1);
+      $this->db->where('level', 4);
+      $data = $this->db->get('tb_user')->result();
+
+      $result = [];
+      $no = 1;
+
+      $tagihan = [];
+      $pembayaran = [];
+      $a = 7;
+      foreach ($data as $key) {
+
+        for ($i = 0; $i < 12; $i++) {
+          $this->db->where('id_murid', $key->id_user);
+          $this->db->where('ta', $ta);
+          $this->db->where('kode', 'SPP');
+          $this->db->where('month(date)', $a);
+          $terbayar = $this->db->get('tb_transaksi')->row();
+
+          $pembayaran[] = [
+            'total'  => ($terbayar != null) ? $terbayar->jumlah : 0
+          ];
+
+          if ($a == 13) {
+            $a = 1;
+          }
+          $a++;
+        }
+
+
+        $this->db->where('id_murid', $key->id_user);
+        $this->db->where('kode', 'SPP');
+        $this->db->where('ta', $ta);
+        $tagihan = $this->db->get('tb_user_tagihan')->row();
+
+        $this->db->where('id_murid', $key->id_user);
+        $this->db->where('kode', 'SPP');
+        $this->db->where('ta', $ta);
+        $this->db->select_sum('jumlah', 'total');
+        $b = $this->db->get('tb_transaksi')->row();
+
+        if ($tagihan == null) {
+          $tarif = 0;
+        } else {
+          $tarif = $tagihan->bayar;
+        }
+
+        if ($a == null) {
+          $c = 0;
+        } else {
+          $c = $b->total;
+        }
+
+        $result[] = [
+          'no'                => $no,
+          'nama'              => $key->nama,
+          'tarif'             => rupiah($tarif),
+          '1'                 => rupiah($pembayaran[0]['total']),
+          '2'                 => rupiah($pembayaran[1]['total']),
+          '3'                 => rupiah($pembayaran[2]['total']),
+          '4'                 => rupiah($pembayaran[3]['total']),
+          '5'                 => rupiah($pembayaran[4]['total']),
+          '6'                 => rupiah($pembayaran[5]['total']),
+          '7'                 => rupiah($pembayaran[6]['total']),
+          '8'                 => rupiah($pembayaran[7]['total']),
+          '9'                 => rupiah($pembayaran[8]['total']),
+          '10'                => rupiah($pembayaran[9]['total']),
+          '11'                => rupiah($pembayaran[10]['total']),
+          '12'                => rupiah($pembayaran[11]['total']),
+          'terbayar'          => rupiah($c),
+          'tagihan'           => rupiah($tarif),
+          'sisa'              => rupiah($tarif - $c),
+        ];
+        $no++;
+      }
+      echo json_encode($result);
+    }
+  }
+  public function prosentase($ta = '2021-2022')
+  {
+    if ($this->scm->cekSecurity() == true) {
+
+      $result =[];
       echo json_encode($result);
     }
   }

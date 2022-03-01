@@ -1,7 +1,7 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <?php $this->load->view('admin/breadcrumb'); ?>
-                   
+
 
                     <div class="row">
                         <duv class="col-md-12">
@@ -12,6 +12,29 @@
                                     </h3>
                                 </div>
                                 <div class="card-body">
+                                    <div class="mb-3 row">
+                                        <div class="col-lg-2 col-sm-4">
+                                            <label for="1" class="col-form-label">Dari Tanggal</label>
+                                            <input type="date" class="start form-control-sm form-control" name="start" value="<?= date('Y-m') . '-01' ?>">
+                                        </div>
+                                        <div class="col-lg-2 col-sm-4">
+                                            <label for="1" class="col-form-label">Sampai Tanggal</label>
+                                            <input type="date" class="end form-control-sm form-control" name="end" value="<?= date('Y-m-d') ?>">
+                                        </div>
+
+                                        <div class="col-lg-1 col-sm-4">
+                                            <label for="1" class="col-form-label">.</label>
+                                            <a href="#" class="cari btn btn-success btn-block btn-sm">Cari</a>
+                                        </div>
+                                        <div class="col-lg-2 col-sm-4">
+                                            <label for="1" class="col-form-label">.</label>
+                                            <a href="<?= base_url('sispem/pemasukan') ?>" data-id="excel" class="excel btn btn-primary btn-block btn-sm">Export Excel</a>
+                                        </div>
+                                        <!-- <div class="col-lg-2 col-sm-4">
+                                                    <label for="1" class="col-form-label">.</label>
+                                                    <a href="<?= base_url('tabungan/excel') ?>" data-id="pdf" class="pdf btn btn-info btn-block btn-sm">Export PDF</a>
+                                                </div> -->
+                                    </div>
                                     <div class="table-responsive">
                                         <form action="<?= base_url('pembayaran/inputData') ?>" class="inputData" method="POST">
                                             <table class="table table-bordered" width="100%" cellspacing="0" id="table-pemasukanHarian">

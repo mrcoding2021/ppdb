@@ -1,258 +1,141 @@
                 <!-- Begin Page Content -->
                 <div class="table-responsive">
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            <?php
+                            $ta = '2016-2017'; ?>
+                            <label for="1" class="col-form-label">Tahun Ajaran</label>
+                            <select type="text" class="form-control taAll" name="ta">
+                                <option value="0">Pilih</option>
+                                <?php $n = 16;
+                                $m = 17;
+                                for ($i = 0; $i < 15; $i++) { ?>
+                                    <option <?= ($n == 21 && $m == 22) ? 'selected' : '' ?> value="20<?= $n . '-20' . $m ?>">20<?= $n . '-20' . $m ?></option>
+                                <?php $n++;
+                                    $m++;
+                                } ?>
+                            </select>
+                        </div>
+                    </div>
                     <table class="table table-bordered text-center" id="allSiswa" width="100%" cellspacing="0">
                         <thead class="bg-dark text-white">
                             <tr>
                                 <th rowspan="2">No</th>
                                 <th rowspan="2">Nama</th>
-                                <th colspan="7">Jumlah Pembayaran</th>
+                                <th colspan="3">PEMBANGNAN</th>
+                                <th colspan="3">KEGIATAN</th>
+                                <th colspan="3">SERAGAM</th>
+                                <th colspan="3">KOMITE</th>
+                                <th colspan="3">BUKU PAKET</th>
+                                <th colspan="3">SPP</th>
+                                <th colspan="3">SARPARAS</th>
                                 <th rowspan="2">Jumlah</th>
-                                <th rowspan="2" width="12%">Aksi</th>
                             </tr>
                             <tr>
-                                <th>PEMBANGNAN</th>
-                                <th>KEGIATAN</th>
-                                <th>SERAGAM</th>
-                                <th>KOMITE</th>
-                                <th>BUKU PAKET</th>
-                                <th>SPP</th>
-                                <th>SARPARAS</th>
+                                <?php for ($i = 0; $i < 7; $i++) { ?>
+                                    <td>Tagihan</td>
+                                    <td>Pembayaran</td>
+                                    <td>Sisa</td>
+                                <?php } ?>
                             </tr>
                         </thead>
                         <tbody>
                         </tbody>
                     </table>
                 </div>
-              
+
                 <script>
-                    $('.find').click(function(e) {
-                        e.preventDefault()
-                        var start = $('.dari').val()
-                        var end = $('.ke').val()
-                        $.ajax({
-                            url: '<?= base_url('acc/tandaTerima/') ?>',
-                            type: 'post',
-                            dataType: 'json',
-                            data: {
-                                'inv': start,
-                                'end': end
-                            },
-                            success: function(res) {
-                                console.log(res)
-                                var html = '<tr>'
-                                $.each(res, function(i, v) {
-                                    html += '<td>' + v.jns + '</td>' +
-                                        '<td>' + v.akun + '</td>' +
-                                        '<td>' + v.metode + '</td>' +
-                                        '<td>' + v.tagihan + '</td>' +
-                                        '<td>' + v.bayar + '</td>' +
-                                        '<td>' + v.diskon + '</td>' +
-                                        '<td>' + v.jml + '</td></tr>'
-                                })
-                                $('#rincianBayar').html(html)
-                                $('.totalBayar').html(res[0].total)
-                                $('.terbilang').html(res[0].terbilang)
-                            }
-                        })
-                    })
-
-                    $('.cari').click(function(e) {
-                        e.preventDefault()
-                        var start = $('.start').val()
-                        var end = $('.end').val()
-                        $('.excel').attr('href', '<?= base_url('pembayaran/export/') ?>' + start + '/' + end)
-                        getPem(start, end)
-                    })
-
-                    var start = $('.start').val()
-                    var end = $('.end').val()
-                    getPem(start, end)
-
-                    function getPem(start, end) {
-                        var dataAcc = $('#dataAcc').DataTable({
-                            'ajax': {
-                                "type": "POST",
-                                "url": '<?= base_url('pembayaran/getPembayaran/') ?>' + start + '/' + end,
-                                "dataSrc": ""
-                            },
-                            'destroy': true,
-                            'columns': [{
-                                    "data": "no"
-                                },
-                                {
-                                    "data": "tgl"
-                                },
-                                {
-                                    "data": "siswa"
-                                },
-                                {
-                                    "data": "kelas"
-                                },
-                                {
-                                    "data": "ta"
-                                },
-                                {
-                                    "data": "jumlah"
-                                },
-                                {
-                                    "data": "jumlah",
-                                    "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a><a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a><a data-id=" + oData.inv + " class='delete mr-1 btn btn-danger btn-sm' href='#'><i class='fa fa-times'></i></a>");
-                                    },
-                                    "className": 'details-control',
-                                    "orderable": false,
-                                    "data": null,
-                                    "defaultContent": ''
-                                },
-                            ]
-                        });
-
-
-                    }
-
-                    $('.ta').change(function(e) {
-                        e.preventDefault()
-                        var id = $('.id_murid').val()
+                    $('.taAll').change(function() {
                         var ta = $(this).val()
-                        getPersiswa(id, ta)
+                        getAllSiswa(ta)
                     })
 
-                    function getPersiswa(id, ta) {
-                        var persiswa = $('#persiswa').DataTable({
+
+                    function getAllSiswa(ta) {
+                        var allSiswa = $('#allSiswa').DataTable({
                             'ajax': {
                                 "type": "POST",
-                                "url": '<?= base_url('pembayaran/getPerSiswa/') ?>' + id + '/' + ta,
+                                "url": '<?= base_url('pembayaran/allPerSiswa/') ?>' + ta,
                                 "dataSrc": ""
                             },
                             'destroy': true,
-                            "order": [
-                                [1, "asc"]
-                            ],
                             'columns': [{
                                     "data": "no"
                                 },
                                 {
-                                    "data": "tgl"
+                                    "data": "nama"
                                 },
                                 {
-                                    "data": "pembangunan"
+                                    "data": "tag_pembangunan"
                                 },
                                 {
-                                    "data": "kegiatan"
+                                    "data": "pem_pembangunan"
                                 },
                                 {
-                                    "data": "seragam"
+                                    "data": "sisa_pembangunan"
                                 },
                                 {
-                                    "data": "komite"
+                                    "data": "tag_kegiatan"
                                 },
                                 {
-                                    "data": "buku_paket"
+                                    "data": "pem_kegiatan"
                                 },
                                 {
-                                    "data": "spp"
+                                    "data": "sisa_kegiatan"
                                 },
                                 {
-                                    "data": "sarpras"
+                                    "data": "tag_seragam"
+                                },
+                                {
+                                    "data": "pem_seragam"
+                                },
+                                {
+                                    "data": "sisa_seragam"
+                                },
+                                {
+                                    "data": "tag_komite"
+                                },
+                                {
+                                    "data": "pem_komite"
+                                },
+                                {
+                                    "data": "sisa_komite"
+                                },
+                                {
+                                    "data": "tag_buku"
+                                },
+                                {
+                                    "data": "pem_buku"
+                                },
+                                {
+                                    "data": "sisa_buku"
+                                },
+                                {
+                                    "data": "tag_spp"
+                                },
+                                {
+                                    "data": "pem_spp"
+                                },
+                                {
+                                    "data": "sisa_spp"
+                                },
+                                {
+                                    "data": "tag_sarpras"
+                                },
+                                {
+                                    "data": "pem_sarpras"
+                                },
+                                {
+                                    "data": "sisa_sarpras"
                                 },
                                 {
                                     "data": "jumlah"
-                                },
-                                {
-                                    "data": "jumlah",
-                                    "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a><a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a><a data-id=" + oData.inv + " class='delete mr-1 btn btn-danger btn-sm' href='#'><i class='fa fa-times'></i></a>");
-                                    },
-                                    "className": 'details-control',
-                                    "orderable": true,
-                                    "data": null,
-                                    "defaultContent": ''
-                                },
+                                }
                             ]
                         });
 
+                        var ta = $('.taAllSPP').val()
+                        spp(ta)
 
                     }
-
-                    $(document).on('click', '.more', function() {
-                        var inv = $(this).data('id')
-                        $('.terima').attr('data-id', inv)
-                        $.ajax({
-                            url: '<?= base_url('acc/getMore/') ?>',
-                            type: 'post',
-                            dataType: 'json',
-                            data: {
-                                'inv': inv
-                            },
-                            success: function(res) {
-                                console.log(res)
-                                var html = '<tr>'
-                                $.each(res, function(i, v) {
-                                    html += '<td>' + v.jns + '</td>' +
-                                        '<td>' + v.akun + '</td>' +
-                                        '<td>' + v.metode + '</td>' +
-                                        '<td>' + v.tagihan + '</td>' +
-                                        '<td>' + v.bayar + '</td>' +
-                                        '<td>' + v.diskon + '</td>' +
-                                        '<td>' + v.jml + '</td></tr>'
-                                })
-                                $('#rincianBayar').html(html)
-                                $('.totalBayar').html(res[0].total)
-                                $('.terbilang').html(res[0].terbilang)
-                            }
-                        })
-                    })
-
-                    $(document).on('click', '.delete', function(e) {
-                        var id = $(this).data('id')
-                        var id_trx = $('#inv').text()
-                        var id_murid = $('.id_murid').val()
-                        e.preventDefault()
-                        Swal.fire({
-                            title: "Yakin ingin dihapus?",
-                            text: "Data transaksi ini akan terhapus permanen",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#3085d6",
-                            cancelButtonColor: "#d33",
-                            confirmButtonText: "Yes, hapus!",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: '<?= base_url('acc/delete') ?>',
-                                    data: {
-                                        'id': id
-                                    },
-                                    dataType: 'json',
-                                    type: 'POST',
-                                    beforeSend: function() {
-                                        Swal.fire({
-                                            html: '<div class="p-5"><i class="fa fa-spinner fa-spin fa-3x fa-fw"></i></div>',
-                                            showConfirmButton: false
-                                        })
-                                    },
-                                    success: function(res) {
-                                        if (res.sukses) {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Berhasil',
-                                                html: `${res.sukses}`
-                                            })
-                                            var start = $('.start').val()
-                                            var end = $('.end').val()
-                                            getPem(start, end)
-
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Gagal !',
-                                                html: `${res.error}`
-                                            })
-                                        }
-
-                                    }
-                                })
-                            }
-                        });
-                    })
                 </script>

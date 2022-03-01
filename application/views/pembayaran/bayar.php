@@ -23,12 +23,22 @@
         <thead>
             <tr>
                 <!-- <th>No</th> -->
-                <th>Tanggal</th>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>Tahun Ajaran</th>
-                <th>Jumlah</th>
-                <th>Aksi</th>
+                <th rowspan="2">Tanggal</th>
+                <th rowspan="2">Nama</th>
+                <th rowspan="2">Kelas</th>
+                <th rowspan="2">Tahun Ajaran</th>
+                <th colspan="7">Jenis Pembayaran</th>
+                <th rowspan="2">Jumlah</th>
+                <th rowspan="2">Aksi</th>
+            </tr>
+            <tr>
+                <td>PEMBANGUNAN</td>
+                <td>KEGIATAN</td>
+                <td>SERAGAM</td>
+                <td>KOMITE</td>
+                <td>BUKU PAKET</td>
+                <td>SPP</td>
+                <td>SARPRAS</td>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +47,6 @@
 </div>
 
 <script>
-
     $('.cari').click(function(e) {
         e.preventDefault()
         var start = $('.startBayar').val()
@@ -58,9 +67,10 @@
                 "dataSrc": ""
             },
             'destroy': true,
-            "order": [[ 0, "asc" ]],
-            'columns': [
-                {
+            "order": [
+                [0, "asc"]
+            ],
+            'columns': [{
                     "data": "tgl"
                 },
                 {
@@ -73,12 +83,33 @@
                     "data": "ta"
                 },
                 {
+                    "data": "pembangunan"
+                },
+                {
+                    "data": "kegiatan"
+                },
+                {
+                    "data": "seragam"
+                },
+                {
+                    "data": "komite"
+                },
+                {
+                    "data": "buku"
+                },
+                {
+                    "data": "spp"
+                },
+                {
+                    "data": "sarpras"
+                },
+                {
                     "data": "jumlah"
                 },
                 {
                     "data": "jumlah",
                     "fnCreatedCell": function(nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a data-toggle='modal' class='mr-1 more btn btn-info btn-sm' href='#more' data-id=" + oData.inv + "><i class='fa fa-search'></i></a><a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a><a data-id=" + oData.inv + " class='delete mr-1 btn btn-danger btn-sm' href='#'><i class='fa fa-times'></i></a>");
+                        $(nTd).html("<a target='_blank' class='mr-1 btn btn-success btn-sm' href='<?= base_url('cetak/invoice/') ?>" + oData.inv + "'><i class='fa fa-print'></i></a><a data-id=" + oData.inv + " class='delete mr-1 btn btn-danger btn-sm' href='#'><i class='fa fa-times'></i></a>");
                     },
                     "className": 'details-control',
                     "orderable": false,
@@ -88,6 +119,7 @@
             ]
         });
 
-
+        var ta = $('.taAll').val()
+        getAllSiswa(ta)
     }
 </script>
